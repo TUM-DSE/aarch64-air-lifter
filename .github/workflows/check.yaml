@@ -13,11 +13,6 @@ jobs:
       - name: Check out
         uses: actions/checkout@v3
 
-      - name: setup ssh agent
-        run: |
-          eval `ssh-agent -s`
-          ssh-add - <<< '${{ secrets.PRIVATE_SSH_KEY }}'
-
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -41,4 +36,6 @@ jobs:
 
       - name: Lint
         run: |
+          eval `ssh-agent -s`
+          ssh-add - <<< '${{ secrets.PRIVATE_SSH_KEY }}'
           just check
