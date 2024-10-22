@@ -1,0 +1,4 @@
+/target
+.idea
+.z3-trace
+.cargo/config.toml
