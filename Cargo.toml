@@ -6,6 +6,6 @@ edition = "2021"
 [dependencies]
 target-lexicon = "0.12.16"
 thiserror = "1.0.64"
-tnj = { git = "ssh://git@github.com/martin-fink/tnj.git", rev = "70eaa34565a0ec66fb4ceaff5d11f87b18474f8d" }
+tnj = { git = "ssh://git@github.com/TUM-DSE/tnj.git", rev = "70eaa34565a0ec66fb4ceaff5d11f87b18474f8d" }
 yaxpeax-arch = "0.3.2"
 yaxpeax-arm = "0.3.0"
