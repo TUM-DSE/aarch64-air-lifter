@@ -3,7 +3,7 @@ use aarch64_air_lifter::Lifter;
 
 #[test]
 #[ignore]
-// Get the absolute value of a register
+// Absolute value
 fn test() {
     let bytes = [
         0x11, 0x10, 0x60, 0x6D, // abs x1, x2

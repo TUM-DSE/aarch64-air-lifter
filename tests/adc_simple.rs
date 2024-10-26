@@ -3,7 +3,7 @@ use aarch64_air_lifter::Lifter;
 
 #[test]
 #[ignore]
-// Add shifted register
+// Add with carry
 fn test() {
     let bytes = [
         0x10, 0x00, 0x00, 0x4D, // adc x1, x1, w0
