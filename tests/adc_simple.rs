@@ -3,11 +3,11 @@ use aarch64_air_lifter::Lifter;
 
 #[test]
 #[ignore]
-// Get the absolute value of a register
+// Add shifted register
 fn test() {
     let bytes = [
-        0x11, 0x10, 0x60, 0x6D, // abs x1, x2
-        0x00, 0x10, 0x60, 0x2D, // abs w0, w0
+        0x10, 0x00, 0x00, 0x4D, // adc x1, x1, w0
+        0x10, 0x00, 0x00, 0x0D, // adc w1, w1, w0
     ];
 
     let lifter = AArch64Lifter;
