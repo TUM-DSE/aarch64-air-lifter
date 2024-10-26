@@ -2,12 +2,11 @@ use aarch64_air_lifter::arm64::AArch64Lifter;
 use aarch64_air_lifter::Lifter;
 
 #[test]
-// Add shifted register
 fn test() {
     let bytes = [
-        0x21, 0x00, 0x00, 0x8B, // add x1, x1, s0
-        0x21, 0x00, 0x00, 0x0B, // add w1, w1, w0
-        0x02, 0xc0, 0x21, 0x0B, // add w2, w0, w1, SXTW
+        0x21, 0x00, 0x00, 0xCB, // sub x1, x1, x0
+        0x21, 0x00, 0x00, 0x4B, // sub w1, w1, w0
+        0x02, 0xC0, 0x21, 0x4B, // sub w2, w0, w1, SXTW
     ];
 
     let lifter = AArch64Lifter;
@@ -55,7 +54,7 @@ fn test() {
 entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64):
   v33 = i64.read_reg "x1"
   v34 = i64.read_reg "x0"
-  v35 = i64.add v33, v34
+  v35 = i64.sub v33, v34
   i64.write_reg v35, "x1"
   v36 = i64.read_reg "x1"
   v37 = i32.trunc_i64 v36
@@ -63,7 +62,7 @@ entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8
   v39 = i64.read_reg "x0"
   v40 = i32.trunc_i64 v39
   v41 = i64.zext_i32 v40
-  v42 = i64.add v38, v41
+  v42 = i64.sub v38, v41
   v43 = i32.trunc_i64 v42
   v44 = i64.zext_i32 v43
   i64.write_reg v44, "x1"
@@ -75,7 +74,7 @@ entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8
   v50 = i64.zext_i32 v49
   v51 = i32.trunc_i64 v50
   v52 = i64.sext_i32 v51
-  v53 = i64.add v47, v52
+  v53 = i64.sub v47, v52
   v54 = i32.trunc_i64 v53
   v55 = i64.zext_i32 v54
   i64.write_reg v55, "x2"

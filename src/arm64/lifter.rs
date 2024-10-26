@@ -21,6 +21,7 @@ impl Lifter for AArch64Lifter {
         let arch = get_arch(Architecture::Aarch64(Aarch64Architecture::Aarch64)).unwrap();
         let mut blob = Blob::new(arch);
         let mut builder = blob.insert();
+        // let mut labels = HashMap::new();
 
         let decoder = <ARMv8 as Arch>::Decoder::default();
 
@@ -36,6 +37,19 @@ impl Lifter for AArch64Lifter {
                             let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let val = builder.add(src1, src2, I64);
+                            let val = if sz == SizeCode::W {
+                                let trunc = builder.trunc_i64(val, I32);
+                                builder.zext_i32(trunc, I64)
+                            } else {
+                                val
+                            };
+                            builder.write_reg(val, dst_reg, I64);
+                        }
+                        Opcode::SUB => {
+                            let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let val = builder.sub(src1, src2, I64);
                             let val = if sz == SizeCode::W {
                                 let trunc = builder.trunc_i64(val, I32);
                                 builder.zext_i32(trunc, I64)
