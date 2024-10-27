@@ -6,8 +6,7 @@ use aarch64_air_lifter::Lifter;
 // Absolute value
 fn test() {
     let bytes = [
-        0x11, 0x10, 0x60, 0x6D, // abs x1, x2
-        0x00, 0x10, 0x60, 0x2D, // abs w0, w0
+        0x41, 0xB8, 0xE0, 0x5E, // abs d1, d2
     ];
 
     let lifter = AArch64Lifter;

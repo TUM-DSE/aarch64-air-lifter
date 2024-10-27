@@ -6,8 +6,8 @@ use aarch64_air_lifter::Lifter;
 // Add with carry
 fn test() {
     let bytes = [
-        0x10, 0x00, 0x00, 0x4D, // adc x1, x1, w0
-        0x10, 0x00, 0x00, 0x0D, // adc w1, w1, w0
+        0x21, 0x00, 0x00, 0x9A, // adc x1, x1, x0
+        0x21, 0x00, 0x00, 0x1A, // adc w1, w1, w0
     ];
 
     let lifter = AArch64Lifter;
