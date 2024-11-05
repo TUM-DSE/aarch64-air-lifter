@@ -2,7 +2,7 @@ use crate::Lifter;
 use target_lexicon::{Aarch64Architecture, Architecture};
 use thiserror::Error;
 use tnj::air::instructions::builder::InstructionBuilder;
-use tnj::air::instructions::{Blob, Value};
+use tnj::air::instructions::{Blob, BlockParamData, Value};
 use tnj::arch::get_arch;
 use tnj::arch::reg::Reg;
 use tnj::types::{I16, I32, I64, I8};
@@ -32,6 +32,42 @@ impl Lifter for AArch64Lifter {
                 Ok(inst) => {
                     println!("{}", inst);
                     match inst.opcode {
+                        // Currently not supported
+                        Opcode::ABS => {
+                            let current_block = builder.current_block();
+                            let neg_block =
+                                builder.create_block("Negate Value", Vec::<BlockParamData>::new());
+                            let next_block =
+                                builder.create_block("Next Block", Vec::<BlockParamData>::new());
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+
+                            let src = Self::get_reg_value(&mut builder, inst.operands[1]);
+                            let zero = builder.iconst(0);
+                            let cmp =
+                                builder.icmp(tnj::air::instructions::CmpTy::Slt, src, zero, I64);
+                            builder.jumpif(
+                                cmp,
+                                neg_block,
+                                Vec::<Value>::new(),
+                                current_block,
+                                Vec::<Value>::new(),
+                            );
+                            builder.write_reg(src, dst_reg, I64);
+                            builder.jump(next_block, Vec::<Value>::new());
+
+                            builder.set_insert_block(neg_block);
+                            let neg_val = builder.sub(zero, src, I64);
+                            let neg_val = if sz == SizeCode::W {
+                                let trunc = builder.trunc_i64(neg_val, I32);
+                                builder.zext_i32(trunc, I64)
+                            } else {
+                                neg_val
+                            };
+                            builder.write_reg(neg_val, dst_reg, I64);
+                            builder.jump(next_block, Vec::<Value>::new());
+
+                            builder.set_insert_block(next_block);
+                        }
                         Opcode::ADD => {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
