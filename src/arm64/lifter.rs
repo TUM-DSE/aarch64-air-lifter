@@ -2,7 +2,7 @@ use crate::Lifter;
 use target_lexicon::{Aarch64Architecture, Architecture};
 use thiserror::Error;
 use tnj::air::instructions::builder::InstructionBuilder;
-use tnj::air::instructions::{Blob, BlockParamData, Value};
+use tnj::air::instructions::{Blob, CmpTy, Value};
 use tnj::arch::get_arch;
 use tnj::arch::reg::Reg;
 use tnj::types::{I16, I32, I64, I8};
@@ -21,7 +21,6 @@ impl Lifter for AArch64Lifter {
         let arch = get_arch(Architecture::Aarch64(Aarch64Architecture::Aarch64)).unwrap();
         let mut blob = Blob::new(arch);
         let mut builder = blob.insert();
-        // let mut labels = HashMap::new();
 
         let decoder = <ARMv8 as Arch>::Decoder::default();
 
@@ -33,41 +32,6 @@ impl Lifter for AArch64Lifter {
                     println!("{}", inst);
                     match inst.opcode {
                         // Currently not supported
-                        Opcode::ABS => {
-                            let current_block = builder.current_block();
-                            let neg_block =
-                                builder.create_block("Negate Value", Vec::<BlockParamData>::new());
-                            let next_block =
-                                builder.create_block("Next Block", Vec::<BlockParamData>::new());
-                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-
-                            let src = Self::get_reg_value(&mut builder, inst.operands[1]);
-                            let zero = builder.iconst(0);
-                            let cmp =
-                                builder.icmp(tnj::air::instructions::CmpTy::Slt, src, zero, I64);
-                            builder.jumpif(
-                                cmp,
-                                neg_block,
-                                Vec::<Value>::new(),
-                                current_block,
-                                Vec::<Value>::new(),
-                            );
-                            builder.write_reg(src, dst_reg, I64);
-                            builder.jump(next_block, Vec::<Value>::new());
-
-                            builder.set_insert_block(neg_block);
-                            let neg_val = builder.sub(zero, src, I64);
-                            let neg_val = if sz == SizeCode::W {
-                                let trunc = builder.trunc_i64(neg_val, I32);
-                                builder.zext_i32(trunc, I64)
-                            } else {
-                                neg_val
-                            };
-                            builder.write_reg(neg_val, dst_reg, I64);
-                            builder.jump(next_block, Vec::<Value>::new());
-
-                            builder.set_insert_block(next_block);
-                        }
                         Opcode::ADD => {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
@@ -93,6 +57,16 @@ impl Lifter for AArch64Lifter {
                                 val
                             };
                             builder.write_reg(val, dst_reg, I64);
+                        }
+                        Opcode::B => {
+                            // let target = Self::get_reg_value(&mut builder, inst.operands[1]);
+                            // builder.jump(dest, dest_params)
+                        }
+                        Opcode::CSINC => {
+                            // let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
+                            // let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
+                            // let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let _cond = Self::get_condition_code(inst.operands[3]);
                         }
                         op => unimplemented!("{}", op),
                     }
@@ -175,6 +149,26 @@ impl AArch64Lifter {
             Operand::RegPostIndex(rn, _) => Self::reg_val(builder, SizeCode::X, rn, SpOrZrReg::Sp),
             Operand::RegPostIndexReg(_, _) => unimplemented!("RegPostIndexReg"),
             op => unreachable!("incorrect operand for `get_reg_value`: {:?}", op),
+        }
+    }
+
+    fn get_condition_code(operand: Operand) -> CmpTy {
+        match operand {
+            Operand::ConditionCode(c) => match c {
+                0 => CmpTy::Eq,
+                1 => CmpTy::Ne,
+                2 => CmpTy::Ugt,
+                3 => CmpTy::Uge,
+                4 => CmpTy::Ult,
+                5 => CmpTy::Ule,
+                6 => CmpTy::Sgt,
+                7 => CmpTy::Sge,
+                8 => CmpTy::Slt,
+                9 => CmpTy::Sle,
+                10..=15 => unimplemented!("condition code: {}", c),
+                _ => unreachable!("incorrect condition code: {}", c),
+            },
+            _ => unreachable!("incorrect operand for `get_condition_code`: {:?}", operand),
         }
     }
 
