@@ -2,7 +2,7 @@ use crate::Lifter;
 use target_lexicon::{Aarch64Architecture, Architecture};
 use thiserror::Error;
 use tnj::air::instructions::builder::InstructionBuilder;
-use tnj::air::instructions::{Blob, CmpTy, Value};
+use tnj::air::instructions::{Blob, BlockParamData, CmpTy, Value};
 use tnj::arch::get_arch;
 use tnj::arch::reg::Reg;
 use tnj::types::{I16, I32, I64, I8};
@@ -63,10 +63,51 @@ impl Lifter for AArch64Lifter {
                             // builder.jump(dest, dest_params)
                         }
                         Opcode::CSINC => {
-                            // let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
-                            // let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
-                            // let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let _cond = Self::get_condition_code(inst.operands[3]);
+                            let final_block =
+                                builder.create_block("Final Block", Vec::<BlockParamData>::new());
+                            let conditional_block = builder
+                                .create_block("Conditional Block", Vec::<BlockParamData>::new());
+                            let current_block = builder.current_block();
+
+                            let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let cmp_ty = Self::get_condition_code(inst.operands[3]);
+                            let cmp = builder.icmp(cmp_ty, src1, src2, I64);
+                            builder.jumpif(
+                                cmp,
+                                conditional_block,
+                                Vec::new(),
+                                current_block,
+                                Vec::new(),
+                            );
+
+                            // Condition is false
+                            let one = builder.iconst(1);
+                            let val = builder.add(src2, one, I64);
+                            let val = if sz == SizeCode::W {
+                                let trunc = builder.trunc_i64(val, I32);
+                                builder.zext_i32(trunc, I64)
+                            } else {
+                                val
+                            };
+                            builder.write_reg(val, dst_reg, I64);
+                            builder.jump(final_block, Vec::new());
+
+                            // Condition is true
+                            builder.set_insert_block(conditional_block);
+                            let zero = builder.iconst(0);
+                            let val = builder.add(src1, zero, I64);
+                            let val = if sz == SizeCode::W {
+                                let trunc = builder.trunc_i64(val, I32);
+                                builder.zext_i32(trunc, I64)
+                            } else {
+                                val
+                            };
+                            builder.write_reg(val, dst_reg, I64);
+                            builder.jump(final_block, Vec::new());
+
+                            builder.set_insert_block(final_block);
                         }
                         op => unimplemented!("{}", op),
                     }
