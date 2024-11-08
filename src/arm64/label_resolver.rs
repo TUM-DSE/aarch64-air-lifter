@@ -15,10 +15,16 @@ use super::AArch64LifterError;
 
 /// Create basic blocks for the InstructionBuilder based off labels
 pub struct LabelResolver {
-    checkpoints: BinaryHeap<usize>,
+    checkpoints: BinaryHeap<isize>,
 }
 
 impl LabelResolver {
+    fn new() -> Self {
+        Self {
+            checkpoints: BinaryHeap::new(),
+        }
+    }
+
     /*
         High-Level:
         Goes through all instructions and creates checkpoints
@@ -43,19 +49,29 @@ impl LabelResolver {
         decoder: &InstDecoder,
     ) -> Result<(), AArch64LifterError> {
         let mut reader = U8Reader::new(code);
-        let mut address: usize = 0;
+        let mut address: isize = -1;
         loop {
+            address += 1;
             match decoder.decode(&mut reader) {
                 Ok(inst) => {
                     println!("{}", inst);
-                    match inst.opcode {
-                        Opcode::B => {
-                            self.checkpoints.push(address + 1);
+                    let imm: isize = match inst.opcode {
+                        Opcode::B | Opcode::BL | Opcode::Bcc(_) => {
+                            self.get_pc_offset(inst.operands[0])
                         }
-                        _ => {
+                        Opcode::CBNZ | Opcode::CBZ | Opcode::TBL | Opcode::TBX => {
+                            self.get_pc_offset(inst.operands[1])
+                        }
+                        Opcode::TBNZ | Opcode::TBZ => self.get_pc_offset(inst.operands[2]),
+                        Opcode::BLR | Opcode::BR => {
+                            // TODO: Uses dynamic address. Might need to be handled in the future differently
                             continue;
                         }
-                    }
+                        _ => continue,
+                    };
+                    self.checkpoints.push(address + 1);
+                    let jump_address = imm + address;
+                    self.checkpoints.push(jump_address);
                 }
                 Err(DecodeError::ExhaustedInput) => break,
                 Err(e) => return Err(AArch64LifterError::DecodeError(e)),
@@ -65,21 +81,11 @@ impl LabelResolver {
         Ok(())
     }
 
-    fn get_immediate(&self, operand: Operand) -> Result<usize, AArch64LifterError> {
-        let imm = match operand {
-            Operand::Imm16(imm) => imm as usize,
-            Operand::Imm64(imm) => imm as usize,
-            Operand::Immediate(imm) => imm as usize,
-            Operand::ImmShift(imm, shift) => ((imm as usize) << shift),
-            Operand::ImmShiftMSL(imm, shift) => {
-                let imm = (imm as usize) << shift;
-                let mask = (1 << shift) - 1;
-                imm & mask
-            }
-            Operand::ImmediateDouble(imm) => imm.floor() as usize,
-            _ => return Err(AArch64LifterError::DecodeError(DecodeError::InvalidOperand)),
-        };
-        Ok(imm)
+    fn get_pc_offset(&self, operand: Operand) -> isize {
+        match operand {
+            Operand::PCOffset(imm) => imm as isize,
+            op => unimplemented!("dst op {:?}", op),
+        }
     }
 
     // Create basic blocks based on mapped labels
