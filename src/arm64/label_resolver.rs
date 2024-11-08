@@ -1,15 +1,9 @@
-#![allow(warnings)]
-#![allow(dead_code)]
-#![allow(unused_imports)]
+#![allow(unused)]
 
-use crate::Lifter;
-use std::{collections::BinaryHeap, io::Error};
-use target_lexicon::Aarch64Architecture;
-use tnj::air::instructions::{builder::InstructionBuilder, Inst};
-use yaxpeax_arch::{Arch, Decoder, U8Reader};
-use yaxpeax_arm::armv8::a64::{
-    ARMv8, DecodeError, InstDecoder, Instruction, Opcode, Operand, ShiftStyle, SizeCode,
-};
+use std::collections::BinaryHeap;
+use tnj::air::instructions::{builder::InstructionBuilder, BlockParamData};
+use yaxpeax_arch::{Decoder, U8Reader};
+use yaxpeax_arm::armv8::a64::{DecodeError, InstDecoder, Opcode, Operand};
 
 use super::AArch64LifterError;
 
@@ -25,24 +19,13 @@ impl LabelResolver {
         }
     }
 
-    /*
-        High-Level:
-        Goes through all instructions and creates checkpoints
-        A checkpoint is where a label is jumping to or where a label is
-
-        After gathering all the checkpoints, it creates the blocks
-    */
-
+    // Create basic blocks based off labels
     fn _resolve(&mut self, code: &[u8], builder: &mut InstructionBuilder, decoder: &InstDecoder) {
         self.get_checkpoints(code, decoder);
         self.create_blocks(builder);
     }
 
-    /*
-        Wir brauchen einen Basic block:
-        1. wenn vorher ein jump stattgefunden hat
-        2. wenn wir zu dieser instruktion springen können
-    */
+    // Store all addresses of branch-destinations or of instructions after branch-instructions
     fn get_checkpoints(
         &mut self,
         code: &[u8],
@@ -64,7 +47,7 @@ impl LabelResolver {
                         }
                         Opcode::TBNZ | Opcode::TBZ => self.get_pc_offset(inst.operands[2]),
                         Opcode::BLR | Opcode::BR => {
-                            // TODO: Uses dynamic address. Might need to be handled in the future differently
+                            // TODO: Uses dynamic address stored in register. Might need to be handled in the future differently
                             continue;
                         }
                         _ => continue,
@@ -88,6 +71,15 @@ impl LabelResolver {
         }
     }
 
-    // Create basic blocks based on mapped labels
-    fn create_blocks(&self, builder: &mut InstructionBuilder) {}
+    // Create basic blocks based checkpoints
+    fn create_blocks(&mut self, builder: &mut InstructionBuilder) {
+        while !self.checkpoints.is_empty() {
+            let checkpoint = match self.checkpoints.pop() {
+                Some(c) => c,
+                None => break,
+            };
+            let name = format!("block_{}", checkpoint);
+            builder.create_block(name, Vec::<BlockParamData>::new());
+        }
+    }
 }
