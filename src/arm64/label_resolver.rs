@@ -1,5 +1,6 @@
 #![allow(unused)]
 
+use super::helper;
 use std::cmp::Ord;
 use std::cmp::Reverse;
 use std::collections::{BinaryHeap, HashSet};
@@ -55,12 +56,12 @@ impl LabelResolver {
                 Ok(inst) => {
                     let imm: isize = match inst.opcode {
                         Opcode::B | Opcode::BL | Opcode::Bcc(_) => {
-                            self.get_pc_offset(inst.operands[0])
+                            helper::get_pc_offset(inst.operands[0])
                         }
                         Opcode::CBNZ | Opcode::CBZ | Opcode::TBL | Opcode::TBX => {
-                            self.get_pc_offset(inst.operands[1])
+                            helper::get_pc_offset(inst.operands[1])
                         }
-                        Opcode::TBNZ | Opcode::TBZ => self.get_pc_offset(inst.operands[2]),
+                        Opcode::TBNZ | Opcode::TBZ => helper::get_pc_offset(inst.operands[2]),
                         Opcode::BLR | Opcode::BR => {
                             // TODO: Uses dynamic address stored in register. Might need to be handled in the future differently
                             continue;
@@ -76,13 +77,6 @@ impl LabelResolver {
             }
         }
         Ok(())
-    }
-
-    fn get_pc_offset(&self, operand: Operand) -> isize {
-        match operand {
-            Operand::PCOffset(imm) => imm as isize,
-            op => unimplemented!("dst op {:?}", op),
-        }
     }
 
     // Create basic blocks based checkpoints

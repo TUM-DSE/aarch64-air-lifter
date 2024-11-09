@@ -1,5 +1,6 @@
 //! Contains the lifter for arm64.
 
+mod helper;
 mod label_resolver;
 mod lifter;
 
