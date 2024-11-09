@@ -29,5 +29,5 @@ pub fn get_condition_code(operand: Operand) -> CmpTy {
 }
 
 pub fn get_block_name(jump_address: isize) -> String {
-    format!("block_{:x}", jump_address)
+    format!("block_{}", jump_address)
 }

@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 use super::helper;
 use std::cmp::Ord;
 use std::cmp::Reverse;
@@ -9,7 +7,7 @@ use std::hash::Hash;
 use tnj::air::instructions::BasicBlock;
 use tnj::air::instructions::{builder::InstructionBuilder, BlockParamData};
 use yaxpeax_arch::{Decoder, U8Reader};
-use yaxpeax_arm::armv8::a64::{DecodeError, InstDecoder, Opcode, Operand};
+use yaxpeax_arm::armv8::a64::{DecodeError, InstDecoder, Opcode};
 
 use super::AArch64LifterError;
 
@@ -41,7 +39,7 @@ impl LabelResolver {
         builder: &mut InstructionBuilder,
         decoder: &InstDecoder,
     ) {
-        self.get_checkpoints(code, decoder);
+        let _ = self.get_checkpoints(code, decoder);
         self.create_blocks(builder);
     }
 
@@ -96,7 +94,8 @@ impl LabelResolver {
                 None => break,
             };
             let name = helper::get_block_name(checkpoint);
-            builder.create_block(name, Vec::<BlockParamData>::new());
+            let b = builder.create_block(name.clone(), Vec::<BlockParamData>::new());
+            self.blocks.insert(name, b);
         }
     }
 }
