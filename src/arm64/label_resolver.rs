@@ -3,8 +3,10 @@
 use super::helper;
 use std::cmp::Ord;
 use std::cmp::Reverse;
+use std::collections::HashMap;
 use std::collections::{BinaryHeap, HashSet};
 use std::hash::Hash;
+use tnj::air::instructions::BasicBlock;
 use tnj::air::instructions::{builder::InstructionBuilder, BlockParamData};
 use yaxpeax_arch::{Decoder, U8Reader};
 use yaxpeax_arm::armv8::a64::{DecodeError, InstDecoder, Opcode, Operand};
@@ -14,6 +16,7 @@ use super::AArch64LifterError;
 /// Create basic blocks for the InstructionBuilder based off labels
 pub struct LabelResolver {
     checkpoints: UniqueHeap<Reverse<isize>>,
+    blocks: HashMap<String, BasicBlock>,
 }
 
 impl Default for LabelResolver {
@@ -27,6 +30,7 @@ impl LabelResolver {
     pub fn new() -> Self {
         Self {
             checkpoints: UniqueHeap::new(),
+            blocks: HashMap::new(),
         }
     }
 
@@ -41,7 +45,12 @@ impl LabelResolver {
         self.create_blocks(builder);
     }
 
-    // Store all addresses of branch-destinations or of instructions after branch-instructions
+    /// Get a block we created by resolving a label
+    pub fn get_block(&self, name: &str) -> Option<&BasicBlock> {
+        self.blocks.get(name)
+    }
+
+    /// Store all addresses of branch-destinations or of instructions after branch-instructions
     fn get_checkpoints(
         &mut self,
         code: &[u8],
@@ -79,14 +88,14 @@ impl LabelResolver {
         Ok(())
     }
 
-    // Create basic blocks based checkpoints
+    /// Create basic blocks based checkpoints
     fn create_blocks(&mut self, builder: &mut InstructionBuilder) {
         while !self.checkpoints.is_empty() {
             let checkpoint = match self.checkpoints.pop() {
                 Some(c) => c.0,
                 None => break,
             };
-            let name = format!("block_{}", checkpoint);
+            let name = helper::get_block_name(checkpoint);
             builder.create_block(name, Vec::<BlockParamData>::new());
         }
     }

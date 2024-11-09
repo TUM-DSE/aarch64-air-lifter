@@ -1,3 +1,5 @@
+#![allow(warnings)]
+use crate::arm64::helper;
 use crate::Lifter;
 use target_lexicon::{Aarch64Architecture, Architecture};
 use thiserror::Error;
@@ -11,8 +13,12 @@ use yaxpeax_arm::armv8::a64::{
     ARMv8, DecodeError, Instruction, Opcode, Operand, ShiftStyle, SizeCode,
 };
 
+use super::label_resolver;
+
 /// A lifter for AArch64
 pub struct AArch64Lifter;
+
+const INSTRUCTION_SIZE: isize = 4;
 
 impl Lifter for AArch64Lifter {
     type E = AArch64LifterError;
@@ -23,8 +29,12 @@ impl Lifter for AArch64Lifter {
         let mut builder = blob.insert();
 
         let decoder = <ARMv8 as Arch>::Decoder::default();
-
         let mut reader = U8Reader::new(code);
+
+        let mut label_resolver = label_resolver::LabelResolver::new();
+        label_resolver.resolve(code, &mut builder, &decoder);
+
+        let mut address: isize = 0;
 
         loop {
             match decoder.decode(&mut reader) {
@@ -59,8 +69,20 @@ impl Lifter for AArch64Lifter {
                             builder.write_reg(val, dst_reg, I64);
                         }
                         Opcode::B => {
-                            // let target = Self::get_reg_value(&mut builder, inst.operands[1]);
-                            // builder.jump(dest, dest_params)
+                            let offset = helper::get_pc_offset(inst.operands[0]);
+                            let jump_address = address as isize + offset;
+                            let block_name = helper::get_block_name(jump_address);
+                            let block = label_resolver.get_block(&block_name);
+                            let block = match block {
+                                Some(block) => block,
+                                None => {
+                                    return Err(AArch64LifterError::CustomError(
+                                        "Jumping to resolved block that does not exist".to_string(),
+                                    ));
+                                }
+                            };
+                            builder.jump(*block, vec![]);
+                            builder.set_insert_block(*block);
                         }
                         Opcode::CSINC => {
                             let final_block =
@@ -72,7 +94,7 @@ impl Lifter for AArch64Lifter {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let cmp_ty = Self::get_condition_code(inst.operands[3]);
+                            let cmp_ty = helper::get_condition_code(inst.operands[3]);
                             let cmp = builder.icmp(cmp_ty, src1, src2, I64);
                             builder.jumpif(
                                 cmp,
@@ -115,6 +137,8 @@ impl Lifter for AArch64Lifter {
                 Err(DecodeError::ExhaustedInput) => break,
                 Err(e) => return Err(AArch64LifterError::DecodeError(e)),
             }
+
+            address += INSTRUCTION_SIZE;
         }
 
         Ok(blob)
@@ -193,26 +217,6 @@ impl AArch64Lifter {
         }
     }
 
-    fn get_condition_code(operand: Operand) -> CmpTy {
-        match operand {
-            Operand::ConditionCode(c) => match c {
-                0 => CmpTy::Eq,
-                1 => CmpTy::Ne,
-                2 => CmpTy::Ugt,
-                3 => CmpTy::Uge,
-                4 => CmpTy::Ult,
-                5 => CmpTy::Ule,
-                6 => CmpTy::Sgt,
-                7 => CmpTy::Sge,
-                8 => CmpTy::Slt,
-                9 => CmpTy::Sle,
-                10..=15 => unimplemented!("condition code: {}", c),
-                _ => unreachable!("incorrect condition code: {}", c),
-            },
-            _ => unreachable!("incorrect operand for `get_condition_code`: {:?}", operand),
-        }
-    }
-
     /// reads a register value
     fn reg_val(
         builder: &mut InstructionBuilder,
@@ -287,4 +291,8 @@ pub enum AArch64LifterError {
     /// Error decoding the instructions
     #[error("Error decoding machine code: {0}")]
     DecodeError(#[from] DecodeError),
+
+    /// Custom error with message
+    #[error("{0}")]
+    CustomError(String),
 }
