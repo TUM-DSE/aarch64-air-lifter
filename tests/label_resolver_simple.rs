@@ -26,10 +26,7 @@ fn test() {
     let mut builder = blob.insert();
     let decoder = <ARMv8 as Arch>::Decoder::default();
 
-    let mut label_resolver = LabelResolver::new();
-    label_resolver.resolve(&bytes, &mut builder, &decoder);
-
-    // println!("{}", blob.display().to_string());
+    let _ = LabelResolver::new(&bytes, &mut builder, &decoder).unwrap();
 
     let expected: Vec<String> = vec![
         "entry", "block_0", "block_8", "block_12", "block_16", "block_24", "block_28",

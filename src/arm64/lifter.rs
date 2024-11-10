@@ -30,9 +30,7 @@ impl Lifter for AArch64Lifter {
 
         let decoder = <ARMv8 as Arch>::Decoder::default();
         let mut reader = U8Reader::new(code);
-
-        let mut label_resolver = label_resolver::LabelResolver::new();
-        label_resolver.resolve(code, &mut builder, &decoder);
+        let mut label_resolver = label_resolver::LabelResolver::new(code, &mut builder, &decoder)?;
 
         let mut address: isize = 0;
 

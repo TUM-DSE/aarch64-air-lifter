@@ -17,19 +17,22 @@ pub struct LabelResolver {
     blocks: HashMap<String, BasicBlock>,
 }
 
-impl Default for LabelResolver {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl LabelResolver {
     /// Create a new LabelResolver
-    pub fn new() -> Self {
-        Self {
+    pub fn new(
+        code: &[u8],
+        builder: &mut InstructionBuilder,
+        decoder: &InstDecoder,
+    ) -> Result<Self, AArch64LifterError> {
+        let mut resolver = Self {
             checkpoints: UniqueHeap::new(),
             blocks: HashMap::new(),
-        }
+        };
+
+        resolver.get_checkpoints(code, decoder)?;
+        resolver.create_blocks(builder);
+
+        Ok(resolver)
     }
 
     /// Create basic blocks based off labels
@@ -38,9 +41,10 @@ impl LabelResolver {
         code: &[u8],
         builder: &mut InstructionBuilder,
         decoder: &InstDecoder,
-    ) {
-        let _ = self.get_checkpoints(code, decoder);
+    ) -> Result<(), AArch64LifterError> {
+        self.get_checkpoints(code, decoder)?;
         self.create_blocks(builder);
+        Ok(())
     }
 
     /// Get a block we created by resolving a label
@@ -54,34 +58,36 @@ impl LabelResolver {
         code: &[u8],
         decoder: &InstDecoder,
     ) -> Result<(), AArch64LifterError> {
-        let instruction_size = 4;
+        const INSTRUCTION_SIZE: isize = 4;
         let mut reader = U8Reader::new(code);
-        let mut address: isize = -instruction_size;
+        let mut address: isize = 0;
         loop {
-            address += instruction_size;
             match decoder.decode(&mut reader) {
                 Ok(inst) => {
-                    let imm: isize = match inst.opcode {
+                    let imm: Option<isize> = match inst.opcode {
                         Opcode::B | Opcode::BL | Opcode::Bcc(_) => {
-                            helper::get_pc_offset(inst.operands[0])
+                            Some(helper::get_pc_offset(inst.operands[0]))
                         }
                         Opcode::CBNZ | Opcode::CBZ | Opcode::TBL | Opcode::TBX => {
-                            helper::get_pc_offset(inst.operands[1])
+                            Some(helper::get_pc_offset(inst.operands[1]))
                         }
-                        Opcode::TBNZ | Opcode::TBZ => helper::get_pc_offset(inst.operands[2]),
+                        Opcode::TBNZ | Opcode::TBZ => Some(helper::get_pc_offset(inst.operands[2])),
                         Opcode::BLR | Opcode::BR => {
                             // TODO: Uses dynamic address stored in register. Might need to be handled in the future differently
-                            continue;
+                            None
                         }
-                        _ => continue,
+                        _ => None,
                     };
-                    self.checkpoints.push(Reverse(address + instruction_size));
-                    let jump_address = imm + address;
-                    self.checkpoints.push(Reverse(jump_address));
+                    if let Some(imm) = imm {
+                        self.checkpoints.push(Reverse(address + INSTRUCTION_SIZE));
+                        let jump_address = imm + address;
+                        self.checkpoints.push(Reverse(jump_address));
+                    }
                 }
                 Err(DecodeError::ExhaustedInput) => break,
                 Err(e) => return Err(AArch64LifterError::DecodeError(e)),
             }
+            address += INSTRUCTION_SIZE;
         }
         Ok(())
     }
