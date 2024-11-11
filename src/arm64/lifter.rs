@@ -4,10 +4,10 @@ use crate::Lifter;
 use target_lexicon::{Aarch64Architecture, Architecture};
 use thiserror::Error;
 use tnj::air::instructions::builder::InstructionBuilder;
-use tnj::air::instructions::{Blob, BlockParamData, CmpTy, Value};
+use tnj::air::instructions::{Blob, BlockParamData, Inst, Value};
 use tnj::arch::get_arch;
 use tnj::arch::reg::Reg;
-use tnj::types::{I16, I32, I64, I8};
+use tnj::types::{BOOL, I16, I32, I64, I8};
 use yaxpeax_arch::{Arch, Decoder, U8Reader};
 use yaxpeax_arm::armv8::a64::{
     ARMv8, DecodeError, Instruction, Opcode, Operand, ShiftStyle, SizeCode,
@@ -19,6 +19,13 @@ use super::label_resolver;
 pub struct AArch64Lifter;
 
 const INSTRUCTION_SIZE: isize = 4;
+
+enum Flag {
+    N,
+    Z,
+    C,
+    V,
+}
 
 impl Lifter for AArch64Lifter {
     type E = AArch64LifterError;
@@ -83,8 +90,6 @@ impl Lifter for AArch64Lifter {
                             builder.set_insert_block(*block);
                         }
                         Opcode::CSINC => {
-                            let final_block =
-                                builder.create_block("Final Block", Vec::<BlockParamData>::new());
                             let conditional_block = builder
                                 .create_block("Conditional Block", Vec::<BlockParamData>::new());
                             let current_block = builder.current_block();
@@ -92,10 +97,9 @@ impl Lifter for AArch64Lifter {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let cmp_ty = helper::get_condition_code(inst.operands[3]);
-                            let cmp = builder.icmp(cmp_ty, src1, src2, I64);
+                            let condition = Self::get_condition(&mut builder, inst.operands[3])?;
                             builder.jumpif(
-                                cmp,
+                                condition,
                                 conditional_block,
                                 Vec::new(),
                                 current_block,
@@ -112,7 +116,6 @@ impl Lifter for AArch64Lifter {
                                 val
                             };
                             builder.write_reg(val, dst_reg, I64);
-                            builder.jump(final_block, Vec::new());
 
                             // Condition is true
                             builder.set_insert_block(conditional_block);
@@ -125,9 +128,9 @@ impl Lifter for AArch64Lifter {
                                 val
                             };
                             builder.write_reg(val, dst_reg, I64);
-                            builder.jump(final_block, Vec::new());
+                            builder.jump(current_block, Vec::new());
 
-                            builder.set_insert_block(final_block);
+                            builder.set_insert_block(current_block);
                         }
                         op => unimplemented!("{}", op),
                     }
@@ -274,6 +277,135 @@ impl AArch64Lifter {
             op => unimplemented!("dst op {:?}", op),
         };
         (dst_reg, sz)
+    }
+
+    fn flag_value(builder: &mut InstructionBuilder, flag: Flag) -> Value {
+        let reg = match flag {
+            Flag::N => "n",
+            Flag::Z => "z",
+            Flag::C => "c",
+            Flag::V => "v",
+        };
+        builder
+            .read_reg(
+                builder
+                    .get_blob()
+                    .get_arch()
+                    .lookup_reg(&reg.into())
+                    .unwrap(),
+                BOOL,
+            )
+            .into()
+    }
+
+    fn get_condition(
+        builder: &mut InstructionBuilder,
+        operand: Operand,
+    ) -> Result<Inst, AArch64LifterError> {
+        let z = Self::flag_value(builder, Flag::Z);
+        let c = Self::flag_value(builder, Flag::C);
+        let n = Self::flag_value(builder, Flag::N);
+        let v = Self::flag_value(builder, Flag::V);
+        let flag_is_true = builder.iconst(1);
+        let flag_is_false = builder.iconst(0);
+        match operand {
+            Operand::ConditionCode(cc) => {
+                let inst = match cc {
+                    0 => {
+                        // EQ
+                        builder.icmp(tnj::types::cmp::CmpTy::Eq, z, flag_is_true, BOOL)
+                    }
+                    1 => {
+                        // NE
+                        builder.icmp(tnj::types::cmp::CmpTy::Ne, z, flag_is_true, BOOL)
+                    }
+                    2 => {
+                        // CS
+                        builder.icmp(tnj::types::cmp::CmpTy::Eq, c, flag_is_true, BOOL)
+                    }
+                    3 => {
+                        // CC
+                        builder.icmp(tnj::types::cmp::CmpTy::Ne, c, flag_is_true, BOOL)
+                    }
+                    4 => {
+                        // MI
+                        builder.icmp(tnj::types::cmp::CmpTy::Eq, n, flag_is_true, BOOL)
+                    }
+                    5 => {
+                        // PL
+                        builder.icmp(tnj::types::cmp::CmpTy::Ne, n, flag_is_true, BOOL)
+                    }
+                    6 => {
+                        // VS
+                        builder.icmp(tnj::types::cmp::CmpTy::Eq, v, flag_is_true, BOOL)
+                    }
+                    7 => {
+                        // VC
+                        builder.icmp(tnj::types::cmp::CmpTy::Ne, v, flag_is_true, BOOL)
+                    }
+                    8 => {
+                        // HI
+                        let c_is_true =
+                            builder.icmp(tnj::types::cmp::CmpTy::Eq, c, flag_is_true, BOOL);
+                        let z_is_false =
+                            builder.icmp(tnj::types::cmp::CmpTy::Ne, z, flag_is_true, BOOL);
+                        builder.and(c_is_true, z_is_false, BOOL)
+                    }
+                    9 => {
+                        // LS
+                        let c_is_false =
+                            builder.icmp(tnj::types::cmp::CmpTy::Ne, c, flag_is_true, BOOL);
+                        let z_is_true =
+                            builder.icmp(tnj::types::cmp::CmpTy::Eq, z, flag_is_true, BOOL);
+                        builder.or(c_is_false, z_is_true, BOOL)
+                    }
+                    10 => {
+                        // GE
+                        let n_eq_v = builder.icmp(tnj::types::cmp::CmpTy::Eq, n, v, BOOL);
+                        builder.icmp(tnj::types::cmp::CmpTy::Eq, n_eq_v, flag_is_true, BOOL)
+                    }
+                    11 => {
+                        // LT
+                        let n_neq_v = builder.icmp(tnj::types::cmp::CmpTy::Ne, n, v, BOOL);
+                        builder.icmp(tnj::types::cmp::CmpTy::Eq, n_neq_v, flag_is_true, BOOL)
+                    }
+                    12 => {
+                        // GT
+                        let z_is_false =
+                            builder.icmp(tnj::types::cmp::CmpTy::Ne, z, flag_is_true, BOOL);
+                        let n_eq_v = builder.icmp(tnj::types::cmp::CmpTy::Eq, n, v, BOOL);
+                        builder.and(z_is_false, n_eq_v, BOOL)
+                    }
+                    13 => {
+                        // LE
+                        let z_is_true =
+                            builder.icmp(tnj::types::cmp::CmpTy::Eq, z, flag_is_true, BOOL);
+                        let n_neq_v = builder.icmp(tnj::types::cmp::CmpTy::Ne, n, v, BOOL);
+                        builder.or(z_is_true, n_neq_v, BOOL)
+                    }
+                    14 => {
+                        // TODO: Change to prettier code?
+                        // AL
+                        builder.and(flag_is_true, flag_is_true, BOOL)
+                    }
+                    15 => {
+                        // NV
+                        builder.and(flag_is_true, flag_is_false, BOOL)
+                    }
+                    _ => {
+                        return Err(AArch64LifterError::CustomError(
+                            "Invalid condition code".to_string(),
+                        ));
+                    }
+                };
+                Ok(inst)
+            }
+            _ => {
+                return Err(AArch64LifterError::CustomError(
+                    "Invalid operand for condition code".to_string(),
+                ));
+            }
+        }
     }
 }
 
