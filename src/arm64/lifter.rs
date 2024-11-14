@@ -90,9 +90,17 @@ impl Lifter for AArch64Lifter {
                             builder.set_insert_block(*block);
                         }
                         Opcode::CSINC => {
-                            let conditional_block = builder
-                                .create_block("Conditional Block", Vec::<BlockParamData>::new());
+                            let positive_condition_block = builder.create_block(
+                                "csinc_positive_condition",
+                                Vec::<BlockParamData>::new(),
+                            );
+                            let negative_condition_block = builder.create_block(
+                                "csinc_negative_condition",
+                                Vec::<BlockParamData>::new(),
+                            );
                             let current_block = builder.current_block();
+                            let end_block =
+                                builder.create_block("csinc_end", Vec::<BlockParamData>::new());
 
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
@@ -100,13 +108,14 @@ impl Lifter for AArch64Lifter {
                             let condition = Self::get_condition(&mut builder, inst.operands[3])?;
                             builder.jumpif(
                                 condition,
-                                conditional_block,
+                                positive_condition_block,
                                 Vec::new(),
-                                current_block,
+                                negative_condition_block,
                                 Vec::new(),
                             );
 
                             // Condition is false
+                            builder.set_insert_block(negative_condition_block);
                             let one = builder.iconst(1);
                             let val = builder.add(src2, one, I64);
                             let val = if sz == SizeCode::W {
@@ -116,9 +125,10 @@ impl Lifter for AArch64Lifter {
                                 val
                             };
                             builder.write_reg(val, dst_reg, I64);
+                            builder.jump(end_block, Vec::new());
 
                             // Condition is true
-                            builder.set_insert_block(conditional_block);
+                            builder.set_insert_block(positive_condition_block);
                             let zero = builder.iconst(0);
                             let val = builder.add(src1, zero, I64);
                             let val = if sz == SizeCode::W {
@@ -128,9 +138,9 @@ impl Lifter for AArch64Lifter {
                                 val
                             };
                             builder.write_reg(val, dst_reg, I64);
-                            builder.jump(current_block, Vec::new());
+                            builder.jump(end_block, Vec::new());
 
-                            builder.set_insert_block(current_block);
+                            builder.set_insert_block(end_block);
                         }
                         op => unimplemented!("{}", op),
                     }
