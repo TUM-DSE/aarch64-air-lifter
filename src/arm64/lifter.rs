@@ -60,6 +60,20 @@ impl Lifter for AArch64Lifter {
                             };
                             builder.write_reg(val, dst_reg, I64);
                         }
+                        Opcode::ADC => {
+                            let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
+                            let carry = Self::flag_value(&mut builder, Flag::C);
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let val = builder.add(src1, carry, I64);
+                            let val = builder.add(val, src2, I64);
+                            let val = if sz == SizeCode::W {
+                                let trunc = builder.trunc_i64(val, I32);
+                                builder.zext_i32(trunc, I64)
+                            } else {
+                                val
+                            };
+                        }
                         Opcode::SUB => {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
