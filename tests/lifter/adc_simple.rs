@@ -2,7 +2,6 @@ use aarch64_air_lifter::arm64::AArch64Lifter;
 use aarch64_air_lifter::Lifter;
 
 #[test]
-#[ignore]
 // Add with carry
 fn test() {
     let bytes = [
