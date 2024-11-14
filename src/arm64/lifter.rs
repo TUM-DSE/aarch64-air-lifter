@@ -144,15 +144,13 @@ impl Lifter for AArch64Lifter {
 
                             // Condition is true
                             builder.set_insert_block(positive_condition_block);
-                            let zero = builder.iconst(0);
-                            let val = builder.add(src1, zero, I64);
-                            let val = if sz == SizeCode::W {
-                                let trunc = builder.trunc_i64(val, I32);
-                                builder.zext_i32(trunc, I64)
+                            if sz == SizeCode::W {
+                                let trunc = builder.trunc_i64(src1, I32);
+                                let val = builder.zext_i32(trunc, I64);
+                                builder.write_reg(val, dst_reg, I64);
                             } else {
-                                val
+                                builder.write_reg(src1, dst_reg, I64);
                             };
-                            builder.write_reg(val, dst_reg, I64);
                             builder.jump(end_block, Vec::new());
 
                             builder.set_insert_block(end_block);
