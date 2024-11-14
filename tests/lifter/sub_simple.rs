@@ -12,8 +12,6 @@ fn test() {
     let lifter = AArch64Lifter;
     let blob = lifter.lift(&bytes, &[]).unwrap();
 
-    println!("{}", blob.display());
-
     let expected = r#"aarch64:
   ptr: i64
   regs:

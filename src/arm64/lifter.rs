@@ -73,6 +73,7 @@ impl Lifter for AArch64Lifter {
                             } else {
                                 val
                             };
+                            builder.write_reg(val, dst_reg, I64);
                         }
                         Opcode::AND => {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
@@ -85,6 +86,7 @@ impl Lifter for AArch64Lifter {
                             } else {
                                 val
                             };
+                            builder.write_reg(val, dst_reg, I64);
                         }
                         Opcode::B => {
                             let offset = helper::get_pc_offset(inst.operands[0]);
@@ -155,6 +157,19 @@ impl Lifter for AArch64Lifter {
 
                             builder.set_insert_block(end_block);
                         }
+                        Opcode::NEG => {
+                            let zero = builder.iconst(0);
+                            let src = Self::get_reg_value(&mut builder, inst.operands[1]);
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let val = builder.sub(zero, src, I64);
+                            let val = if sz == SizeCode::W {
+                                let trunc = builder.trunc_i64(val, I32);
+                                builder.zext_i32(trunc, I64)
+                            } else {
+                                val
+                            };
+                            builder.write_reg(val, dst_reg, I64);
+                        }
                         Opcode::ORR => {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
@@ -167,6 +182,9 @@ impl Lifter for AArch64Lifter {
                                 val
                             };
                             builder.write_reg(val, dst_reg, I64);
+                        }
+                        Opcode::ORN => {
+                            unimplemented!("TODO");
                         }
                         Opcode::SUB => {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);

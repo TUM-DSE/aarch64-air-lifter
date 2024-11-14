@@ -11,6 +11,7 @@ fn test() {
 
     let lifter = AArch64Lifter;
     let blob = lifter.lift(&bytes, &[]).unwrap();
+    println!("{}", blob.display());
     let expected = r#"aarch64:
   ptr: i64
   regs:
@@ -58,6 +59,7 @@ entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8
   v39 = i1.read_reg "c"
   v40 = i64.add v37, v39
   v41 = i64.add v40, v38
+  i64.write_reg v41, "x1"
   v42 = i64.read_reg "x1"
   v43 = i32.trunc_i64 v42
   v44 = i64.zext_i32 v43
@@ -69,6 +71,7 @@ entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8
   v50 = i64.add v49, v47
   v51 = i32.trunc_i64 v50
   v52 = i64.zext_i32 v51
+  i64.write_reg v52, "x1"
 
 "#;
 
