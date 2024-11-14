@@ -5,9 +5,9 @@ use aarch64_air_lifter::Lifter;
 // Bitwise AND
 fn test() {
     let bytes = [
-        0x20, 0x04, 0x00, 0x12, // and w0, w1, #3
-        0x41, 0x00, 0x40, 0x92, // and x1, x2, #1
-        0x20, 0x10, 0x02, 0x8A, // and x0, x1, x2, LSL#4
+        0x20, 0x04, 0x00, 0x32, // orr w0, w1, #0x3
+        0x41, 0x00, 0x40, 0xB2, // orr x1, x2, #0x1
+        0x20, 0x10, 0x02, 0xAA, // orr x0, x1, x2, lsl#4
     ];
 
     let lifter = AArch64Lifter;
@@ -58,15 +58,18 @@ entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8
   v37 = i64.read_reg "x1"
   v38 = i32.trunc_i64 v37
   v39 = i64.zext_i32 v38
-  v40 = i32.and v39, 0x3
+  v40 = i64.or v39, 0x3
   v41 = i32.trunc_i64 v40
   v42 = i64.zext_i32 v41
+  i64.write_reg v42, "x0"
   v43 = i64.read_reg "x2"
-  v44 = i32.and v43, 0x1
+  v44 = i64.or v43, 0x1
+  i64.write_reg v44, "x1"
   v45 = i64.read_reg "x1"
   v46 = i64.read_reg "x2"
   v47 = i64.lshl v46, 0x4
-  v48 = i32.and v45, v47
+  v48 = i64.or v45, v47
+  i64.write_reg v48, "x0"
 
 "#;
 

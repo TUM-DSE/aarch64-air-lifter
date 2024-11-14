@@ -78,26 +78,13 @@ impl Lifter for AArch64Lifter {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let val = builder.and(src1, src2, I64);
+                            let val = builder.and(src1, src2, I32);
                             let val = if sz == SizeCode::W {
                                 let trunc = builder.trunc_i64(val, I32);
                                 builder.zext_i32(trunc, I64)
                             } else {
                                 val
                             };
-                        }
-                        Opcode::SUB => {
-                            let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
-                            let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
-                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let val = builder.sub(src1, src2, I64);
-                            let val = if sz == SizeCode::W {
-                                let trunc = builder.trunc_i64(val, I32);
-                                builder.zext_i32(trunc, I64)
-                            } else {
-                                val
-                            };
-                            builder.write_reg(val, dst_reg, I64);
                         }
                         Opcode::B => {
                             let offset = helper::get_pc_offset(inst.operands[0]);
@@ -167,6 +154,32 @@ impl Lifter for AArch64Lifter {
                             builder.jump(end_block, Vec::new());
 
                             builder.set_insert_block(end_block);
+                        }
+                        Opcode::ORR => {
+                            let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let val = builder.or(src1, src2, I64);
+                            let val = if sz == SizeCode::W {
+                                let trunc = builder.trunc_i64(val, I32);
+                                builder.zext_i32(trunc, I64)
+                            } else {
+                                val
+                            };
+                            builder.write_reg(val, dst_reg, I64);
+                        }
+                        Opcode::SUB => {
+                            let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let val = builder.sub(src1, src2, I64);
+                            let val = if sz == SizeCode::W {
+                                let trunc = builder.trunc_i64(val, I32);
+                                builder.zext_i32(trunc, I64)
+                            } else {
+                                val
+                            };
+                            builder.write_reg(val, dst_reg, I64);
                         }
                         op => unimplemented!("{}", op),
                     }
