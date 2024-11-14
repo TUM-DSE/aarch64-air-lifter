@@ -13,6 +13,7 @@ mod lifter {
     mod bfm_simple;
     mod bic_simple;
     mod csinc_simple;
+    mod neg_simple;
     mod or_simple;
     mod sub_simple;
 }
