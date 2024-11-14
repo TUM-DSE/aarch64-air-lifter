@@ -2,7 +2,6 @@ use aarch64_air_lifter::arm64::AArch64Lifter;
 use aarch64_air_lifter::Lifter;
 
 #[test]
-#[ignore]
 // Conditional select increment
 fn test() {
     let bytes = [
@@ -15,5 +14,5 @@ fn test() {
     let lifter = AArch64Lifter;
     let blob = lifter.lift(&bytes, &[]).unwrap();
 
-    println!("{}", blob.display().to_string());
+    println!("{}", blob.display());
 }
