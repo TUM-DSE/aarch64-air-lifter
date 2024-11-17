@@ -51,42 +51,27 @@ impl Lifter for AArch64Lifter {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let val = builder.add(src1, src2, I64);
-                            let val = if sz == SizeCode::W {
-                                let trunc = builder.trunc_i64(val, I32);
-                                builder.zext_i32(trunc, I64)
-                            } else {
-                                val
-                            };
-                            builder.write_reg(val, dst_reg, I64);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let val = builder.add(src1, src2, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::ADC => {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
                             let carry = Self::flag_value(&mut builder, Flag::C);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let val = builder.add(src1, carry, I64);
-                            let val = builder.add(val, src2, I64);
-                            let val = if sz == SizeCode::W {
-                                let trunc = builder.trunc_i64(val, I32);
-                                builder.zext_i32(trunc, I64)
-                            } else {
-                                val
-                            };
-                            builder.write_reg(val, dst_reg, I64);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let val = builder.add(src1, carry, op_type);
+                            let val = builder.add(val, src2, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::AND => {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let val = builder.and(src1, src2, I32);
-                            let val = if sz == SizeCode::W {
-                                let trunc = builder.trunc_i64(val, I32);
-                                builder.zext_i32(trunc, I64)
-                            } else {
-                                val
-                            };
-                            builder.write_reg(val, dst_reg, I64);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let val = builder.and(src1, src2, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::B => {
                             let offset = helper::get_pc_offset(inst.operands[0]);
@@ -120,6 +105,7 @@ impl Lifter for AArch64Lifter {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sz);
                             let condition = Self::get_condition(&mut builder, inst.operands[3])?;
                             builder.jumpif(
                                 condition,
@@ -132,25 +118,13 @@ impl Lifter for AArch64Lifter {
                             // Condition is false
                             builder.set_insert_block(negative_condition_block);
                             let one = builder.iconst(1);
-                            let val = builder.add(src2, one, I64);
-                            let val = if sz == SizeCode::W {
-                                let trunc = builder.trunc_i64(val, I32);
-                                builder.zext_i32(trunc, I64)
-                            } else {
-                                val
-                            };
-                            builder.write_reg(val, dst_reg, I64);
+                            let val = builder.add(src2, one, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
                             builder.jump(end_block, Vec::new());
 
                             // Condition is true
                             builder.set_insert_block(positive_condition_block);
-                            if sz == SizeCode::W {
-                                let trunc = builder.trunc_i64(src1, I32);
-                                let val = builder.zext_i32(trunc, I64);
-                                builder.write_reg(val, dst_reg, I64);
-                            } else {
-                                builder.write_reg(src1, dst_reg, I64);
-                            };
+                            builder.write_reg(src1, dst_reg, op_type);
                             builder.jump(end_block, Vec::new());
 
                             builder.set_insert_block(end_block);
@@ -159,54 +133,34 @@ impl Lifter for AArch64Lifter {
                             let zero = builder.iconst(0);
                             let src = Self::get_reg_value(&mut builder, inst.operands[1]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let val = builder.sub(zero, src, I64);
-                            let val = if sz == SizeCode::W {
-                                let trunc = builder.trunc_i64(val, I32);
-                                builder.zext_i32(trunc, I64)
-                            } else {
-                                val
-                            };
-                            builder.write_reg(val, dst_reg, I64);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let val = builder.sub(zero, src, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::ORR => {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let val = builder.or(src1, src2, I64);
-                            let val = if sz == SizeCode::W {
-                                let trunc = builder.trunc_i64(val, I32);
-                                builder.zext_i32(trunc, I64)
-                            } else {
-                                val
-                            };
-                            builder.write_reg(val, dst_reg, I64);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let val = builder.or(src1, src2, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::ORN => {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let val = builder.not(src2, I64);
-                            let val = builder.or(src1, val, I64);
-                            let val = if sz == SizeCode::W {
-                                let trunc = builder.trunc_i64(val, I32);
-                                builder.zext_i32(trunc, I64)
-                            } else {
-                                val
-                            };
-                            builder.write_reg(val, dst_reg, I64);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let val = builder.not(src2, op_type);
+                            let val = builder.or(src1, val, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::SUB => {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let val = builder.sub(src1, src2, I64);
-                            let val = if sz == SizeCode::W {
-                                let trunc = builder.trunc_i64(val, I32);
-                                builder.zext_i32(trunc, I64)
-                            } else {
-                                val
-                            };
-                            builder.write_reg(val, dst_reg, I64);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let val = builder.sub(src1, src2, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
                         }
                         op => unimplemented!("{}", op),
                     }
@@ -241,11 +195,12 @@ impl AArch64Lifter {
             Operand::RegShift(style, s, sz, reg) => {
                 // 64 bit value, zero extended
                 let reg_val = Self::reg_val(builder, sz, reg, SpOrZrReg::Zr);
+                let op_type = helper::get_type_by_sizecode(sz);
                 let shift_val = builder.iconst(s as u64);
                 match style {
                     ShiftStyle::LSL | ShiftStyle::LSR if s == 0 => reg_val,
-                    ShiftStyle::LSL => builder.lshl(reg_val, shift_val, I64).into(),
-                    ShiftStyle::LSR => builder.lshr(reg_val, shift_val, I64).into(),
+                    ShiftStyle::LSL => builder.lshl(reg_val, shift_val, op_type).into(),
+                    ShiftStyle::LSR => builder.lshr(reg_val, shift_val, op_type).into(),
                     ShiftStyle::ASR => unimplemented!("ASR"),
                     ShiftStyle::ROR => unimplemented!("ROR"),
                     ShiftStyle::UXTB | ShiftStyle::UXTH | ShiftStyle::UXTW | ShiftStyle::UXTX => {
@@ -254,15 +209,15 @@ impl AArch64Lifter {
                     ShiftStyle::SXTB => {
                         // TODO: for this we might need some optimization later on.
                         let trunc = builder.trunc_i64(reg_val, I8);
-                        builder.sext_i8(trunc, I64).into()
+                        builder.sext_i8(trunc, op_type).into()
                     }
                     ShiftStyle::SXTH => {
                         let trunc = builder.trunc_i64(reg_val, I16);
-                        builder.sext_i16(trunc, I64).into()
+                        builder.sext_i16(trunc, op_type).into()
                     }
                     ShiftStyle::SXTW => {
                         let trunc = builder.trunc_i64(reg_val, I32);
-                        builder.sext_i32(trunc, I64).into()
+                        builder.sext_i32(trunc, op_type).into()
                     }
                     ShiftStyle::SXTX => reg_val,
                 }
@@ -271,8 +226,9 @@ impl AArch64Lifter {
                 let rn = Self::reg_val(builder, sz, rn, SpOrZrReg::Sp);
                 let rd = Self::reg_val(builder, sz, rd, SpOrZrReg::Zr);
                 let s = builder.iconst(if s == 1 { 2 } else { 0 });
+                let op_type = helper::get_type_by_sizecode(sz);
                 let offset_val = match style {
-                    ShiftStyle::LSL => builder.lshl(rd, s, I64).into(),
+                    ShiftStyle::LSL => builder.lshl(rd, s, op_type).into(),
                     ShiftStyle::UXTW => rd,
                     ShiftStyle::SXTW => {
                         let trunc = builder.trunc_i64(rd, I32);
@@ -301,6 +257,7 @@ impl AArch64Lifter {
         reg: u16,
         sp_or_zr: SpOrZrReg,
     ) -> Value {
+        let op_type = helper::get_type_by_sizecode(sz);
         let val = if reg == 31 {
             match sp_or_zr {
                 SpOrZrReg::Sp => builder.read_reg(
@@ -317,16 +274,9 @@ impl AArch64Lifter {
                 }
             }
         } else {
-            builder.read_reg(Reg(reg as u32), I64)
+            builder.read_reg(Reg(reg as u32), op_type)
         };
-        if sz == SizeCode::W {
-            // then we need to trunc the top bits
-            let trunc = builder.trunc_i64(val, I32);
-            builder.zext_i32(trunc, I64)
-        } else {
-            val
-        }
-        .into()
+        val.into()
     }
 
     fn get_dst_reg(builder: &InstructionBuilder, inst: Instruction) -> (Reg, SizeCode) {
