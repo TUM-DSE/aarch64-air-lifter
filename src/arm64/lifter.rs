@@ -182,7 +182,18 @@ impl Lifter for AArch64Lifter {
                             builder.write_reg(val, dst_reg, I64);
                         }
                         Opcode::ORN => {
-                            unimplemented!("TODO");
+                            let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let val = builder.not(src2, I64);
+                            let val = builder.or(src1, val, I64);
+                            let val = if sz == SizeCode::W {
+                                let trunc = builder.trunc_i64(val, I32);
+                                builder.zext_i32(trunc, I64)
+                            } else {
+                                val
+                            };
+                            builder.write_reg(val, dst_reg, I64);
                         }
                         Opcode::SUB => {
                             let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
