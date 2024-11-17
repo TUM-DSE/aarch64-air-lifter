@@ -177,7 +177,14 @@ impl Lifter for AArch64Lifter {
                             builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::RET => {}
-                        Opcode::SDIV => {}
+                        Opcode::SDIV => {
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let val = builder.idiv(src1, src2, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
+                        }
                         Opcode::STP => {}
                         Opcode::STR => {
                             let (_, sz) = Self::get_dst_reg(&builder, inst);
