@@ -12,5 +12,6 @@ mod lifter {
     mod neg_simple;
     mod orn_simple;
     mod orr_simple;
+    mod str_simple;
     mod sub_simple;
 }

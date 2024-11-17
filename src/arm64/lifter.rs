@@ -130,10 +130,8 @@ impl Lifter for AArch64Lifter {
                         Opcode::LDR => {
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
-                            let pc = Self::get_pc(&mut builder);
-                            let offset = Self::get_value(&mut builder, inst.operands[1]);
-                            let addr = builder.add(pc, offset, I64);
-                            let val = builder.load(addr, op_type);
+                            let address = Self::get_value(&mut builder, inst.operands[1]);
+                            let val = builder.load(address, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::NEG => {
@@ -162,7 +160,11 @@ impl Lifter for AArch64Lifter {
                             builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::STR => {
-                            // TODO
+                            let (_, sz) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let value = Self::get_value(&mut builder, inst.operands[0]);
+                            let address = Self::get_value(&mut builder, inst.operands[1]);
+                            builder.store(value, address, op_type);
                         }
                         Opcode::SUB => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
@@ -189,6 +191,7 @@ impl Lifter for AArch64Lifter {
 impl AArch64Lifter {
     /// Returns the value of a register as a 64-bit value.
     fn get_value(builder: &mut InstructionBuilder, operand: Operand) -> Value {
+        println!("{:?}", operand);
         match operand {
             Operand::Register(sz, reg) => Self::reg_val(builder, sz, reg, SpOrZrReg::Zr),
             Operand::RegisterOrSP(sz, reg) => Self::reg_val(builder, sz, reg, SpOrZrReg::Sp),
@@ -476,19 +479,6 @@ impl AArch64Lifter {
                 "Invalid operand for condition code".to_string(),
             )),
         }
-    }
-
-    fn get_pc(builder: &mut InstructionBuilder) -> Value {
-        builder
-            .read_reg(
-                builder
-                    .get_blob()
-                    .get_arch()
-                    .lookup_reg(&"pc".into())
-                    .unwrap(),
-                I64,
-            )
-            .into()
     }
 }
 

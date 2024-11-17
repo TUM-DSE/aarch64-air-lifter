@@ -2,6 +2,7 @@ use aarch64_air_lifter::arm64::AArch64Lifter;
 use aarch64_air_lifter::Lifter;
 
 #[test]
+// Load register
 fn test() {
     let bytes = [
         0x40, 0x44, 0x40, 0xF8, // ldr x0, [x2], #4
