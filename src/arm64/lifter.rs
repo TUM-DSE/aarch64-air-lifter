@@ -1,4 +1,3 @@
-#![allow(warnings)]
 use crate::arm64::helper;
 use crate::Lifter;
 use target_lexicon::{Aarch64Architecture, Architecture};
@@ -37,9 +36,9 @@ impl Lifter for AArch64Lifter {
 
         let decoder = <ARMv8 as Arch>::Decoder::default();
         let mut reader = U8Reader::new(code);
-        let mut label_resolver = label_resolver::LabelResolver::new(code, &mut builder, &decoder)?;
+        let label_resolver = label_resolver::LabelResolver::new(code, &mut builder, &decoder)?;
 
-        let mut address: isize = 0;
+        let mut pc: isize = 0;
 
         loop {
             match decoder.decode(&mut reader) {
@@ -48,16 +47,16 @@ impl Lifter for AArch64Lifter {
                     match inst.opcode {
                         // Currently not supported
                         Opcode::ADD => {
-                            let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
-                            let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let val = builder.add(src1, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::ADC => {
-                            let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
-                            let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let carry = Self::flag_value(&mut builder, Flag::C);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
@@ -66,16 +65,16 @@ impl Lifter for AArch64Lifter {
                             builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::AND => {
-                            let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
-                            let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let val = builder.and(src1, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::B => {
-                            let offset = helper::get_pc_offset(inst.operands[0]);
-                            let jump_address = address as isize + offset;
+                            let offset = helper::get_pc_offset_as_int(inst.operands[0]);
+                            let jump_address = pc + offset;
                             let block_name = helper::get_block_name(jump_address);
                             let block = label_resolver.get_block(&block_name);
                             let block = match block {
@@ -98,12 +97,11 @@ impl Lifter for AArch64Lifter {
                                 "csinc_negative_condition",
                                 Vec::<BlockParamData>::new(),
                             );
-                            let current_block = builder.current_block();
                             let end_block =
                                 builder.create_block("csinc_end", Vec::<BlockParamData>::new());
 
-                            let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
-                            let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let condition = Self::get_condition(&mut builder, inst.operands[3])?;
@@ -129,34 +127,46 @@ impl Lifter for AArch64Lifter {
 
                             builder.set_insert_block(end_block);
                         }
+                        Opcode::LDR => {
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let pc = Self::get_pc(&mut builder);
+                            let offset = Self::get_value(&mut builder, inst.operands[1]);
+                            let addr = builder.add(pc, offset, I64);
+                            let val = builder.load(addr, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
+                        }
                         Opcode::NEG => {
                             let zero = builder.iconst(0);
-                            let src = Self::get_reg_value(&mut builder, inst.operands[1]);
+                            let src = Self::get_value(&mut builder, inst.operands[1]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let val = builder.sub(zero, src, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::ORR => {
-                            let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
-                            let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let val = builder.or(src1, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::ORN => {
-                            let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
-                            let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let val = builder.not(src2, op_type);
                             let val = builder.or(src1, val, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
+                        Opcode::STR => {
+                            // TODO
+                        }
                         Opcode::SUB => {
-                            let src1 = Self::get_reg_value(&mut builder, inst.operands[1]);
-                            let src2 = Self::get_reg_value(&mut builder, inst.operands[2]);
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let val = builder.sub(src1, src2, op_type);
@@ -169,7 +179,7 @@ impl Lifter for AArch64Lifter {
                 Err(e) => return Err(AArch64LifterError::DecodeError(e)),
             }
 
-            address += INSTRUCTION_SIZE;
+            pc += INSTRUCTION_SIZE;
         }
 
         Ok(blob)
@@ -178,7 +188,7 @@ impl Lifter for AArch64Lifter {
 
 impl AArch64Lifter {
     /// Returns the value of a register as a 64-bit value.
-    fn get_reg_value(builder: &mut InstructionBuilder, operand: Operand) -> Value {
+    fn get_value(builder: &mut InstructionBuilder, operand: Operand) -> Value {
         match operand {
             Operand::Register(sz, reg) => Self::reg_val(builder, sz, reg, SpOrZrReg::Zr),
             Operand::RegisterOrSP(sz, reg) => Self::reg_val(builder, sz, reg, SpOrZrReg::Sp),
@@ -244,8 +254,13 @@ impl AArch64Lifter {
                 let offset = builder.iconst(offset as u64);
                 builder.add(rn, offset, I64).into()
             }
-            Operand::RegPostIndex(rn, _) => Self::reg_val(builder, SizeCode::X, rn, SpOrZrReg::Sp),
+            Operand::RegPostIndex(rn, offset) => {
+                let val = Self::reg_val(builder, SizeCode::X, rn, SpOrZrReg::Sp);
+                let offset = builder.iconst(offset as u64);
+                builder.add(val, offset, I64).into()
+            }
             Operand::RegPostIndexReg(_, _) => unimplemented!("RegPostIndexReg"),
+            Operand::PCOffset(n) => builder.iconst(n as u64),
             op => unreachable!("incorrect operand for `get_reg_value`: {:?}", op),
         }
     }
@@ -442,7 +457,6 @@ impl AArch64Lifter {
                         builder.or(z_is_true, n_neq_v, BOOL)
                     }
                     14 => {
-                        // TODO: Change to prettier code?
                         // AL
                         builder.and(flag_is_true, flag_is_true, BOOL)
                     }
@@ -452,18 +466,29 @@ impl AArch64Lifter {
                     }
                     _ => {
                         return Err(AArch64LifterError::CustomError(
-                            "Invalid condition code".to_string(),
-                        ));
+                            "Invalid operand for condition code".to_string(),
+                        ))
                     }
                 };
                 Ok(inst)
             }
-            _ => {
-                return Err(AArch64LifterError::CustomError(
-                    "Invalid operand for condition code".to_string(),
-                ));
-            }
+            _ => Err(AArch64LifterError::CustomError(
+                "Invalid operand for condition code".to_string(),
+            )),
         }
+    }
+
+    fn get_pc(builder: &mut InstructionBuilder) -> Value {
+        builder
+            .read_reg(
+                builder
+                    .get_blob()
+                    .get_arch()
+                    .lookup_reg(&"pc".into())
+                    .unwrap(),
+                I64,
+            )
+            .into()
     }
 }
 

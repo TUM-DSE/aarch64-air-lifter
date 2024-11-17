@@ -8,6 +8,7 @@ mod lifter {
     mod and_simple;
     mod b_simple;
     mod csinc_simple;
+    mod ldr_simple;
     mod neg_simple;
     mod orn_simple;
     mod orr_simple;

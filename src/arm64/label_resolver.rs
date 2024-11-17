@@ -66,12 +66,14 @@ impl LabelResolver {
                 Ok(inst) => {
                     let imm: Option<isize> = match inst.opcode {
                         Opcode::B | Opcode::BL | Opcode::Bcc(_) => {
-                            Some(helper::get_pc_offset(inst.operands[0]))
+                            Some(helper::get_pc_offset_as_int(inst.operands[0]))
                         }
                         Opcode::CBNZ | Opcode::CBZ | Opcode::TBL | Opcode::TBX => {
-                            Some(helper::get_pc_offset(inst.operands[1]))
+                            Some(helper::get_pc_offset_as_int(inst.operands[1]))
                         }
-                        Opcode::TBNZ | Opcode::TBZ => Some(helper::get_pc_offset(inst.operands[2])),
+                        Opcode::TBNZ | Opcode::TBZ => {
+                            Some(helper::get_pc_offset_as_int(inst.operands[2]))
+                        }
                         Opcode::BLR | Opcode::BR => {
                             // TODO: Uses dynamic address stored in register. Might need to be handled in the future differently
                             None
