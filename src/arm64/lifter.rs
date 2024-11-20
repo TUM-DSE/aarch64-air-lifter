@@ -206,7 +206,22 @@ impl Lifter for AArch64Lifter {
                             builder.xor(src1, src2, op_type);
                             builder.write_reg(src1, dst_reg, op_type);
                         }
-                        Opcode::LDP => {}
+                        Opcode::LDP => {
+                            let (dst_reg1, sz) = Self::get_dst_reg_by_index(&builder, inst, 0);
+                            let (dst_reg2, _) = Self::get_dst_reg_by_index(&builder, inst, 1);
+                            let address = Self::get_value(&mut builder, inst.operands[2]);
+                            let op_type = helper::get_type_by_sizecode(sz);
+
+                            let val1 = builder.load(address, op_type);
+                            builder.write_reg(val1, dst_reg1, op_type);
+                            let address_offset = match op_type {
+                                I64 => builder.iconst(8),
+                                _ => builder.iconst(4),
+                            };
+                            let address = builder.add(address, address_offset, I64);
+                            let val2 = builder.load(address, op_type);
+                            builder.write_reg(val2, dst_reg2, op_type);
+                        }
                         Opcode::LDR => {
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
@@ -401,8 +416,12 @@ impl AArch64Lifter {
         val.into()
     }
 
-    fn get_dst_reg(builder: &InstructionBuilder, inst: Instruction) -> (Reg, SizeCode) {
-        let (dst_reg, sz) = match inst.operands[0] {
+    fn get_dst_reg_by_index(
+        builder: &InstructionBuilder,
+        inst: Instruction,
+        index: usize,
+    ) -> (Reg, SizeCode) {
+        let (dst_reg, sz) = match inst.operands[index] {
             Operand::Register(sz, reg) => {
                 assert_ne!(reg, 31, "cannot write to xzr/wzr");
                 (Reg(reg as u32), sz)
@@ -425,6 +444,10 @@ impl AArch64Lifter {
             op => unimplemented!("dst op {:?}", op),
         };
         (dst_reg, sz)
+    }
+
+    fn get_dst_reg(builder: &InstructionBuilder, inst: Instruction) -> (Reg, SizeCode) {
+        Self::get_dst_reg_by_index(builder, inst, 0)
     }
 
     fn flag_value(builder: &mut InstructionBuilder, flag: Flag) -> Value {
