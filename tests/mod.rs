@@ -13,6 +13,7 @@ mod lifter {
     mod eor_simple;
     mod ldp_simple;
     mod ldr_simple;
+    mod lslv_simple;
     mod madd_simple;
     mod neg_simple;
     mod orn_simple;
