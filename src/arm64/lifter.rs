@@ -72,7 +72,16 @@ impl Lifter for AArch64Lifter {
                             let val = builder.and(src1, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
-                        Opcode::ASRV => {}
+                        Opcode::ASRV => {
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let shift_mask = builder.iconst(63);
+                            let shift_val = builder.and(src2, shift_mask, op_type);
+                            let val = builder.ashr(src1, shift_val, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
+                        }
                         Opcode::B => {
                             let offset = helper::get_pc_offset_as_int(inst.operands[0]);
                             let jump_address = pc + offset;
