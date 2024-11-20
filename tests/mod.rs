@@ -6,7 +6,9 @@ mod lifter {
     mod adc_simple;
     mod add_simple;
     mod and_simple;
+    mod asrv_simple;
     mod b_simple;
+    mod ccmp_simple;
     mod csinc_simple;
     mod ldr_simple;
     mod madd_simple;

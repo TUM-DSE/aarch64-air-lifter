@@ -89,7 +89,67 @@ impl Lifter for AArch64Lifter {
                             builder.jump(*block, vec![]);
                             builder.set_insert_block(*block);
                         }
-                        Opcode::CCMP => {}
+                        Opcode::CCMP => {
+                            let positive_condition_block = builder.create_block(
+                                "ccmp_positive_condition",
+                                Vec::<BlockParamData>::new(),
+                            );
+                            let negative_condition_block = builder.create_block(
+                                "ccmp_negative_condition",
+                                Vec::<BlockParamData>::new(),
+                            );
+                            let end_block =
+                                builder.create_block("ccmp_end", Vec::<BlockParamData>::new());
+
+                            let src1 = Self::get_value(&mut builder, inst.operands[0]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[1]);
+                            let flag_values = Self::get_value(&mut builder, inst.operands[2]);
+                            let condition = Self::get_condition(&mut builder, inst.operands[3])?;
+                            let op_type =
+                                helper::get_type_by_sizecode(Self::get_size_code(inst.operands[0]));
+                            builder.jumpif(
+                                condition,
+                                positive_condition_block,
+                                Vec::new(),
+                                negative_condition_block,
+                                Vec::new(),
+                            );
+
+                            builder.set_insert_block(positive_condition_block);
+                            let zero = builder.iconst(0);
+                            // set n flag
+                            let n_mask = builder.iconst(8);
+                            let n = builder.and(n_mask, flag_values, op_type);
+                            let n_is_set =
+                                builder.icmp(tnj::types::cmp::CmpTy::Ne, zero, n, op_type);
+                            Self::write_flag(&mut builder, n_is_set.into(), Flag::N);
+                            // set z flag
+                            let z_mask = builder.iconst(4);
+                            let z = builder.and(z_mask, src2, op_type);
+                            let z_is_set =
+                                builder.icmp(tnj::types::cmp::CmpTy::Ne, zero, z, op_type);
+                            Self::write_flag(&mut builder, z_is_set.into(), Flag::Z);
+                            // set c flag
+                            let c_mask = builder.iconst(2);
+                            let c = builder.and(c_mask, src2, op_type);
+                            let c_is_set =
+                                builder.icmp(tnj::types::cmp::CmpTy::Ne, zero, c, op_type);
+                            Self::write_flag(&mut builder, c_is_set.into(), Flag::C);
+                            // set v flag
+                            let v_mask = builder.iconst(1);
+                            let v = builder.and(v_mask, src2, op_type);
+                            let v_is_set =
+                                builder.icmp(tnj::types::cmp::CmpTy::Ne, zero, v, op_type);
+                            Self::write_flag(&mut builder, v_is_set.into(), Flag::V);
+                            builder.jump(end_block, Vec::new());
+
+                            // set flags using immediate
+                            builder.set_insert_block(negative_condition_block);
+                            builder.icmp(tnj::types::cmp::CmpTy::Ne, src1, src2, op_type);
+                            builder.jump(end_block, Vec::new());
+
+                            builder.set_insert_block(end_block);
+                        }
                         Opcode::CSINC => {
                             let positive_condition_block = builder.create_block(
                                 "csinc_positive_condition",
@@ -370,6 +430,21 @@ impl AArch64Lifter {
             .into()
     }
 
+    fn write_flag(builder: &mut InstructionBuilder, value: Value, flag: Flag) {
+        let reg_name = match flag {
+            Flag::N => "n",
+            Flag::Z => "z",
+            Flag::C => "c",
+            Flag::V => "v",
+        };
+        let reg = builder
+            .get_blob()
+            .get_arch()
+            .lookup_reg(&reg_name.into())
+            .unwrap();
+        builder.write_reg(value, reg, BOOL);
+    }
+
     fn get_condition(
         builder: &mut InstructionBuilder,
         operand: Operand,
@@ -387,43 +462,36 @@ impl AArch64Lifter {
                     1 => {
                         // NE
                         let z = Self::flag_value(builder, Flag::Z);
-
                         builder.icmp(tnj::types::cmp::CmpTy::Ne, z, flag_is_true, BOOL)
                     }
                     2 => {
                         // CS
                         let c = Self::flag_value(builder, Flag::C);
-
                         builder.icmp(tnj::types::cmp::CmpTy::Eq, c, flag_is_true, BOOL)
                     }
                     3 => {
                         // CC
                         let c = Self::flag_value(builder, Flag::C);
-
                         builder.icmp(tnj::types::cmp::CmpTy::Ne, c, flag_is_true, BOOL)
                     }
                     4 => {
                         // MI
                         let n = Self::flag_value(builder, Flag::N);
-
                         builder.icmp(tnj::types::cmp::CmpTy::Eq, n, flag_is_true, BOOL)
                     }
                     5 => {
                         // PL
                         let n = Self::flag_value(builder, Flag::N);
-
                         builder.icmp(tnj::types::cmp::CmpTy::Ne, n, flag_is_true, BOOL)
                     }
                     6 => {
                         // VS
                         let v = Self::flag_value(builder, Flag::V);
-
                         builder.icmp(tnj::types::cmp::CmpTy::Eq, v, flag_is_true, BOOL)
                     }
                     7 => {
                         // VC
                         let v = Self::flag_value(builder, Flag::V);
-
                         builder.icmp(tnj::types::cmp::CmpTy::Ne, v, flag_is_true, BOOL)
                     }
                     8 => {
@@ -506,6 +574,16 @@ impl AArch64Lifter {
             _ => Err(AArch64LifterError::CustomError(
                 "Invalid operand for condition code".to_string(),
             )),
+        }
+    }
+
+    fn get_size_code(operand: Operand) -> SizeCode {
+        match operand {
+            Operand::Register(sz, _) => sz,
+            Operand::RegisterOrSP(sz, _) => sz,
+            Operand::RegShift(_, _, sz, _) => sz,
+            Operand::RegRegOffset(_, _, sz, _, _) => sz,
+            _ => panic!("can not get size code for non-register types"),
         }
     }
 }
