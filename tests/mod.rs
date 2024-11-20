@@ -10,6 +10,7 @@ mod lifter {
     mod b_simple;
     mod ccmp_simple;
     mod csinc_simple;
+    mod eor_simple;
     mod ldr_simple;
     mod madd_simple;
     mod neg_simple;
