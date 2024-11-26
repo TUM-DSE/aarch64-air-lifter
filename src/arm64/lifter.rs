@@ -249,11 +249,21 @@ impl Lifter for AArch64Lifter {
                         Opcode::MADD => {
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
-                            let rn = Self::get_value(&mut builder, inst.operands[1]);
-                            let rm = Self::get_value(&mut builder, inst.operands[2]);
-                            let ra = Self::get_value(&mut builder, inst.operands[3]);
-                            let val = builder.imul(rn, rm, op_type);
-                            let val = builder.add(val, ra, op_type);
+                            let mul_src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let mul_src2 = Self::get_value(&mut builder, inst.operands[2]);
+                            let add_src = Self::get_value(&mut builder, inst.operands[3]);
+                            let val = builder.imul(mul_src1, mul_src2, op_type);
+                            let val = builder.add(val, add_src, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
+                        }
+                        Opcode::MSUB => {
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let mul_src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let mul_src2 = Self::get_value(&mut builder, inst.operands[2]);
+                            let sub_src = Self::get_value(&mut builder, inst.operands[3]);
+                            let val = builder.imul(mul_src1, mul_src2, op_type);
+                            let val = builder.sub(sub_src, val, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::MUL => {}
