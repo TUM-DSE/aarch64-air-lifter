@@ -101,6 +101,28 @@ impl Lifter for AArch64Lifter {
                             builder.jump(*block, vec![]);
                             builder.set_insert_block(*block);
                         }
+                        Opcode::BL => {
+                            let instruction_size = builder.iconst(4);
+                            let pc_reg = Self::get_pc(&mut builder);
+                            let return_address = builder.add(pc_reg, instruction_size, I64);
+                            let x30 = Self::get_reg_val_by_name(&mut builder, "x30");
+
+                            let offset = helper::get_pc_offset_as_int(inst.operands[0]);
+                            let jump_address = pc + offset;
+                            let block_name = helper::get_block_name(jump_address);
+                            let block = label_resolver.get_block(&block_name);
+                            let block = match block {
+                                Some(block) => block,
+                                None => {
+                                    return Err(AArch64LifterError::CustomError(
+                                        "Jumping to resolved block that does not exist".to_string(),
+                                    ));
+                                }
+                            };
+                            builder.write_reg(return_address, x30, I64);
+                            builder.jump(*block, vec![]);
+                            builder.set_insert_block(*block);
+                        }
                         Opcode::CCMP => {
                             let positive_condition_block = builder.create_block(
                                 "ccmp_positive_condition",
@@ -278,7 +300,6 @@ impl Lifter for AArch64Lifter {
                             let val = builder.sub(sub_src, val, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
-                        Opcode::MUL => {}
                         Opcode::NEG => {
                             let zero = builder.iconst(0);
                             let src = Self::get_value(&mut builder, inst.operands[1]);
@@ -513,12 +534,21 @@ impl AArch64Lifter {
             Flag::C => "c",
             Flag::V => "v",
         };
-        let reg = builder
+        let reg = Self::get_reg_val_by_name(builder, reg_name);
+        builder.write_reg(value, reg, BOOL);
+    }
+
+    fn get_reg_val_by_name(builder: &mut InstructionBuilder, name: &str) -> Reg {
+        builder
             .get_blob()
             .get_arch()
-            .lookup_reg(&reg_name.into())
-            .unwrap();
-        builder.write_reg(value, reg, BOOL);
+            .lookup_reg(&name.into())
+            .unwrap()
+    }
+
+    fn get_pc(builder: &mut InstructionBuilder) -> Value {
+        let reg = Self::get_reg_val_by_name(builder, "pc");
+        Self::reg_val(builder, SizeCode::X, reg.0 as u16, SpOrZrReg::Sp)
     }
 
     fn get_condition(
