@@ -42,10 +42,16 @@ impl Lifter for AArch64Lifter {
 
         loop {
             match decoder.decode(&mut reader) {
+                // TODO: Set insert block if insert block exists. Inefficient
                 Ok(inst) => {
+                    let block_name = helper::get_block_name(pc);
+                    let block = label_resolver.get_block(block_name.as_str());
+                    if let Some(block) = block {
+                        builder.set_insert_block(*block);
+                    }
+
                     println!("{}", inst);
                     match inst.opcode {
-                        // Currently not supported
                         Opcode::ADD => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
@@ -99,7 +105,6 @@ impl Lifter for AArch64Lifter {
                                 }
                             };
                             builder.jump(*block, vec![]);
-                            builder.set_insert_block(*block);
                         }
                         Opcode::BL => {
                             let instruction_size = builder.iconst(4);
@@ -121,7 +126,6 @@ impl Lifter for AArch64Lifter {
                             };
                             builder.write_reg(return_address, x30, I64);
                             builder.jump(*block, vec![]);
-                            builder.set_insert_block(*block);
                         }
                         Opcode::CCMP => {
                             let positive_condition_block = builder.create_block(
