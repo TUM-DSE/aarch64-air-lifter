@@ -5,8 +5,8 @@ use aarch64_air_lifter::Lifter;
 // Logical shift left variable
 fn test() {
     let bytes = [
-        0x20, 0x20, 0xC2, 0x9A, // lslv x0, x1, x2
-        0x20, 0x20, 0xC2, 0x1A, // lslv w0, w1, w2
+        0x20, 0x24, 0xC2, 0x1A, // lsr w0, w1, w2
+        0x20, 0x24, 0xC2, 0x9A, // lsr x0, x1, x2
     ];
 
     let lifter = AArch64Lifter;

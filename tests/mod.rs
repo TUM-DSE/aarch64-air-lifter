@@ -14,6 +14,7 @@ mod lifter {
     mod ldp_simple;
     mod ldr_simple;
     mod lslv_simple;
+    mod lsrv_simple;
     mod madd_simple;
     mod msub_simple;
     mod neg_simple;
