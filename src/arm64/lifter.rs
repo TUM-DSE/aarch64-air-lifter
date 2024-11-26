@@ -45,7 +45,7 @@ impl Lifter for AArch64Lifter {
                 // TODO: Set insert block if insert block exists. Inefficient
                 Ok(inst) => {
                     let block_name = helper::get_block_name(pc);
-                    let block = label_resolver.get_block(block_name.as_str());
+                    let block = label_resolver.get_block_option_by_name(block_name.as_str());
                     if let Some(block) = block {
                         builder.set_insert_block(*block);
                     }
@@ -93,17 +93,8 @@ impl Lifter for AArch64Lifter {
                         }
                         Opcode::B => {
                             let offset = helper::get_pc_offset_as_int(inst.operands[0]);
-                            let jump_address = pc + offset;
-                            let block_name = helper::get_block_name(jump_address);
-                            let block = label_resolver.get_block(&block_name);
-                            let block = match block {
-                                Some(block) => block,
-                                None => {
-                                    return Err(AArch64LifterError::CustomError(
-                                        "Jumping to resolved block that does not exist".to_string(),
-                                    ));
-                                }
-                            };
+                            let next_address = pc + offset;
+                            let block = label_resolver.get_block_by_address(next_address);
                             builder.jump(*block, vec![]);
                         }
                         Opcode::BL => {
@@ -113,19 +104,27 @@ impl Lifter for AArch64Lifter {
                             let x30 = Self::get_reg_val_by_name(&mut builder, "x30");
 
                             let offset = helper::get_pc_offset_as_int(inst.operands[0]);
-                            let jump_address = pc + offset;
-                            let block_name = helper::get_block_name(jump_address);
-                            let block = label_resolver.get_block(&block_name);
-                            let block = match block {
-                                Some(block) => block,
-                                None => {
-                                    return Err(AArch64LifterError::CustomError(
-                                        "Jumping to resolved block that does not exist".to_string(),
-                                    ));
-                                }
-                            };
+                            let next_address = pc + offset;
+                            let block = label_resolver.get_block_by_address(next_address);
                             builder.write_reg(return_address, x30, I64);
                             builder.jump(*block, vec![]);
+                        }
+                        Opcode::CBZ => {
+                            let next_address = pc + INSTRUCTION_SIZE;
+                            let next_block = *label_resolver.get_block_by_address(next_address);
+
+                            let src = Self::get_value(&mut builder, inst.operands[0]);
+                            let op_type =
+                                helper::get_type_by_sizecode(Self::get_size_code(inst.operands[0]));
+                            let zero = builder.iconst(0);
+                            let condition =
+                                builder.icmp(tnj::types::cmp::CmpTy::Eq, src, zero, op_type);
+
+                            let offset = helper::get_pc_offset_as_int(inst.operands[1]);
+                            let jump_address = pc + offset;
+                            let block = label_resolver.get_block_by_address(jump_address);
+
+                            builder.jumpif(condition, *block, Vec::new(), next_block, Vec::new());
                         }
                         Opcode::CCMP => {
                             let positive_condition_block = builder.create_block(
@@ -136,8 +135,8 @@ impl Lifter for AArch64Lifter {
                                 "ccmp_negative_condition",
                                 Vec::<BlockParamData>::new(),
                             );
-                            let end_block =
-                                builder.create_block("ccmp_end", Vec::<BlockParamData>::new());
+                            let next_address = pc + INSTRUCTION_SIZE;
+                            let next_block = *label_resolver.get_block_by_address(next_address);
 
                             let src1 = Self::get_value(&mut builder, inst.operands[0]);
                             let src2 = Self::get_value(&mut builder, inst.operands[1]);
@@ -179,14 +178,12 @@ impl Lifter for AArch64Lifter {
                             let v_is_set =
                                 builder.icmp(tnj::types::cmp::CmpTy::Ne, zero, v, op_type);
                             Self::write_flag(&mut builder, v_is_set.into(), Flag::V);
-                            builder.jump(end_block, Vec::new());
+                            builder.jump(next_block, Vec::new());
 
                             // set flags using immediate
                             builder.set_insert_block(negative_condition_block);
                             builder.icmp(tnj::types::cmp::CmpTy::Ne, src1, src2, op_type);
-                            builder.jump(end_block, Vec::new());
-
-                            builder.set_insert_block(end_block);
+                            builder.jump(next_block, Vec::new());
                         }
                         Opcode::CSINC => {
                             let positive_condition_block = builder.create_block(
@@ -197,8 +194,8 @@ impl Lifter for AArch64Lifter {
                                 "csinc_negative_condition",
                                 Vec::<BlockParamData>::new(),
                             );
-                            let end_block =
-                                builder.create_block("csinc_end", Vec::<BlockParamData>::new());
+                            let next_address = pc + INSTRUCTION_SIZE;
+                            let next_block = *label_resolver.get_block_by_address(next_address);
 
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
@@ -218,14 +215,12 @@ impl Lifter for AArch64Lifter {
                             let one = builder.iconst(1);
                             let val = builder.add(src2, one, op_type);
                             builder.write_reg(val, dst_reg, op_type);
-                            builder.jump(end_block, Vec::new());
+                            builder.jump(next_block, Vec::new());
 
                             // Condition is true
                             builder.set_insert_block(positive_condition_block);
                             builder.write_reg(src1, dst_reg, op_type);
-                            builder.jump(end_block, Vec::new());
-
-                            builder.set_insert_block(end_block);
+                            builder.jump(next_block, Vec::new());
                         }
                         Opcode::EOR => {
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);

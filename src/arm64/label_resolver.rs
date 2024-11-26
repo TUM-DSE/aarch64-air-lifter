@@ -17,6 +17,12 @@ pub struct LabelResolver {
     blocks: HashMap<String, BasicBlock>,
 }
 
+#[derive(PartialEq, Eq, Debug)]
+enum CheckpointType {
+    Conditional,
+    Branch,
+}
+
 impl LabelResolver {
     /// Create a new LabelResolver
     pub fn new(
@@ -47,9 +53,16 @@ impl LabelResolver {
         Ok(())
     }
 
-    /// Get a block we created by resolving a label
-    pub fn get_block(&self, name: &str) -> Option<&BasicBlock> {
+    /// Get a block by block name
+    pub fn get_block_option_by_name(&self, name: &str) -> Option<&BasicBlock> {
         self.blocks.get(name)
+    }
+
+    /// Get a block by block address
+    pub fn get_block_by_address(&self, address: isize) -> &BasicBlock {
+        let name = helper::get_block_name(address);
+        self.get_block_option_by_name(&name)
+            .expect("Block not found")
     }
 
     /// Store all addresses of branch-destinations or of instructions after branch-instructions
@@ -64,26 +77,32 @@ impl LabelResolver {
         loop {
             match decoder.decode(&mut reader) {
                 Ok(inst) => {
-                    let imm: Option<isize> = match inst.opcode {
-                        Opcode::B | Opcode::BL | Opcode::Bcc(_) => {
-                            Some(helper::get_pc_offset_as_int(inst.operands[0]))
-                        }
-                        Opcode::CBNZ | Opcode::CBZ | Opcode::TBL | Opcode::TBX => {
-                            Some(helper::get_pc_offset_as_int(inst.operands[1]))
-                        }
-                        Opcode::TBNZ | Opcode::TBZ => {
-                            Some(helper::get_pc_offset_as_int(inst.operands[2]))
-                        }
+                    let imm: Option<(isize, CheckpointType)> = match inst.opcode {
+                        Opcode::B | Opcode::BL | Opcode::Bcc(_) => Some((
+                            helper::get_pc_offset_as_int(inst.operands[0]),
+                            CheckpointType::Branch,
+                        )),
+                        Opcode::CBNZ | Opcode::CBZ | Opcode::TBL | Opcode::TBX => Some((
+                            helper::get_pc_offset_as_int(inst.operands[1]),
+                            CheckpointType::Branch,
+                        )),
+                        Opcode::TBNZ | Opcode::TBZ => Some((
+                            helper::get_pc_offset_as_int(inst.operands[2]),
+                            CheckpointType::Branch,
+                        )),
+                        Opcode::CCMP | Opcode::CSINC => Some((0, CheckpointType::Conditional)),
                         Opcode::BLR | Opcode::BR => {
                             // TODO: Uses dynamic address stored in register. Might need to be handled in the future differently
                             None
                         }
                         _ => None,
                     };
-                    if let Some(imm) = imm {
+                    if let Some((imm, checkpoint_type)) = imm {
                         self.checkpoints.push(Reverse(address + INSTRUCTION_SIZE));
-                        let jump_address = imm + address;
-                        self.checkpoints.push(Reverse(jump_address));
+                        if checkpoint_type == CheckpointType::Branch {
+                            let jump_address = imm + address;
+                            self.checkpoints.push(Reverse(jump_address));
+                        }
                     }
                 }
                 Err(DecodeError::ExhaustedInput) => break,
