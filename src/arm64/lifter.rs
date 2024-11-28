@@ -77,6 +77,13 @@ impl Lifter for AArch64Lifter {
                             let val = builder.add(pc, offset, I64);
                             builder.write_reg(val, dst_reg, I64);
                         }
+                        Opcode::ADRP => {
+                            let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
+                            let offset = Self::get_value(&mut builder, inst.operands[1]);
+                            let pc = Self::get_pc(&mut builder);
+                            let addr = builder.add(pc, offset, I64);
+                            builder.write_reg(addr, dst_reg, I64);
+                        }
                         Opcode::AND => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
