@@ -5,7 +5,7 @@ use aarch64_air_lifter::Lifter;
 // Branch
 fn test() {
     let bytes = [
-        0x00, 0x00, 0x00, 0x14, // b _label where address of _label is 0x0
+        0x00, 0x00, 0x00, 0x14, // b, pc
     ];
 
     let lifter = AArch64Lifter;
