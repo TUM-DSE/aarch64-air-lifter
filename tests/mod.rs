@@ -5,6 +5,7 @@ mod label_resolver {
 mod lifter {
     mod adc_simple;
     mod add_simple;
+    mod adr_simple;
     mod and_simple;
     mod asrv_simple;
     mod b_simple;

@@ -52,14 +52,6 @@ impl Lifter for AArch64Lifter {
 
                     println!("{}", inst);
                     match inst.opcode {
-                        Opcode::ADD => {
-                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
-                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
-                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let op_type = helper::get_type_by_sizecode(sz);
-                            let val = builder.add(src1, src2, op_type);
-                            builder.write_reg(val, dst_reg, op_type);
-                        }
                         Opcode::ADC => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
@@ -69,6 +61,21 @@ impl Lifter for AArch64Lifter {
                             let val = builder.add(src1, carry, op_type);
                             let val = builder.add(val, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
+                        }
+                        Opcode::ADD => {
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let val = builder.add(src1, src2, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
+                        }
+                        Opcode::ADR => {
+                            let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
+                            let pc = Self::get_pc(&mut builder);
+                            let offset = Self::get_value(&mut builder, inst.operands[1]);
+                            let val = builder.add(pc, offset, I64);
+                            builder.write_reg(val, dst_reg, I64);
                         }
                         Opcode::AND => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
