@@ -123,6 +123,23 @@ impl Lifter for AArch64Lifter {
                             builder.write_reg(return_address, x30, I64);
                             builder.jump(*block, vec![]);
                         }
+                        Opcode::CBNZ => {
+                            let next_address = pc + INSTRUCTION_SIZE;
+                            let next_block = *label_resolver.get_block_by_address(next_address);
+
+                            let src = Self::get_value(&mut builder, inst.operands[0]);
+                            let op_type =
+                                helper::get_type_by_sizecode(Self::get_size_code(inst.operands[0]));
+                            let zero = builder.iconst(0);
+                            let condition =
+                                builder.icmp(tnj::types::cmp::CmpTy::Ne, src, zero, op_type);
+
+                            let offset = helper::get_pc_offset_as_int(inst.operands[1]);
+                            let jump_address = pc + offset;
+                            let block = label_resolver.get_block_by_address(jump_address);
+
+                            builder.jumpif(condition, *block, Vec::new(), next_block, Vec::new());
+                        }
                         Opcode::CBZ => {
                             let next_address = pc + INSTRUCTION_SIZE;
                             let next_block = *label_resolver.get_block_by_address(next_address);

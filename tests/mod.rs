@@ -11,6 +11,7 @@ mod lifter {
     mod asrv_simple;
     mod b_simple;
     mod bl_simple;
+    mod cbnz_simple;
     mod cbz_simple;
     mod ccmp_simple;
     mod csinc_simple;
