@@ -24,6 +24,7 @@ mod lifter {
     mod orn_simple;
     mod orr_simple;
     mod sdiv_simple;
+    mod stp_simple;
     mod str_simple;
     mod sub_simple;
 }
