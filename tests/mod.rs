@@ -13,6 +13,7 @@ mod lifter {
     mod bl_simple;
     mod cbnz_simple;
     mod cbz_simple;
+    mod ccmn_simple;
     mod ccmp_simple;
     mod csel_simple;
     mod csinc_simple;
