@@ -30,4 +30,5 @@ mod lifter {
     mod stp_simple;
     mod str_simple;
     mod sub_simple;
+    mod tbz_simple;
 }
