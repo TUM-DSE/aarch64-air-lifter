@@ -416,7 +416,9 @@ impl Lifter for AArch64Lifter {
                             let val = builder.or(src1, val, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
-                        Opcode::RET => {}
+                        Opcode::RET => {
+                            builder.ret();
+                        }
                         Opcode::RETAB => {}
                         Opcode::SDIV => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
