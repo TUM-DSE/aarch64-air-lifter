@@ -29,6 +29,7 @@ mod lifter {
     mod sdiv_simple;
     mod stp_simple;
     mod str_simple;
+    mod strb_simple;
     mod sub_simple;
     mod tbnz_simple;
     mod tbz_simple;

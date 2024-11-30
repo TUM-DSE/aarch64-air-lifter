@@ -388,11 +388,17 @@ impl Lifter for AArch64Lifter {
                             builder.store(src2, address, op_type);
                         }
                         Opcode::STR => {
-                            let (_, sz) = Self::get_dst_reg(&builder, inst);
+                            let sz = Self::get_size_code(inst.operands[0]);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let value = Self::get_value(&mut builder, inst.operands[0]);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             builder.store(value, address, op_type);
+                        }
+                        Opcode::STRB => {
+                            let value = Self::get_value(&mut builder, inst.operands[0]);
+                            let value = builder.trunc_i64(value, I8);
+                            let address = Self::get_value(&mut builder, inst.operands[1]);
+                            builder.store(value, address, I8);
                         }
                         Opcode::SUB => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
@@ -503,7 +509,7 @@ impl AArch64Lifter {
                 }
             }
             Operand::RegRegOffset(rn, rd, sz, style, s) => {
-                let rn = Self::reg_val(builder, sz, rn, SpOrZrReg::Sp);
+                let rn = Self::reg_val(builder, SizeCode::X, rn, SpOrZrReg::Sp);
                 let rd = Self::reg_val(builder, sz, rd, SpOrZrReg::Zr);
                 let s = builder.iconst(if s == 1 { 2 } else { 0 });
                 let op_type = helper::get_type_by_sizecode(sz);
