@@ -324,6 +324,16 @@ impl Lifter for AArch64Lifter {
                             let val = builder.zext_i8(val, I32);
                             builder.write_reg(val, dst_reg, I8);
                         }
+                        Opcode::LDUR => {
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let address = Self::get_value(&mut builder, inst.operands[1]);
+                            let mut val = builder.load(address, op_type);
+                            if sz == SizeCode::W {
+                                val = builder.zext_i32(val, I64);
+                            }
+                            builder.write_reg(val, dst_reg, op_type);
+                        }
                         Opcode::LSLV => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
