@@ -402,6 +402,25 @@ impl Lifter for AArch64Lifter {
                             let val = builder.sub(src1, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
+                        Opcode::TBNZ => {
+                            let next_address = pc + INSTRUCTION_SIZE;
+                            let next_block = *label_resolver.get_block_by_address(next_address);
+
+                            let one = builder.iconst(1);
+                            let zero = builder.iconst(0);
+                            let (src, sizecode) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sizecode);
+                            let test_bit = Self::get_value(&mut builder, inst.operands[1]);
+                            let offset = helper::get_pc_offset_as_int(inst.operands[2]);
+
+                            let test_bit = builder.lshr(test_bit, one, op_type);
+                            let val = builder.and(test_bit, src, op_type);
+                            let jump_address = offset + pc;
+                            let jump_block = *label_resolver.get_block_by_address(jump_address);
+
+                            let cmp = builder.icmp(tnj::types::cmp::CmpTy::Ne, val, zero, op_type);
+                            builder.jumpif(cmp, jump_block, Vec::new(), next_block, Vec::new());
+                        }
                         Opcode::TBZ => {
                             let next_address = pc + INSTRUCTION_SIZE;
                             let next_block = *label_resolver.get_block_by_address(next_address);
