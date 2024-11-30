@@ -90,9 +90,11 @@ impl LabelResolver {
                             helper::get_pc_offset_as_int(inst.operands[2]),
                             CheckpointType::Branch,
                         )),
-                        Opcode::CCMP | Opcode::CCMN | Opcode::CSINC | Opcode::CSEL => {
-                            Some((0, CheckpointType::Conditional))
-                        }
+                        Opcode::CCMP
+                        | Opcode::CCMN
+                        | Opcode::CSINC
+                        | Opcode::CSEL
+                        | Opcode::BFM => Some((0, CheckpointType::Conditional)),
                         Opcode::BLR | Opcode::BR => {
                             // TODO: Uses dynamic address stored in register. Might need to be handled in the future differently
                             None
