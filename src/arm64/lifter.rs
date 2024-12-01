@@ -210,6 +210,15 @@ impl Lifter for AArch64Lifter {
                             builder.write_reg(val, dst_reg, op_type);
                             builder.jump(next_block, Vec::new());
                         }
+                        Opcode::BIC => {
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let neg_src2 = builder.not(src2, op_type);
+                            let val = builder.and(src1, neg_src2, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
+                        }
                         Opcode::BL => {
                             let instruction_size = builder.iconst(4);
                             let pc_reg = Self::get_pc(&mut builder);
@@ -647,7 +656,7 @@ impl AArch64Lifter {
                     ShiftStyle::LSL | ShiftStyle::LSR if s == 0 => reg_val,
                     ShiftStyle::LSL => builder.lshl(reg_val, shift_val, op_type).into(),
                     ShiftStyle::LSR => builder.lshr(reg_val, shift_val, op_type).into(),
-                    ShiftStyle::ASR => unimplemented!("ASR"),
+                    ShiftStyle::ASR => builder.ashr(reg_val, shift_val, op_type).into(),
                     ShiftStyle::ROR => unimplemented!("ROR"),
                     ShiftStyle::UXTB | ShiftStyle::UXTH | ShiftStyle::UXTW | ShiftStyle::UXTX => {
                         reg_val
