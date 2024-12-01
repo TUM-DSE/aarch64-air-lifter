@@ -940,14 +940,6 @@ impl AArch64Lifter {
         let sum = builder.add(val1, val2, op_type);
         let sum = builder.add(sum, one, op_type);
 
-        let max_val = {
-            if op_type == I64 {
-                builder.iconst(i64::MAX)
-            } else {
-                builder.iconst(i32::MAX)
-            }
-        };
-
         // z is set if equal if both values are equal
         let z = builder.icmp(tnj::types::cmp::CmpTy::Eq, sum, zero, op_type);
         Self::write_flag(builder, z.into(), Flag::Z);
@@ -955,7 +947,9 @@ impl AArch64Lifter {
         let n = builder.icmp(tnj::types::cmp::CmpTy::Slt, sum, zero, op_type);
         Self::write_flag(builder, n.into(), Flag::N);
         // c is set if operation creates carry
-        let c = builder.icmp(tnj::types::cmp::CmpTy::Ugt, sum, max_val, op_type);
+        let val1_is_ugt_sum = builder.icmp(tnj::types::cmp::CmpTy::Ugt, val1, sum, op_type);
+        let val2_is_ugt_sum = builder.icmp(tnj::types::cmp::CmpTy::Ugt, val2, sum, op_type);
+        let c = builder.or(val1_is_ugt_sum, val2_is_ugt_sum, BOOL);
         Self::write_flag(builder, c.into(), Flag::C);
         // v is set if both operands have the same sign and the result has a different sign
         let val1_is_negative = builder.icmp(tnj::types::cmp::CmpTy::Slt, val1, zero, op_type);
