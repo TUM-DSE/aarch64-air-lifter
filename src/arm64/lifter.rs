@@ -112,7 +112,6 @@ impl Lifter for AArch64Lifter {
                             let block = label_resolver.get_block_by_address(next_address);
                             builder.jump(*block, vec![]);
                         }
-                        // TODO: Add tests
                         Opcode::BFM => {
                             let positive_condition_block = builder.create_block(
                                 "bfm_positive_condition",
@@ -151,10 +150,11 @@ impl Lifter for AArch64Lifter {
                             let src_bitfield = builder.and(src, src_mask, op_type);
                             let src_bitfield = builder.ashr(src_bitfield, immr, op_type);
                             // clear dst bits that are replaced by the src bitfield
-                            let dst_mask = builder.lshr(one, immr, op_type);
+                            let dst_mask = builder.lshr(one, src_bitfield_size, op_type);
                             let dst_mask = builder.sub(dst_mask, one, op_type);
+                            let dst_mask = builder.not(dst_mask, op_type);
                             let dst_bitfield = builder.and(src, dst_mask, op_type);
-
+                            // merge and write bitfield
                             let val = builder.or(src_bitfield, dst_bitfield, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                             builder.jump(next_block, Vec::new());
@@ -166,11 +166,20 @@ impl Lifter for AArch64Lifter {
                             let src_mask = builder.lshl(one, src_bitfield_size, op_type);
                             let src_mask = builder.sub(src_mask, one, op_type);
                             let src_bitfield = builder.and(src, src_mask, op_type);
-                            let src_bitfield = builder.lshl(src_bitfield, immr, op_type);
+                            let reg_size = match op_type {
+                                I64 => builder.iconst(64),
+                                _ => builder.iconst(32),
+                            };
+                            let starting_position = builder.sub(reg_size, immr, op_type);
+                            let src_bitfield =
+                                builder.lshl(src_bitfield, starting_position, op_type);
                             // clear dst bits that are replaced by the src bitfield
-                            let dst_mask = builder.lshr(src_mask, immr, op_type);
+                            let dst_mask = builder.lshr(one, src_bitfield_size, op_type);
+                            let dst_mask = builder.sub(dst_mask, one, op_type);
+                            let dst_mask = builder.lshl(dst_mask, starting_position, op_type);
                             let dst_mask = builder.not(dst_mask, op_type);
-                            let dst_bitfield = builder.and(dst_mask, dst_reg, op_type);
+                            let dst_bitfield = builder.and(src, dst_mask, op_type);
+                            // merge and write bitfield
                             let val = builder.or(src_bitfield, dst_bitfield, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                             builder.jump(next_block, Vec::new());
