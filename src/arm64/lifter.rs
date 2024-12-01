@@ -252,7 +252,7 @@ impl Lifter for AArch64Lifter {
                             builder.set_insert_block(negative_condition_block);
                             let src1 = Self::get_value(&mut builder, inst.operands[0]);
                             let src2 = Self::get_value(&mut builder, inst.operands[1]);
-                            builder.icmp(tnj::types::cmp::CmpTy::Eq, src1, src2, op_type);
+                            Self::set_flags_using_comparison(&mut builder, src1, src2, op_type);
                             builder.jump(next_block, Vec::new());
                         }
                         Opcode::CCMN => {
@@ -288,7 +288,12 @@ impl Lifter for AArch64Lifter {
                             let zero = builder.iconst(0);
                             let src2 = Self::get_value(&mut builder, inst.operands[1]);
                             let neg_src2 = builder.sub(zero, src2, op_type);
-                            builder.icmp(tnj::types::cmp::CmpTy::Eq, src1, neg_src2, op_type);
+                            Self::set_flags_using_comparison(
+                                &mut builder,
+                                src1,
+                                neg_src2.into(),
+                                op_type,
+                            );
                             builder.jump(next_block, Vec::new());
                         }
                         Opcode::CSEL => {
@@ -921,6 +926,50 @@ impl AArch64Lifter {
         let v = builder.and(v_mask, flag_val, op_type);
         let v_is_set = builder.icmp(tnj::types::cmp::CmpTy::Ne, zero, v, op_type);
         Self::write_flag(builder, v_is_set.into(), Flag::V);
+    }
+
+    fn set_flags_using_comparison(
+        builder: &mut InstructionBuilder,
+        val1: Value,
+        val2: Value,
+        op_type: Type,
+    ) {
+        let zero = builder.iconst(0);
+        let one = builder.iconst(1);
+        let val2 = builder.not(val2, op_type);
+        let sum = builder.add(val1, val2, op_type);
+        let sum = builder.add(sum, one, op_type);
+
+        let max_val = {
+            if op_type == I64 {
+                builder.iconst(i64::MAX)
+            } else {
+                builder.iconst(i32::MAX)
+            }
+        };
+
+        // z is set if equal if both values are equal
+        let z = builder.icmp(tnj::types::cmp::CmpTy::Eq, sum, zero, op_type);
+        Self::write_flag(builder, z.into(), Flag::Z);
+        // n is set if the sum is negative
+        let n = builder.icmp(tnj::types::cmp::CmpTy::Slt, sum, zero, op_type);
+        Self::write_flag(builder, n.into(), Flag::N);
+        // c is set if operation creates carry
+        let c = builder.icmp(tnj::types::cmp::CmpTy::Ugt, sum, max_val, op_type);
+        Self::write_flag(builder, c.into(), Flag::C);
+        // v is set if both operands have the same sign and the result has a different sign
+        let val1_is_negative = builder.icmp(tnj::types::cmp::CmpTy::Slt, val1, zero, op_type);
+        let val2_is_negative = builder.icmp(tnj::types::cmp::CmpTy::Slt, val2, zero, op_type);
+        let values_have_same_sign = builder.icmp(
+            tnj::types::cmp::CmpTy::Eq,
+            val1_is_negative,
+            val2_is_negative,
+            BOOL,
+        );
+        let result_has_different_sign =
+            builder.icmp(tnj::types::cmp::CmpTy::Ne, val1_is_negative, n, BOOL);
+        let v = builder.and(values_have_same_sign, result_has_different_sign, BOOL);
+        Self::write_flag(builder, v.into(), Flag::V);
     }
 
     fn get_size_code(operand: Operand) -> SizeCode {
