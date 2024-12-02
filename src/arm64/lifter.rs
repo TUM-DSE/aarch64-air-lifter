@@ -26,6 +26,32 @@ enum Flag {
     V,
 }
 
+impl AArch64Lifter {
+    /// Disassemble code and print to a string.
+    pub fn disassemble<W>(&self, w: &mut W, code: &[u8]) -> Result<(), AArch64DisassemblerError>
+    where
+        W: ?Sized + std::io::Write,
+    {
+        let decoder = <ARMv8 as Arch>::Decoder::default();
+        let mut reader = U8Reader::new(code);
+
+        let mut pc = 0usize;
+
+        loop {
+            match decoder.decode(&mut reader) {
+                Ok(inst) => {
+                    writeln!(w, "0x{:0>4x}:\t{}", pc, inst)?;
+                    pc += INSTRUCTION_SIZE as usize;
+                }
+                Err(DecodeError::ExhaustedInput) => break,
+                Err(e) => return Err(AArch64DisassemblerError::DecodeError(e)),
+            }
+        }
+
+        Ok(())
+    }
+}
+
 // TODO: Implement comparison instruction that also set flags
 impl Lifter for AArch64Lifter {
     type E = AArch64LifterError;
@@ -1002,4 +1028,16 @@ pub enum AArch64LifterError {
     /// Custom error with message
     #[error("{0}")]
     CustomError(String),
+}
+
+/// Error type for disassembling from machine code to AIR
+#[derive(Debug, Error)]
+pub enum AArch64DisassemblerError {
+    /// Error decoding the instructions
+    #[error("Error decoding machine code: {0}")]
+    DecodeError(#[from] DecodeError),
+
+    /// I/O error
+    #[error("{0}")]
+    Io(#[from] std::io::Error),
 }
