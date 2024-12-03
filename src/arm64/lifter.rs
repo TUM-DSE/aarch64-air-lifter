@@ -231,6 +231,32 @@ impl Lifter for AArch64Lifter {
                             builder.write_reg(return_address, x30, I64);
                             builder.jump(*block, vec![]);
                         }
+                        Opcode::BLR => {
+                            unimplemented!("BLR. Need to implement jump to register")
+                        }
+                        Opcode::BR => {
+                            unimplemented!("BR. Need to implement jump to register")
+                        }
+                        Opcode::CAS(_memory_ordering) => {
+                            // Untested
+                            let swap_block =
+                                builder.create_block("cas_swap", Vec::<BlockParamData>::new());
+                            let next_address = pc + INSTRUCTION_SIZE;
+                            let next_block = *label_resolver.get_block_by_address(next_address);
+
+                            let old = Self::get_value(&mut builder, inst.operands[0]);
+                            let new = Self::get_value(&mut builder, inst.operands[1]);
+                            let addr = Self::get_value(&mut builder, inst.operands[2]);
+                            let sz = Self::get_size_code(inst.operands[0]);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let val = builder.load(addr, op_type);
+                            let cmp = builder.icmp(tnj::types::cmp::CmpTy::Eq, val, old, op_type);
+                            builder.jumpif(cmp, swap_block, Vec::new(), next_block, Vec::new());
+
+                            builder.set_insert_block(swap_block);
+                            builder.store(new, addr, op_type);
+                            builder.jump(next_block, Vec::new());
+                        }
                         Opcode::CBNZ => {
                             let next_address = pc + INSTRUCTION_SIZE;
                             let next_block = *label_resolver.get_block_by_address(next_address);
@@ -576,6 +602,9 @@ impl Lifter for AArch64Lifter {
                             let op_type = helper::get_type_by_sizecode(sz);
                             let val = builder.sub(src1, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
+                        }
+                        Opcode::SYS(_data) => {
+                            unimplemented!("SYS");
                         }
                         Opcode::TBNZ => {
                             let next_address = pc + INSTRUCTION_SIZE;
