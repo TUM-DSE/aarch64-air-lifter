@@ -38,4 +38,5 @@ mod lifter {
     mod sub_simple;
     mod tbnz_simple;
     mod tbz_simple;
+    mod wasm;
 }
