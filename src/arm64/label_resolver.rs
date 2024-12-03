@@ -93,6 +93,7 @@ impl LabelResolver {
                         Opcode::CCMP
                         | Opcode::CCMN
                         | Opcode::CSINC
+                        | Opcode::CSINV
                         | Opcode::CSEL
                         | Opcode::BFM => Some((0, CheckpointType::Conditional)),
                         Opcode::BLR | Opcode::BR => {
