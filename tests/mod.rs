@@ -18,6 +18,7 @@ mod lifter {
     mod cbz_simple;
     mod ccmn_simple;
     mod ccmp_simple;
+    mod cls_simple;
     mod csel_simple;
     mod csinc_simple;
     mod csinv_simple;
