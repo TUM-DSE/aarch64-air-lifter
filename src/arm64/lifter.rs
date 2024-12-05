@@ -387,6 +387,22 @@ impl Lifter for AArch64Lifter {
 
                             builder.write_reg(val, dst_reg, op_type);
                         }
+                        Opcode::CLZ => {
+                            let src = Self::get_value(&mut builder, inst.operands[1]);
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let one = builder.iconst(1);
+
+                            let n = match op_type {
+                                I64 => builder.iconst(64),
+                                _ => builder.iconst(32),
+                            };
+                            let highest_set_bit = builder.highest_set_bit(src, op_type);
+                            let val = builder.sub(n, highest_set_bit, op_type);
+                            let val = builder.sub(val, one, op_type);
+
+                            builder.write_reg(val, dst_reg, op_type);
+                        }
                         Opcode::CSEL => {
                             let positive_condition_block = builder.create_block(
                                 "csel_positive_condition",
