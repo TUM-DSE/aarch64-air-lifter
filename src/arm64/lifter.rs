@@ -601,6 +601,20 @@ impl Lifter for AArch64Lifter {
                             let val = builder.or(src1, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
+                        Opcode::HINT => {
+                            // HINT is a no-op
+                        }
+                        Opcode::HVC => {
+                            // TODO
+                            unimplemented!("HVC");
+                        }
+                        Opcode::LDAR => {
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let address = Self::get_value(&mut builder, inst.operands[1]);
+                            let val = builder.load(address, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
+                        }
                         Opcode::LDR => {
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
