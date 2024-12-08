@@ -620,7 +620,14 @@ impl Lifter for AArch64Lifter {
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             let val = builder.load(address, I8);
                             let val = builder.zext_i8(val, I32);
-                            builder.write_reg(val, dst_reg, I8);
+                            builder.write_reg(val, dst_reg, I32);
+                        }
+                        Opcode::LDRH | Opcode::LDARH => {
+                            let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
+                            let address = Self::get_value(&mut builder, inst.operands[1]);
+                            let val = builder.load(address, I16);
+                            let val = builder.zext_i16(val, I32);
+                            builder.write_reg(val, dst_reg, I32);
                         }
                         Opcode::LDUR => {
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);

@@ -29,9 +29,11 @@ mod lifter {
     mod extr_simple;
     mod ldar_simple;
     mod ldarb_simple;
+    mod ldarh_simple;
     mod ldp_simple;
     mod ldr_simple;
     mod ldrb_simple;
+    mod ldrh_simple;
     mod ldur_simple;
     mod lslv_simple;
     mod lsrv_simple;

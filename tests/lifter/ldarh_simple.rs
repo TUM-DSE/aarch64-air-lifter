@@ -2,12 +2,11 @@ use aarch64_air_lifter::arm64::AArch64Lifter;
 use aarch64_air_lifter::Lifter;
 
 #[test]
-// Load register byte
+// Load-acquire register halfword
 fn test() {
     let bytes = [
-        0xE0, 0xDB, 0x62, 0x38, // ldrb w0, [sp, w2, sxtw #0]
-        0x20, 0xD8, 0x62, 0x38, // ldrb w0, [x1, w2, sxtw #0]
-        0x20, 0x58, 0x62, 0x38, // ldrb w0, [x1, w2, uxtw #0]
+        0xE1, 0xFF, 0xDF, 0x48, // ldarh w1, [sp]
+        0x21, 0xFC, 0xDF, 0x48, // ldarh w1, [x1]
     ];
 
     let lifter = AArch64Lifter;
