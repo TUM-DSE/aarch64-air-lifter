@@ -28,6 +28,7 @@ mod lifter {
     mod eor_simple;
     mod extr_simple;
     mod ldar_simple;
+    mod ldarb_simple;
     mod ldp_simple;
     mod ldr_simple;
     mod ldrb_simple;
