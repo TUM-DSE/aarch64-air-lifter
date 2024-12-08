@@ -26,6 +26,7 @@ mod lifter {
     mod csneg_simple;
     mod eon_simple;
     mod eor_simple;
+    mod extr_simple;
     mod ldp_simple;
     mod ldr_simple;
     mod ldrb_simple;
