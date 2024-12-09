@@ -13,7 +13,7 @@ use super::AArch64LifterError;
 
 /// Create basic blocks for the InstructionBuilder based off labels
 pub struct LabelResolver {
-    checkpoints: UniqueHeap<Reverse<isize>>,
+    checkpoints: UniqueHeap<Reverse<u64>>,
     blocks: HashMap<String, BasicBlock>,
 }
 
@@ -59,7 +59,7 @@ impl LabelResolver {
     }
 
     /// Get a block by block address
-    pub fn get_block_by_address(&self, address: isize) -> &BasicBlock {
+    pub fn get_block_by_address(&self, address: u64) -> &BasicBlock {
         let name = helper::get_block_name(address);
         self.get_block_option_by_name(&name)
             .expect("Block not found")
@@ -71,13 +71,13 @@ impl LabelResolver {
         code: &[u8],
         decoder: &InstDecoder,
     ) -> Result<(), AArch64LifterError> {
-        const INSTRUCTION_SIZE: isize = 4;
+        const INSTRUCTION_SIZE: u64 = 4;
         let mut reader = U8Reader::new(code);
-        let mut address: isize = 0;
+        let mut address: u64 = 0;
         loop {
             match decoder.decode(&mut reader) {
                 Ok(inst) => {
-                    let imm: Option<(isize, CheckpointType)> = match inst.opcode {
+                    let imm: Option<(u64, CheckpointType)> = match inst.opcode {
                         Opcode::B | Opcode::BL | Opcode::Bcc(_) => Some((
                             helper::get_pc_offset_as_int(inst.operands[0]),
                             CheckpointType::Branch,
@@ -106,7 +106,7 @@ impl LabelResolver {
                     if let Some((imm, checkpoint_type)) = imm {
                         self.checkpoints.push(Reverse(address + INSTRUCTION_SIZE));
                         if checkpoint_type == CheckpointType::Branch {
-                            let jump_address = imm + address;
+                            let jump_address = imm.wrapping_add(address);
                             self.checkpoints.push(Reverse(jump_address));
                         }
                     }
