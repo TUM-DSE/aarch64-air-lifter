@@ -17,7 +17,7 @@ use super::label_resolver;
 /// A lifter for AArch64
 pub struct AArch64Lifter;
 
-const INSTRUCTION_SIZE: isize = 4;
+const INSTRUCTION_SIZE: u64 = 4;
 
 enum Flag {
     N,
@@ -35,13 +35,13 @@ impl AArch64Lifter {
         let decoder = <ARMv8 as Arch>::Decoder::default();
         let mut reader = U8Reader::new(code);
 
-        let mut pc = 0usize;
+        let mut pc = 0u64;
 
         loop {
             match decoder.decode(&mut reader) {
                 Ok(inst) => {
                     writeln!(w, "0x{:0>4x}:\t{}", pc, inst)?;
-                    pc += INSTRUCTION_SIZE as usize;
+                    pc += INSTRUCTION_SIZE;
                 }
                 Err(DecodeError::ExhaustedInput) => break,
                 Err(e) => return Err(AArch64DisassemblerError::DecodeError(e)),
@@ -65,7 +65,7 @@ impl Lifter for AArch64Lifter {
         let mut reader = U8Reader::new(code);
         let label_resolver = label_resolver::LabelResolver::new(code, &mut builder, &decoder)?;
 
-        let mut pc: isize = 0;
+        let mut pc: u64 = 0;
 
         loop {
             match decoder.decode(&mut reader) {
@@ -226,7 +226,7 @@ impl Lifter for AArch64Lifter {
                             let x30 = Self::get_reg_val_by_name(&mut builder, "x30");
 
                             let offset = helper::get_pc_offset_as_int(inst.operands[0]);
-                            let next_address = pc + offset;
+                            let next_address = pc.wrapping_add(offset);
                             let block = label_resolver.get_block_by_address(next_address);
                             builder.write_reg(return_address, x30, I64);
                             builder.jump(*block, vec![]);
@@ -269,7 +269,7 @@ impl Lifter for AArch64Lifter {
                                 builder.icmp(tnj::types::cmp::CmpTy::Ne, src, zero, op_type);
 
                             let offset = helper::get_pc_offset_as_int(inst.operands[1]);
-                            let jump_address = pc + offset;
+                            let jump_address = pc.wrapping_add(offset);
                             let block = label_resolver.get_block_by_address(jump_address);
 
                             builder.jumpif(condition, *block, Vec::new(), next_block, Vec::new());
@@ -286,7 +286,7 @@ impl Lifter for AArch64Lifter {
                                 builder.icmp(tnj::types::cmp::CmpTy::Eq, src, zero, op_type);
 
                             let offset = helper::get_pc_offset_as_int(inst.operands[1]);
-                            let jump_address = pc + offset;
+                            let jump_address = pc.wrapping_add(offset);
                             let block = label_resolver.get_block_by_address(jump_address);
 
                             builder.jumpif(condition, *block, Vec::new(), next_block, Vec::new());
@@ -774,7 +774,7 @@ impl Lifter for AArch64Lifter {
 
                             let test_bit = builder.lshr(test_bit, one, op_type);
                             let val = builder.and(test_bit, src, op_type);
-                            let jump_address = offset + pc;
+                            let jump_address = pc.wrapping_add(offset);
                             let jump_block = *label_resolver.get_block_by_address(jump_address);
 
                             let cmp = builder.icmp(tnj::types::cmp::CmpTy::Ne, val, zero, op_type);
@@ -793,7 +793,7 @@ impl Lifter for AArch64Lifter {
 
                             let test_bit = builder.lshr(test_bit, one, op_type);
                             let val = builder.and(test_bit, src, op_type);
-                            let jump_address = offset + pc;
+                            let jump_address = pc.wrapping_add(offset);
                             let jump_block = *label_resolver.get_block_by_address(jump_address);
 
                             let cmp = builder.icmp(tnj::types::cmp::CmpTy::Eq, val, zero, op_type);
