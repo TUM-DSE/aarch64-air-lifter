@@ -12,6 +12,8 @@ use yaxpeax_arm::armv8::a64::{
     ARMv8, DecodeError, Instruction, Opcode, Operand, ShiftStyle, SizeCode,
 };
 
+mod disassembler;
+
 use super::label_resolver;
 
 /// A lifter for AArch64
@@ -24,32 +26,6 @@ enum Flag {
     Z,
     C,
     V,
-}
-
-impl AArch64Lifter {
-    /// Disassemble code and print to a string.
-    pub fn disassemble<W>(&self, w: &mut W, code: &[u8]) -> Result<(), AArch64DisassemblerError>
-    where
-        W: ?Sized + std::io::Write,
-    {
-        let decoder = <ARMv8 as Arch>::Decoder::default();
-        let mut reader = U8Reader::new(code);
-
-        let mut pc = 0u64;
-
-        loop {
-            match decoder.decode(&mut reader) {
-                Ok(inst) => {
-                    writeln!(w, "0x{:0>4x}:\t{}", pc, inst)?;
-                    pc += INSTRUCTION_SIZE;
-                }
-                Err(DecodeError::ExhaustedInput) => break,
-                Err(e) => return Err(AArch64DisassemblerError::DecodeError(e)),
-            }
-        }
-
-        Ok(())
-    }
 }
 
 // TODO: Implement comparison instruction that also set flags
