@@ -14,7 +14,7 @@ pub fn check_instruction(
     bytes: [u8; 4],
     directives: &str,
     variable_map: Option<SimpleVariableMap>,
-) {
+) -> bool {
     let lifter = AArch64Lifter;
     let blob = lifter.lift(&bytes, &[]).unwrap();
     let result = blob.display().to_string();
@@ -30,7 +30,7 @@ pub fn check_instruction(
         .expect("Failed to create checker builder");
     let checker = checker_builder.finish();
 
-    assert!(checker
+    checker
         .check(&result, &variable_map)
-        .expect("Filecheck failed"));
+        .expect("Filecheck failed")
 }

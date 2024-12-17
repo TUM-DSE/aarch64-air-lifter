@@ -1,6 +1,6 @@
 use crate::common::lib::check_instruction;
 
-// Add shifted register
+// Add
 #[test]
 fn test_add_1() {
     let bytes = [
@@ -14,7 +14,7 @@ fn test_add_1() {
         #4 nextln: i64.write_reg v39, "x1"
     "#;
 
-    check_instruction(bytes, directives, None);
+    assert!(check_instruction(bytes, directives, None));
 }
 
 #[test]
@@ -30,7 +30,7 @@ fn test_add_2() {
         #4 nextln: i32.write_reg v39, "x1"
   "#;
 
-    check_instruction(bytes, directives, None);
+    assert!(check_instruction(bytes, directives, None));
 }
 
 #[test]
@@ -46,5 +46,5 @@ fn test_add_3() {
         #4 nextln: i32.write_reg $VAR_NAME, "x2"
     "#;
 
-    check_instruction(bytes, directives, None);
+    assert!(check_instruction(bytes, directives, None));
 }
