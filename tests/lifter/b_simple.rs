@@ -1,15 +1,17 @@
-use aarch64_air_lifter::arm64::AArch64Lifter;
-use aarch64_air_lifter::Lifter;
+use crate::common::lib::check_instruction;
 
-#[test]
 // Branch
-fn test() {
+#[test]
+fn test_b_1() {
     let bytes = [
         0x00, 0x00, 0x00, 0x14, // b, pc
     ];
+    let directives = r#"
+        #0 check: // entry block    
+        #1 check: block_0: // preds: block_0
+        #2 nextln: jump block_0
+        #3 check: block_4: // no preds!
+    "#;
 
-    let lifter = AArch64Lifter;
-    let blob = lifter.lift(&bytes, &[]).unwrap();
-
-    println!("{}", blob.display());
+    assert!(check_instruction(bytes, directives, None));
 }
