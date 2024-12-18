@@ -5,10 +5,16 @@ use filecheck::{CheckerBuilder, Value};
 
 use super::simple_variable_map::SimpleVariableMap;
 
-const VARIABLES: [(&str, Value); 1] = [(
-    "VAR_NAME",
-    Value::Regex(std::borrow::Cow::Borrowed("v[0-9]+")),
-)];
+const VARIABLES: [(&str, Value); 2] = [
+    (
+        "VAR_NAME",
+        Value::Regex(std::borrow::Cow::Borrowed("v[0-9]+")),
+    ),
+    (
+        "LABEL",
+        Value::Regex(std::borrow::Cow::Borrowed("[a-zA-Z0-9_]+")),
+    ),
+];
 
 pub fn check_instruction(
     bytes: [u8; 4],
