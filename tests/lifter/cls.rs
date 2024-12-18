@@ -19,7 +19,7 @@ fn test_cls_1() {
         nextln: i64.write_reg v44, "x1"
     "#;
 
-    assert!(check_instruction(bytes, directives, None)) 
+    assert!(check_instruction(bytes, directives, None))
 }
 
 #[test]
@@ -40,6 +40,5 @@ fn test_cls_2() {
         nextln: i32.write_reg v44, "x1"
     "#;
 
-    assert!(check_instruction(bytes, directives, None)) 
+    assert!(check_instruction(bytes, directives, None))
 }
-
