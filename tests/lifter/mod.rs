@@ -8,7 +8,6 @@ mod b;
 mod bfm;
 mod bic;
 mod bl;
-mod cas;
 mod cbnz;
 mod cbz;
 mod ccmn;
