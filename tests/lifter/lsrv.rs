@@ -1,16 +1,26 @@
-use aarch64_air_lifter::arm64::AArch64Lifter;
-use aarch64_air_lifter::Lifter;
+use crate::common::lib::check_instruction;
 
-#[test]
 // Logical shift left variable
-fn test() {
+#[test]
+fn test_lsrv_1() {
     let bytes = [
         0x20, 0x24, 0xC2, 0x1A, // lsr w0, w1, w2
+    ];
+    let directives = r#"
+        check: // entry block
+    "#;
+
+    assert!(check_instruction(bytes, directives, None))
+}
+
+#[test]
+fn test_lsrv_2() {
+    let bytes = [
         0x20, 0x24, 0xC2, 0x9A, // lsr x0, x1, x2
     ];
+    let directives = r#"
+        check: // entry block
+    "#;
 
-    let lifter = AArch64Lifter;
-    let blob = lifter.lift(&bytes, &[]).unwrap();
-
-    println!("{}", blob.display());
+    assert!(check_instruction(bytes, directives, None))
 }
