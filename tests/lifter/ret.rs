@@ -1,16 +1,28 @@
-use aarch64_air_lifter::arm64::AArch64Lifter;
-use aarch64_air_lifter::Lifter;
+use crate::common::lib::check_instruction;
 
+// Ret
 #[test]
-// Signed divide
-fn test() {
+fn test_ret_1() {
     let bytes = [
         0xc0, 0x03, 0x5f, 0xd6, // ret
+    ];
+    let directives = r#"
+        check: // entry block
+        ret
+    "#;
+
+    assert!(check_instruction(bytes, directives, None))
+}
+
+#[test]
+fn test_ret_2() {
+    let bytes = [
         0x20, 0x00, 0x5f, 0xd6, // ret	x1
     ];
+    let directives = r#"
+        check: // entry block
+        ret
+    "#;
 
-    let lifter = AArch64Lifter;
-    let blob = lifter.lift(&bytes, &[]).unwrap();
-
-    println!("{}", blob.display());
+    assert!(check_instruction(bytes, directives, None))
 }
