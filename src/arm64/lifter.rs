@@ -675,6 +675,11 @@ impl Lifter for AArch64Lifter {
                             let val = builder.sub(sub_src, val, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
+                        Opcode::MOVK => {
+                            let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
+                            let src = Self::get_value(&mut builder, inst.operands[1]);
+                            builder.write_reg(src, dst_reg, I16);
+                        }
                         Opcode::NEG => {
                             let zero = builder.iconst(0);
                             let src = Self::get_value(&mut builder, inst.operands[1]);

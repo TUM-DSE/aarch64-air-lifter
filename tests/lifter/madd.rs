@@ -1,19 +1,6 @@
-use aarch64_air_lifter::arm64::AArch64Lifter;
-use aarch64_air_lifter::Lifter;
-
 use crate::common::lib::check_instruction;
 
-#[test]
 // Multiply-add
-fn test() {
-    let bytes = [];
-
-    let lifter = AArch64Lifter;
-    let blob = lifter.lift(&bytes, &[]).unwrap();
-
-    println!("{}", blob.display());
-}
-
 #[test]
 fn test_madd_1() {
     let bytes = [

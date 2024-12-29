@@ -32,6 +32,7 @@ mod ldur;
 mod lslv;
 mod lsrv;
 mod madd;
+mod movk;
 mod msub;
 mod neg;
 mod orn;
