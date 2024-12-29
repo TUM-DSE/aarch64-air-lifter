@@ -34,6 +34,7 @@ mod lsrv;
 mod madd;
 mod movk;
 mod movn;
+mod movz;
 mod msub;
 mod neg;
 mod orn;

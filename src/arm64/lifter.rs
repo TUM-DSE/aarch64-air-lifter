@@ -690,6 +690,15 @@ impl Lifter for AArch64Lifter {
                             let src = builder.not(src, I16);
                             builder.write_reg(src, dst_reg, I16);
                         }
+                        Opcode::MOVZ => {
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let zero = builder.iconst(0);
+                            builder.write_reg(zero, dst_reg, op_type);
+
+                            let src = Self::get_value(&mut builder, inst.operands[1]);
+                            builder.write_reg(src, dst_reg, I16);
+                        }
                         Opcode::NEG => {
                             let zero = builder.iconst(0);
                             let src = Self::get_value(&mut builder, inst.operands[1]);
