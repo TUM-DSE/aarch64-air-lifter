@@ -41,6 +41,7 @@ mod orn;
 mod orr;
 mod ret;
 mod sbc;
+mod sbfm;
 mod sdiv;
 mod stp;
 mod str;
