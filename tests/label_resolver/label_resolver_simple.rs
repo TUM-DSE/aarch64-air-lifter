@@ -8,7 +8,6 @@ use yaxpeax_arch::Arch;
 use yaxpeax_arm::armv8::a64::ARMv8;
 
 #[test]
-#[ignore]
 // Add with carry
 fn test() {
     let bytes = [

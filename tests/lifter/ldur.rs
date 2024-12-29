@@ -11,8 +11,7 @@ fn test_ldur_1() {
         nextln:  v37 = i64.read_reg "sp"
         nextln:  v38 = i64.add v37, 0x17
         nextln:  v39 = i32.load v38
-        nextln:  v40 = i64.zext_i32 v39
-        nextln:  i32.write_reg v40, "x1"
+        nextln:  i32.write_reg v39, "x1"
     "#;
 
     assert!(check_instruction(bytes, directives, None))

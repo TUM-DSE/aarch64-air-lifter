@@ -567,7 +567,7 @@ impl Lifter for AArch64Lifter {
                             builder.xor(src1, src2, op_type);
                             builder.write_reg(src1, dst_reg, op_type);
                         }
-                        Opcode::LDP => {
+                        Opcode::LDP | Opcode::LDXP => {
                             let (dst_reg1, sz) = Self::get_dst_reg_by_index(&builder, inst, 0);
                             let (dst_reg2, _) = Self::get_dst_reg_by_index(&builder, inst, 1);
                             let address = Self::get_value(&mut builder, inst.operands[2]);
@@ -608,36 +608,26 @@ impl Lifter for AArch64Lifter {
                             // TODO
                             unimplemented!("HVC");
                         }
-                        Opcode::LDR | Opcode::LDAR => {
+                        Opcode::LDR | Opcode::LDUR | Opcode::LDAR | Opcode::LDXR => {
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             let val = builder.load(address, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
-                        Opcode::LDRB | Opcode::LDARB => {
+                        Opcode::LDRB | Opcode::LDURB | Opcode::LDARB | Opcode::LDXRB => {
                             let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             let val = builder.load(address, I8);
                             let val = builder.zext_i8(val, I32);
                             builder.write_reg(val, dst_reg, I32);
                         }
-                        Opcode::LDRH | Opcode::LDARH => {
+                        Opcode::LDRH | Opcode::LDURH | Opcode::LDARH | Opcode::LDXRH => {
                             let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             let val = builder.load(address, I16);
                             let val = builder.zext_i16(val, I32);
                             builder.write_reg(val, dst_reg, I32);
-                        }
-                        Opcode::LDUR => {
-                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let op_type = helper::get_type_by_sizecode(sz);
-                            let address = Self::get_value(&mut builder, inst.operands[1]);
-                            let mut val = builder.load(address, op_type);
-                            if sz == SizeCode::W {
-                                val = builder.zext_i32(val, I64);
-                            }
-                            builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::LSLV => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
