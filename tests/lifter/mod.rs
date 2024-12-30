@@ -43,6 +43,7 @@ mod ret;
 mod sbc;
 mod sbfm;
 mod sdiv;
+mod smaddl;
 mod stp;
 mod str;
 mod strb;
