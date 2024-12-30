@@ -838,6 +838,7 @@ impl Lifter for AArch64Lifter {
                             let val = builder.sub(src3, val, I64);
                             builder.write_reg(val, dst_reg, I64);
                         }
+                        Opcode::SMULH => {}
                         Opcode::STP => {
                             let src1 = Self::get_value(&mut builder, inst.operands[0]);
                             let src2 = Self::get_value(&mut builder, inst.operands[1]);
@@ -853,18 +854,22 @@ impl Lifter for AArch64Lifter {
                             let address = builder.add(address, address_offset, I64);
                             builder.store(src2, address, op_type);
                         }
-                        Opcode::STR => {
+                        Opcode::STR | Opcode::STLR => {
                             let sz = Self::get_size_code(inst.operands[0]);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let value = Self::get_value(&mut builder, inst.operands[0]);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             builder.store(value, address, op_type);
                         }
-                        Opcode::STRB => {
+                        Opcode::STRB | Opcode::STLRB => {
                             let value = Self::get_value(&mut builder, inst.operands[0]);
-                            let value = builder.trunc_i64(value, I8);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             builder.store(value, address, I8);
+                        }
+                        Opcode::STRH | Opcode::STLRH => {
+                            let value = Self::get_value(&mut builder, inst.operands[0]);
+                            let address = Self::get_value(&mut builder, inst.operands[1]);
+                            builder.store(value, address, I32);
                         }
                         Opcode::SUB => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);

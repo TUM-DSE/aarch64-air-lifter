@@ -48,6 +48,7 @@ mod smsubl;
 mod stp;
 mod str;
 mod strb;
+mod strh;
 mod sub;
 mod tbnz;
 mod tbz;
