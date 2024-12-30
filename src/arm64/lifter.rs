@@ -98,6 +98,7 @@ impl Lifter for AArch64Lifter {
                             let val = builder.add(src1, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
+                        Opcode::ADDS => {}
                         Opcode::ADR => {
                             let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
                             let pc = Self::get_pc(&mut builder);
@@ -839,7 +840,7 @@ impl Lifter for AArch64Lifter {
                             builder.write_reg(val, dst_reg, I64);
                         }
                         Opcode::SMULH => {}
-                        Opcode::STP => {
+                        Opcode::STP | Opcode::STLXP | Opcode::STXP | Opcode::STNP => {
                             let src1 = Self::get_value(&mut builder, inst.operands[0]);
                             let src2 = Self::get_value(&mut builder, inst.operands[1]);
                             let address = Self::get_value(&mut builder, inst.operands[2]);
@@ -854,19 +855,34 @@ impl Lifter for AArch64Lifter {
                             let address = builder.add(address, address_offset, I64);
                             builder.store(src2, address, op_type);
                         }
-                        Opcode::STR | Opcode::STLR => {
+                        Opcode::STR
+                        | Opcode::STLR
+                        | Opcode::STLXR
+                        | Opcode::STUR
+                        | Opcode::STLUR
+                        | Opcode::STXR => {
                             let sz = Self::get_size_code(inst.operands[0]);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let value = Self::get_value(&mut builder, inst.operands[0]);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             builder.store(value, address, op_type);
                         }
-                        Opcode::STRB | Opcode::STLRB => {
+                        Opcode::STRB
+                        | Opcode::STLRB
+                        | Opcode::STLXRB
+                        | Opcode::STURB
+                        | Opcode::STLURB
+                        | Opcode::STXRB => {
                             let value = Self::get_value(&mut builder, inst.operands[0]);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             builder.store(value, address, I8);
                         }
-                        Opcode::STRH | Opcode::STLRH => {
+                        Opcode::STRH
+                        | Opcode::STLRH
+                        | Opcode::STLXRH
+                        | Opcode::STURH
+                        | Opcode::STLURH
+                        | Opcode::STXRH => {
                             let value = Self::get_value(&mut builder, inst.operands[0]);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             builder.store(value, address, I32);
@@ -879,9 +895,10 @@ impl Lifter for AArch64Lifter {
                             let val = builder.sub(src1, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
-                        Opcode::SYS(_data) => {
-                            unimplemented!("SYS");
-                        }
+                        Opcode::SUBS => {}
+                        Opcode::SVC => {}
+                        Opcode::SYS(_data) => {}
+                        Opcode::SYSL(_data) => {}
                         Opcode::TBNZ => {
                             let next_address = pc + INSTRUCTION_SIZE;
                             let next_block = *label_resolver.get_block_by_address(next_address);
