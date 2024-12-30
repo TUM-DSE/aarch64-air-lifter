@@ -829,6 +829,15 @@ impl Lifter for AArch64Lifter {
                             let val = builder.add(val, src3, I64);
                             builder.write_reg(val, dst_reg, I64);
                         }
+                        Opcode::SMSUBL => {
+                            let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
+                            let src3 = Self::get_value(&mut builder, inst.operands[3]);
+                            let val = builder.imul(src1, src2, I32);
+                            let val = builder.sub(src3, val, I64);
+                            builder.write_reg(val, dst_reg, I64);
+                        }
                         Opcode::STP => {
                             let src1 = Self::get_value(&mut builder, inst.operands[0]);
                             let src2 = Self::get_value(&mut builder, inst.operands[1]);

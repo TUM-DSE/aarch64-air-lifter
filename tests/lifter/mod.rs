@@ -44,6 +44,7 @@ mod sbc;
 mod sbfm;
 mod sdiv;
 mod smaddl;
+mod smsubl;
 mod stp;
 mod str;
 mod strb;
