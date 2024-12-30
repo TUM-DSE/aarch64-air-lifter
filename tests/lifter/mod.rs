@@ -52,4 +52,5 @@ mod strh;
 mod sub;
 mod tbnz;
 mod tbz;
+mod ubfm;
 mod wasm;

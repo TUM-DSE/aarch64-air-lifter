@@ -759,11 +759,11 @@ impl Lifter for AArch64Lifter {
                         Opcode::SBCS => {}
                         Opcode::SBFM => {
                             let positive_condition_block = builder.create_block(
-                                "bfm_positive_condition",
+                                "sbfm_positive_condition",
                                 Vec::<BlockParamData>::new(),
                             );
                             let negative_condition_block = builder.create_block(
-                                "bfm_negative_condition",
+                                "sbfm_negative_condition",
                                 Vec::<BlockParamData>::new(),
                             );
                             let next_address = pc + INSTRUCTION_SIZE;
@@ -936,6 +936,62 @@ impl Lifter for AArch64Lifter {
 
                             let cmp = builder.icmp(tnj::types::cmp::CmpTy::Eq, val, zero, op_type);
                             builder.jumpif(cmp, jump_block, Vec::new(), next_block, Vec::new());
+                        }
+                        Opcode::UBFM => {
+                            let positive_condition_block = builder.create_block(
+                                "ubfm_positive_condition",
+                                Vec::<BlockParamData>::new(),
+                            );
+                            let negative_condition_block = builder.create_block(
+                                "ubfm_negative_condition",
+                                Vec::<BlockParamData>::new(),
+                            );
+                            let next_address = pc + INSTRUCTION_SIZE;
+                            let next_block = *label_resolver.get_block_by_address(next_address);
+
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let src = Self::get_value(&mut builder, inst.operands[1]);
+                            let immr = Self::get_value(&mut builder, inst.operands[2]);
+                            let imms = Self::get_value(&mut builder, inst.operands[3]);
+                            let cmp = builder.icmp(tnj::types::cmp::CmpTy::Ult, immr, imms, I64);
+                            builder.jumpif(
+                                cmp,
+                                positive_condition_block,
+                                Vec::new(),
+                                negative_condition_block,
+                                Vec::new(),
+                            );
+
+                            let reg_size = match op_type {
+                                I64 => builder.iconst(64),
+                                _ => builder.iconst(32),
+                            };
+
+                            // copies a bitfield of (<imms>-<immr>+1) bits starting from bit position <immr> in the source register to the least significant bits of the destination register
+                            builder.set_insert_block(positive_condition_block);
+                            // get src bitfield
+                            let one = builder.iconst(1);
+                            let src_bitfield_size = builder.add(one, imms, op_type);
+                            let src_bitfield_size = builder.sub(src_bitfield_size, immr, op_type);
+                            let shift_val = builder.add(imms, one, op_type);
+                            let shift_val = builder.sub(reg_size, shift_val, op_type);
+                            let val = builder.lshl(src, shift_val, op_type);
+                            let shift_val = builder.sub(reg_size, src_bitfield_size, op_type);
+                            let val = builder.lshr(val, shift_val, op_type);
+
+                            builder.write_reg(val, dst_reg, op_type);
+                            builder.jump(next_block, Vec::new());
+
+                            // this copies a bitfield of (<imms>+1) bits from the least significant bits of the source register to bit position (regsize-<immr>) of the destination register
+                            builder.set_insert_block(negative_condition_block);
+                            let shift_val = builder.add(imms, one, op_type);
+                            let shift_val = builder.sub(reg_size, shift_val, op_type);
+                            let val = builder.lshl(src, shift_val, op_type);
+                            let shift_val = builder.sub(reg_size, immr, op_type);
+                            let val = builder.lshr(val, shift_val, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
+                            builder.jump(next_block, Vec::new());
                         }
                         Opcode::UDIV => {}
 

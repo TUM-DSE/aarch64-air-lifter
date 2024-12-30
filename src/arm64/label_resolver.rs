@@ -97,6 +97,7 @@ impl LabelResolver {
                         | Opcode::CSEL
                         | Opcode::CSNEG
                         | Opcode::SBFM
+                        | Opcode::UBFM
                         | Opcode::BFM => Some((0, CheckpointType::Conditional)),
                         Opcode::BLR | Opcode::BR => {
                             // TODO: Uses dynamic address stored in register. Might need to be handled in the future differently
