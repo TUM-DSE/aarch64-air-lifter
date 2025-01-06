@@ -69,7 +69,6 @@ impl Lifter for AArch64Lifter {
 
         loop {
             match decoder.decode(&mut reader) {
-                // TODO: Set insert block if insert block exists. Inefficient
                 Ok(inst) => {
                     let block_name = helper::get_block_name(pc);
                     let block = label_resolver.get_block_option_by_name(block_name.as_str());
@@ -79,7 +78,7 @@ impl Lifter for AArch64Lifter {
 
                     println!("{}", inst);
                     match inst.opcode {
-                        Opcode::ADC => {
+                        Opcode::ADC | Opcode::ADCS => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let carry = Self::flag_value(&mut builder, Flag::C);
@@ -88,8 +87,9 @@ impl Lifter for AArch64Lifter {
                             let val = builder.add(src1, carry, op_type);
                             let val = builder.add(val, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
+
+                            if inst.opcode == Opcode::ADCS {}
                         }
-                        Opcode::ADCS => {}
                         Opcode::ADD => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
@@ -98,7 +98,9 @@ impl Lifter for AArch64Lifter {
                             let val = builder.add(src1, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
-                        Opcode::ADDS => {}
+                        Opcode::ADDS => {
+                            // TODO
+                        }
                         Opcode::ADR => {
                             let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
                             let pc = Self::get_pc(&mut builder);
@@ -318,7 +320,7 @@ impl Lifter for AArch64Lifter {
 
                             builder.set_insert_block(positive_condition_block);
                             let flag_val = Self::get_value(&mut builder, inst.operands[2]);
-                            Self::set_flags_using_value(&mut builder, flag_val, op_type);
+                            Self::set_flags_to_value(&mut builder, flag_val, op_type);
                             builder.jump(next_block, Vec::new());
 
                             builder.set_insert_block(negative_condition_block);
@@ -352,7 +354,7 @@ impl Lifter for AArch64Lifter {
 
                             builder.set_insert_block(positive_condition_block);
                             let flag_val = Self::get_value(&mut builder, inst.operands[2]);
-                            Self::set_flags_using_value(&mut builder, flag_val, op_type);
+                            Self::set_flags_to_value(&mut builder, flag_val, op_type);
                             builder.jump(next_block, Vec::new());
 
                             builder.set_insert_block(negative_condition_block);
@@ -388,9 +390,6 @@ impl Lifter for AArch64Lifter {
                             let val = builder.sub(val, one, op_type);
 
                             builder.write_reg(val, dst_reg, op_type);
-                        }
-                        Opcode::CLREX => {
-                            unimplemented!("CLREX");
                         }
                         Opcode::CLZ => {
                             let src = Self::get_value(&mut builder, inst.operands[1]);
@@ -701,9 +700,6 @@ impl Lifter for AArch64Lifter {
                             let src = Self::get_value(&mut builder, inst.operands[1]);
                             builder.write_reg(src, dst_reg, I16);
                         }
-                        Opcode::MSR => {
-                            unimplemented!("MSR");
-                        }
                         Opcode::NEG => {
                             let zero = builder.iconst(0);
                             let src = Self::get_value(&mut builder, inst.operands[1]);
@@ -729,14 +725,24 @@ impl Lifter for AArch64Lifter {
                             let val = builder.or(src1, val, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
-                        Opcode::RBIT => {}
+                        Opcode::RBIT => {
+                            // TODO
+                        }
                         Opcode::RET => {
                             builder.ret();
                         }
-                        Opcode::RETAB => {}
-                        Opcode::REV | Opcode::REV64 => {}
-                        Opcode::REV16 => {}
-                        Opcode::REV32 => {}
+                        Opcode::RETAB => {
+                            // TODO
+                        }
+                        Opcode::REV | Opcode::REV64 => {
+                            // TODO
+                        }
+                        Opcode::REV16 => {
+                            // TODO
+                        }
+                        Opcode::REV32 => {
+                            // TODO
+                        }
                         Opcode::RORV => {
                             /*
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
@@ -756,7 +762,9 @@ impl Lifter for AArch64Lifter {
                             let val = builder.sub(val, carry, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
-                        Opcode::SBCS => {}
+                        Opcode::SBCS => {
+                            // TODO
+                        }
                         Opcode::SBFM => {
                             let positive_condition_block = builder.create_block(
                                 "sbfm_positive_condition",
@@ -839,7 +847,9 @@ impl Lifter for AArch64Lifter {
                             let val = builder.sub(src3, val, I64);
                             builder.write_reg(val, dst_reg, I64);
                         }
-                        Opcode::SMULH => {}
+                        Opcode::SMULH => {
+                            // TODO
+                        }
                         Opcode::STP | Opcode::STLXP | Opcode::STXP | Opcode::STNP => {
                             let src1 = Self::get_value(&mut builder, inst.operands[0]);
                             let src2 = Self::get_value(&mut builder, inst.operands[1]);
@@ -895,10 +905,18 @@ impl Lifter for AArch64Lifter {
                             let val = builder.sub(src1, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
-                        Opcode::SUBS => {}
-                        Opcode::SVC => {}
-                        Opcode::SYS(_data) => {}
-                        Opcode::SYSL(_data) => {}
+                        Opcode::SUBS => {
+                            // TODO
+                        }
+                        Opcode::SVC => {
+                            // TODO
+                        }
+                        Opcode::SYS(_data) => {
+                            // TODO
+                        }
+                        Opcode::SYSL(_data) => {
+                            // TODO
+                        }
                         Opcode::TBNZ => {
                             let next_address = pc + INSTRUCTION_SIZE;
                             let next_block = *label_resolver.get_block_by_address(next_address);
@@ -993,8 +1011,18 @@ impl Lifter for AArch64Lifter {
                             builder.write_reg(val, dst_reg, op_type);
                             builder.jump(next_block, Vec::new());
                         }
-                        Opcode::UDIV => {}
-
+                        Opcode::UDIV => {
+                            // TODO
+                        }
+                        Opcode::UMADDL => {
+                            // TODO
+                        }
+                        Opcode::UMSUBL => {
+                            // TODO
+                        }
+                        Opcode::UMULH => {
+                            // TODO
+                        }
                         op => unimplemented!("{}", op),
                     }
                 }
@@ -1036,7 +1064,7 @@ impl AArch64Lifter {
                     ShiftStyle::LSL => builder.lshl(reg_val, shift_val, op_type).into(),
                     ShiftStyle::LSR => builder.lshr(reg_val, shift_val, op_type).into(),
                     ShiftStyle::ASR => builder.ashr(reg_val, shift_val, op_type).into(),
-                    ShiftStyle::ROR => unimplemented!("ROR"),
+                    ShiftStyle::ROR => unimplemented!("ROR"), // TODO
                     ShiftStyle::UXTB | ShiftStyle::UXTH | ShiftStyle::UXTW | ShiftStyle::UXTX => {
                         reg_val
                     }
@@ -1327,7 +1355,7 @@ impl AArch64Lifter {
         }
     }
 
-    fn set_flags_using_value(builder: &mut InstructionBuilder, flag_val: Value, op_type: Type) {
+    fn set_flags_to_value(builder: &mut InstructionBuilder, flag_val: Value, op_type: Type) {
         let zero = builder.iconst(0);
         // set n flag
         let n_mask = builder.iconst(8);
