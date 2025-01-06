@@ -727,6 +727,11 @@ impl Lifter for AArch64Lifter {
                         }
                         Opcode::RBIT => {
                             // TODO
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let src = Self::get_value(&mut builder, inst.operands[1]);
+                            let val = builder.reverse_bits(src, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::RET => {
                             builder.ret();

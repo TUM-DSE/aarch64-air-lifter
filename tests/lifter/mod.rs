@@ -39,6 +39,7 @@ mod msub;
 mod neg;
 mod orn;
 mod orr;
+mod rbit;
 mod ret;
 mod rev;
 mod sbc;
