@@ -40,6 +40,7 @@ mod neg;
 mod orn;
 mod orr;
 mod ret;
+mod rev;
 mod sbc;
 mod sbfm;
 mod sdiv;
