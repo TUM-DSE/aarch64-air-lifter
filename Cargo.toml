@@ -7,6 +7,6 @@ edition = "2021"
 filecheck = "0.5.0"
 target-lexicon = "0.12.16"
 thiserror = "2.0.0"
-tnj = { git = "ssh://git@github.com/TUM-DSE/tnj.git", rev = "15833a816989b300f64ee6d0230679f98a22f26b" }
+tnj = { git = "ssh://git@github.com/TUM-DSE/tnj.git", rev = "d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13" }
 yaxpeax-arch = "0.3.2"
 yaxpeax-arm = "0.3.0"
