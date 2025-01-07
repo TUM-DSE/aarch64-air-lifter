@@ -43,6 +43,7 @@ mod rbit;
 mod ret;
 mod rev;
 mod rev16;
+mod rev32;
 mod sbc;
 mod sbfm;
 mod sdiv;

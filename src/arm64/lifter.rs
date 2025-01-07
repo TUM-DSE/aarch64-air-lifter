@@ -764,7 +764,21 @@ impl Lifter for AArch64Lifter {
                             builder.write_reg(res, dst_reg, op_type);
                         }
                         Opcode::REV32 => {
-                            // TODO
+                            let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
+                            let (src_reg, _) = Self::get_reg_by_index(&builder, inst, 1);
+                            let mut res = builder.iconst(0);
+
+                            let val = builder.read_reg(src_reg, I32);
+                            let val = builder.reverse_bytes(val, I32);
+                            res = builder.or(res, val, I32).into();
+
+                            let thirtytwo = builder.iconst(32);
+                            builder.lshl(res, thirtytwo, I64);
+                            let val = builder.read_reg(src_reg, I32);
+                            let val = builder.reverse_bytes(val, I32);
+                            res = builder.or(res, val, I32).into();
+
+                            builder.write_reg(res, dst_reg, I64);
                         }
                         Opcode::RORV => {
                             /*
