@@ -726,7 +726,6 @@ impl Lifter for AArch64Lifter {
                             builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::RBIT => {
-                            // TODO
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let src = Self::get_value(&mut builder, inst.operands[1]);
@@ -747,7 +746,22 @@ impl Lifter for AArch64Lifter {
                             builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::REV16 => {
-                            // TODO
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let (src_reg, _) = Self::get_reg_by_index(&builder, inst, 1);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let mut res = builder.iconst(0);
+                            let sixteen = builder.iconst(16);
+
+                            let loop_iterations = if sz == SizeCode::W { 2 } else { 4 };
+                            for i in 0..loop_iterations {
+                                let val = builder.read_reg(src_reg, I16);
+                                let val = builder.reverse_bytes(val, I16);
+                                res = builder.or(res, val, I16).into();
+                                if i != loop_iterations - 1 {
+                                    res = builder.lshl(res, sixteen, I32).into();
+                                }
+                            }
+                            builder.write_reg(res, dst_reg, op_type);
                         }
                         Opcode::REV32 => {
                             // TODO

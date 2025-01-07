@@ -42,6 +42,7 @@ mod orr;
 mod rbit;
 mod ret;
 mod rev;
+mod rev16;
 mod sbc;
 mod sbfm;
 mod sdiv;
