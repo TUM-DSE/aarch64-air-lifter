@@ -6,7 +6,7 @@ use tnj::air::instructions::builder::InstructionBuilder;
 use tnj::air::instructions::{Blob, BlockParamData, Inst, Value};
 use tnj::arch::get_arch;
 use tnj::arch::reg::Reg;
-use tnj::types::{Type, BOOL, I16, I32, I64, I8};
+use tnj::types::{Type, BOOL, I128, I16, I32, I64, I8};
 use yaxpeax_arch::{Arch, Decoder, U8Reader};
 use yaxpeax_arm::armv8::a64::{
     ARMv8, DecodeError, Instruction, Opcode, Operand, ShiftStyle, SizeCode,
@@ -893,7 +893,13 @@ impl Lifter for AArch64Lifter {
                             builder.write_reg(val, dst_reg, I64);
                         }
                         Opcode::SMULH => {
-                            // TODO
+                            let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
+                            let val = builder.imul(src1, src2, I128);
+                            let sixtyfour = builder.iconst(64);
+                            let val = builder.ashr(val, sixtyfour, I128);
+                            builder.write_reg(val, dst_reg, I64);
                         }
                         Opcode::STP | Opcode::STLXP | Opcode::STXP | Opcode::STNP => {
                             let src1 = Self::get_value(&mut builder, inst.operands[0]);
