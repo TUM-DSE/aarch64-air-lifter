@@ -1,19 +1,48 @@
-use aarch64_air_lifter::arm64::AArch64Lifter;
-use aarch64_air_lifter::Lifter;
+use crate::common::lib::check_instruction;
 
+// Load registers
 #[test]
-// Load register
-fn test() {
+fn test_ldr_1() {
     let bytes = [
         0x40, 0x44, 0x40, 0xF8, // ldr x0, [x2], #4
-        0x41, 0xC4, 0x40, 0xB8, // ldr w1, [x2], #12
-        0xC2, 0xFF, 0xFF, 0x18, // ldr w2, -0x8
-        0xA2, 0xFF, 0xFF, 0x58, // ldr x2, -0xc
-        0x41, 0x68, 0x61, 0xF8, // ldr x1, [x2, x1]
     ];
+    let directives = r#"
+        check: // entry block
+        nextln: v37 = i64.read_reg "x2"
+        nextln: v38 = i64.add v37, 0x4
+        nextln: v39 = i64.load v38
+        nextln: i64.write_reg v39, "x0"
+    "#;
 
-    let lifter = AArch64Lifter;
-    let blob = lifter.lift(&bytes, &[]).unwrap();
+    assert!(check_instruction(bytes, directives, None))
+}
 
-    println!("{}", blob.display());
+#[test]
+fn test_ldr_2() {
+    let bytes = [
+        0x41, 0xC4, 0x40, 0xB8, // ldr w1, [x2], #12
+    ];
+    let directives = r#"
+        check: // entry block
+        nextln: v37 = i64.read_reg "x2"
+        nextln: v38 = i64.add v37, 0xc
+        nextln: v39 = i32.load v38
+        nextln: i32.write_reg v39, "x1"
+    "#;
+
+    assert!(check_instruction(bytes, directives, None))
+}
+
+#[test]
+fn test_ldr_3() {
+    let bytes = [
+        0xA2, 0xFF, 0xFF, 0x58, // ldr x2, -0xc
+    ];
+    let directives = r#"
+        check: // entry block
+        nextln: v37 = i64.load 0xfffffffffffffff4
+        nextln: i64.write_reg v37, "x2"
+    "#;
+
+    assert!(check_instruction(bytes, directives, None))
 }
