@@ -1,6 +1,6 @@
 use crate::common::lib::check_instruction;
 
-// Add with carry
+// Add with carry with settings flags
 #[test]
 fn test_adcs_1() {
     let bytes = [

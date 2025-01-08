@@ -4,7 +4,7 @@ use crate::common::lib::check_instruction;
 #[test]
 fn test_add_1() {
     let bytes = [
-        0x21, 0x00, 0x00, 0x8B, // add x1, x1, s0
+        0x21, 0x00, 0x00, 0x8B, // add x1, x1, x0
     ];
     let directives = r#"
         #0 check: // entry block

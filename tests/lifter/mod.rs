@@ -1,6 +1,7 @@
 mod adc;
 mod adcs;
 mod add;
+mod adds;
 mod adr;
 mod adrp;
 mod and;
