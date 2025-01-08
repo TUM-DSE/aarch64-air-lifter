@@ -863,6 +863,10 @@ impl Lifter for AArch64Lifter {
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
+                            let zero = builder.iconst(0);
+                            let trap =
+                                builder.icmp(tnj::types::cmp::CmpTy::Eq, src2, zero, op_type);
+                            builder.trapif(trap, op_type);
                             let val = builder.idiv(src1, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
