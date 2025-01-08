@@ -62,4 +62,5 @@ mod ubfm;
 mod udiv;
 mod umaddl;
 mod umsubl;
+mod umulh;
 mod wasm;

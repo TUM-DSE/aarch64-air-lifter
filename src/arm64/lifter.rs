@@ -1093,7 +1093,13 @@ impl Lifter for AArch64Lifter {
                             builder.write_reg(val, dst_reg, I64);
                         }
                         Opcode::UMULH => {
-                            // TODO
+                            let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
+                            let val = builder.umul(src1, src2, I128);
+                            let sixtyfour = builder.iconst(64);
+                            let val = builder.ashr(val, sixtyfour, I128);
+                            builder.write_reg(val, dst_reg, I64);
                         }
                         op => unimplemented!("{}", op),
                     }
