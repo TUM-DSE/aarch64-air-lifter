@@ -57,4 +57,5 @@ mod sub;
 mod tbnz;
 mod tbz;
 mod ubfm;
+mod udiv;
 mod wasm;
