@@ -795,7 +795,7 @@ impl Lifter for AArch64Lifter {
                             let val = builder.ror(src1, shift, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
-                        Opcode::SBC => {
+                        Opcode::SBC | Opcode::SBCS => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let carry = Self::flag_value(&mut builder, Flag::C);
@@ -804,9 +804,10 @@ impl Lifter for AArch64Lifter {
                             let val = builder.sub(src1, src2, op_type);
                             let val = builder.sub(val, carry, op_type);
                             builder.write_reg(val, dst_reg, op_type);
-                        }
-                        Opcode::SBCS => {
-                            // TODO
+                            if inst.opcode == Opcode::SBCS {
+                                let carry = Self::flag_value(&mut builder, Flag::C);
+                                Self::set_flags_using_adc(&mut builder, src1, src2, op_type, carry);
+                            }
                         }
                         Opcode::SBFM => {
                             let positive_condition_block = builder.create_block(

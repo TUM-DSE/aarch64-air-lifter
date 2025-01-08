@@ -48,6 +48,7 @@ mod rev16;
 mod rev32;
 mod rorv;
 mod sbc;
+mod sbcs;
 mod sbfm;
 mod sdiv;
 mod smaddl;
