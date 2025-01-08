@@ -781,13 +781,17 @@ impl Lifter for AArch64Lifter {
                             builder.write_reg(res, dst_reg, I64);
                         }
                         Opcode::RORV => {
-                            /*
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
-                            */
-                            // TODO!
+                            let size = match op_type {
+                                I64 => builder.iconst(64),
+                                _ => builder.iconst(32),
+                            };
+                            let shift = builder.modulo(src2, size, op_type);
+                            let val = builder.ror(src1, shift, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::SBC => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
