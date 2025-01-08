@@ -59,6 +59,7 @@ mod str;
 mod strb;
 mod strh;
 mod sub;
+mod subs;
 mod tbnz;
 mod tbz;
 mod ubfm;

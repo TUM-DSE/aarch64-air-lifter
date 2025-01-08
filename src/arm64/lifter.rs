@@ -951,16 +951,24 @@ impl Lifter for AArch64Lifter {
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             builder.store(value, address, I32);
                         }
-                        Opcode::SUB => {
+                        Opcode::SUB | Opcode::SUBS => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let val = builder.sub(src1, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
-                        }
-                        Opcode::SUBS => {
-                            // TODO
+                            if inst.opcode == Opcode::SUBS {
+                                let one = builder.iconst(1);
+                                let not_src2 = builder.not(src2, op_type).into();
+                                Self::set_flags_using_adc(
+                                    &mut builder,
+                                    src1,
+                                    not_src2,
+                                    op_type,
+                                    one,
+                                );
+                            }
                         }
                         Opcode::SVC => {
                             // Ignoring supervisor calls
