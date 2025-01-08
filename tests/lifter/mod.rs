@@ -1,4 +1,5 @@
 mod adc;
+mod adcs;
 mod add;
 mod adr;
 mod adrp;

@@ -88,8 +88,9 @@ impl Lifter for AArch64Lifter {
                             let val = builder.add(val, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
 
-                            // TODO
-                            if inst.opcode == Opcode::ADCS {}
+                            if inst.opcode == Opcode::ADCS {
+                                Self::set_flags_using_adc(&mut builder, src1, src2, op_type, carry);
+                            }
                         }
                         Opcode::ADD | Opcode::ADDS => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
