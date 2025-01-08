@@ -327,7 +327,15 @@ impl Lifter for AArch64Lifter {
                             builder.set_insert_block(positive_condition_block);
                             let src1 = Self::get_value(&mut builder, inst.operands[0]);
                             let src2 = Self::get_value(&mut builder, inst.operands[1]);
-                            Self::set_flags_using_comparison(&mut builder, src1, src2, op_type);
+                            let not_src2 = builder.not(src2, op_type);
+                            let carry = builder.iconst(0);
+                            Self::set_flags_using_adc(
+                                &mut builder,
+                                src1,
+                                not_src2.into(),
+                                op_type,
+                                carry,
+                            );
                             builder.jump(next_block, Vec::new());
                         }
                         Opcode::CCMN => {
@@ -360,15 +368,9 @@ impl Lifter for AArch64Lifter {
 
                             builder.set_insert_block(positive_condition_block);
                             let src1 = Self::get_value(&mut builder, inst.operands[0]);
-                            let zero = builder.iconst(0);
                             let src2 = Self::get_value(&mut builder, inst.operands[1]);
-                            let neg_src2 = builder.sub(zero, src2, op_type);
-                            Self::set_flags_using_comparison(
-                                &mut builder,
-                                src1,
-                                neg_src2.into(),
-                                op_type,
-                            );
+                            let carry = builder.iconst(0);
+                            Self::set_flags_using_adc(&mut builder, src1, src2, op_type, carry);
                             builder.jump(next_block, Vec::new());
                         }
                         Opcode::CLS => {
@@ -1454,17 +1456,16 @@ impl AArch64Lifter {
         Self::write_flag(builder, v_is_set.into(), Flag::V);
     }
 
-    fn set_flags_using_comparison(
+    fn set_flags_using_adc(
         builder: &mut InstructionBuilder,
         val1: Value,
         val2: Value,
         op_type: Type,
+        carry: Value,
     ) {
         let zero = builder.iconst(0);
-        let one = builder.iconst(1);
-        let val2 = builder.not(val2, op_type);
         let sum = builder.add(val1, val2, op_type);
-        let sum = builder.add(sum, one, op_type);
+        let sum = builder.add(sum, carry, op_type);
 
         // z is set if equal if both values are equal
         let z = builder.icmp(tnj::types::cmp::CmpTy::Eq, sum, zero, op_type);
@@ -1472,7 +1473,7 @@ impl AArch64Lifter {
         // n is set if the sum is negative
         let n = builder.icmp(tnj::types::cmp::CmpTy::Slt, sum, zero, op_type);
         Self::write_flag(builder, n.into(), Flag::N);
-        // c is set if operation creates carry
+        // if either operand is greater than the result in an unsigned comparison, the carry is set
         let val1_is_ugt_sum = builder.icmp(tnj::types::cmp::CmpTy::Ugt, val1, sum, op_type);
         let val2_is_ugt_sum = builder.icmp(tnj::types::cmp::CmpTy::Ugt, val2, sum, op_type);
         let c = builder.or(val1_is_ugt_sum, val2_is_ugt_sum, BOOL);
