@@ -720,16 +720,6 @@ impl Lifter for AArch64Lifter {
                             let val = builder.add(val, add_src, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
-                        Opcode::MSUB => {
-                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let op_type = helper::get_type_by_sizecode(sz);
-                            let mul_src1 = Self::get_value(&mut builder, inst.operands[1]);
-                            let mul_src2 = Self::get_value(&mut builder, inst.operands[2]);
-                            let sub_src = Self::get_value(&mut builder, inst.operands[3]);
-                            let val = builder.imul(mul_src1, mul_src2, op_type);
-                            let val = builder.sub(sub_src, val, op_type);
-                            builder.write_reg(val, dst_reg, op_type);
-                        }
                         Opcode::MOVK => {
                             let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
                             let src = Self::get_value(&mut builder, inst.operands[1]);
@@ -754,12 +744,31 @@ impl Lifter for AArch64Lifter {
                             let src = Self::get_value(&mut builder, inst.operands[1]);
                             builder.write_reg(src, dst_reg, I16);
                         }
+                        Opcode::MSUB => {
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let mul_src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let mul_src2 = Self::get_value(&mut builder, inst.operands[2]);
+                            let sub_src = Self::get_value(&mut builder, inst.operands[3]);
+                            let val = builder.imul(mul_src1, mul_src2, op_type);
+                            let val = builder.sub(sub_src, val, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
+                        }
                         Opcode::NEG => {
                             let zero = builder.iconst(0);
                             let src = Self::get_value(&mut builder, inst.operands[1]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let val = builder.sub(zero, src, op_type);
+                            builder.write_reg(val, dst_reg, op_type);
+                        }
+                        Opcode::ORN => {
+                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
+                            let op_type = helper::get_type_by_sizecode(sz);
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
+                            let val = builder.not(src2, op_type);
+                            let val = builder.or(src1, val, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
                         Opcode::ORR => {
@@ -770,14 +779,8 @@ impl Lifter for AArch64Lifter {
                             let val = builder.or(src1, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
-                        Opcode::ORN => {
-                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
-                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
-                            let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let op_type = helper::get_type_by_sizecode(sz);
-                            let val = builder.not(src2, op_type);
-                            let val = builder.or(src1, val, op_type);
-                            builder.write_reg(val, dst_reg, op_type);
+                        Opcode::PRFM | Opcode::PRFUM => {
+                            // We are ignoring prefetch hints
                         }
                         Opcode::RBIT => {
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
@@ -798,19 +801,17 @@ impl Lifter for AArch64Lifter {
                         }
                         Opcode::REV16 => {
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
-                            let (src_reg, _) = Self::get_reg_by_index(&builder, inst, 1);
                             let op_type = helper::get_type_by_sizecode(sz);
+                            let mut src = Self::get_value(&mut builder, inst.operands[1]);
                             let mut res = builder.iconst(0);
                             let sixteen = builder.iconst(16);
 
                             let loop_iterations = if sz == SizeCode::W { 2 } else { 4 };
-                            for i in 0..loop_iterations {
-                                let val = builder.read_reg(src_reg, I16);
-                                let val = builder.reverse_bytes(val, I16);
+                            for _ in 0..loop_iterations {
+                                let val = builder.reverse_bytes(src, I16);
                                 res = builder.or(res, val, I16).into();
-                                if i != loop_iterations - 1 {
-                                    res = builder.lshl(res, sixteen, I32).into();
-                                }
+                                res = builder.ror(res, sixteen, op_type).into();
+                                src = builder.ror(src, sixteen, op_type).into();
                             }
                             builder.write_reg(res, dst_reg, op_type);
                         }
