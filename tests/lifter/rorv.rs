@@ -9,7 +9,7 @@ fn test_rorv_1() {
         check: // entry block
         nextln: v37 = i64.read_reg "x1"
         nextln: v38 = i64.read_reg "x2"
-        nextln: v39 = i64.modulo v38, 0x40
+        nextln: v39 = i64.and v38, 0x3f
         nextln: v40 = i64.ror v37, v39
         nextln: i64.write_reg v40, "x1"
    "#;
@@ -26,7 +26,7 @@ fn test_rorv_2() {
         check: // entry block
         nextln: v37 = i32.read_reg "x1"
         nextln: v38 = i32.read_reg "x2"
-        nextln: v39 = i32.modulo v38, 0x20
+        nextln: v39 = i32.and v38, 0x1f
         nextln: v40 = i32.ror v37, v39
         nextln: i32.write_reg v40, "x1"
    "#;

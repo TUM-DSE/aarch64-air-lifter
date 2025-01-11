@@ -817,18 +817,18 @@ impl Lifter for AArch64Lifter {
                         }
                         Opcode::REV32 => {
                             let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
-                            let (src_reg, _) = Self::get_reg_by_index(&builder, inst, 1);
+                            let mut src = Self::get_value(&mut builder, inst.operands[1]);
                             let mut res = builder.iconst(0);
-
-                            let val = builder.read_reg(src_reg, I32);
-                            let val = builder.reverse_bytes(val, I32);
-                            res = builder.or(res, val, I32).into();
-
                             let thirtytwo = builder.iconst(32);
-                            builder.lshl(res, thirtytwo, I64);
-                            let val = builder.read_reg(src_reg, I32);
-                            let val = builder.reverse_bytes(val, I32);
+
+                            let val = builder.reverse_bytes(src, I32);
                             res = builder.or(res, val, I32).into();
+                            res = builder.ror(res, thirtytwo, I64).into();
+                            src = builder.ror(src, thirtytwo, I64).into();
+
+                            let val = builder.reverse_bytes(src, I32);
+                            res = builder.or(res, val, I32).into();
+                            res = builder.ror(res, thirtytwo, I64).into();
 
                             builder.write_reg(res, dst_reg, I64);
                         }
@@ -837,11 +837,11 @@ impl Lifter for AArch64Lifter {
                             let op_type = helper::get_type_by_sizecode(sz);
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
-                            let size = match op_type {
-                                I64 => builder.iconst(64),
-                                _ => builder.iconst(32),
+                            let mask = match op_type {
+                                I64 => builder.iconst(63),
+                                _ => builder.iconst(31),
                             };
-                            let shift = builder.modulo(src2, size, op_type);
+                            let shift = builder.and(src2, mask, op_type);
                             let val = builder.ror(src1, shift, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
