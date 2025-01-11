@@ -473,18 +473,18 @@ impl Lifter for AArch64Lifter {
                                 Vec::new(),
                             );
 
+                            // Condition is true
+                            builder.set_insert_block(positive_condition_block);
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            builder.write_reg(src1, dst_reg, op_type);
+                            builder.jump(next_block, Vec::new());
+
                             // Condition is false
                             builder.set_insert_block(negative_condition_block);
                             let one = builder.iconst(1);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let val = builder.add(src2, one, op_type);
                             builder.write_reg(val, dst_reg, op_type);
-                            builder.jump(next_block, Vec::new());
-
-                            // Condition is true
-                            builder.set_insert_block(positive_condition_block);
-                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
-                            builder.write_reg(src1, dst_reg, op_type);
                             builder.jump(next_block, Vec::new());
                         }
                         Opcode::CSINV => {
@@ -510,17 +510,17 @@ impl Lifter for AArch64Lifter {
                                 Vec::new(),
                             );
 
+                            // Condition is true
+                            builder.set_insert_block(positive_condition_block);
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            builder.write_reg(src1, dst_reg, op_type);
+                            builder.jump(next_block, Vec::new());
+
                             // Condition is false
                             builder.set_insert_block(negative_condition_block);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let val = builder.not(src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
-                            builder.jump(next_block, Vec::new());
-
-                            // Condition is true
-                            builder.set_insert_block(positive_condition_block);
-                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
-                            builder.write_reg(src1, dst_reg, op_type);
                             builder.jump(next_block, Vec::new());
                         }
                         Opcode::CSNEG => {
@@ -546,18 +546,18 @@ impl Lifter for AArch64Lifter {
                                 Vec::new(),
                             );
 
+                            // Condition is true
+                            builder.set_insert_block(positive_condition_block);
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            builder.write_reg(src1, dst_reg, op_type);
+                            builder.jump(next_block, Vec::new());
+
                             // Condition is false
                             builder.set_insert_block(negative_condition_block);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let zero = builder.iconst(0);
                             let val = builder.sub(zero, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
-                            builder.jump(next_block, Vec::new());
-
-                            // Condition is true
-                            builder.set_insert_block(positive_condition_block);
-                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
-                            builder.write_reg(src1, dst_reg, op_type);
                             builder.jump(next_block, Vec::new());
                         }
                         Opcode::EON => {
@@ -577,22 +577,6 @@ impl Lifter for AArch64Lifter {
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             builder.xor(src1, src2, op_type);
                             builder.write_reg(src1, dst_reg, op_type);
-                        }
-                        Opcode::LDP | Opcode::LDXP => {
-                            let (dst_reg1, sz) = Self::get_reg_by_index(&builder, inst, 0);
-                            let (dst_reg2, _) = Self::get_reg_by_index(&builder, inst, 1);
-                            let address = Self::get_value(&mut builder, inst.operands[2]);
-                            let op_type = helper::get_type_by_sizecode(sz);
-
-                            let val1 = builder.load(address, op_type);
-                            builder.write_reg(val1, dst_reg1, op_type);
-                            let address_offset = match op_type {
-                                I64 => builder.iconst(8),
-                                _ => builder.iconst(4),
-                            };
-                            let address = builder.add(address, address_offset, I64);
-                            let val2 = builder.load(address, op_type);
-                            builder.write_reg(val2, dst_reg2, op_type);
                         }
                         Opcode::EXTR => {
                             // 4 Operands
@@ -617,6 +601,36 @@ impl Lifter for AArch64Lifter {
                         }
                         Opcode::HVC => {
                             // We are ignoring hypervisor calls
+                        }
+                        Opcode::LDP | Opcode::LDXP => {
+                            let (dst_reg1, sz) = Self::get_reg_by_index(&builder, inst, 0);
+                            let (dst_reg2, _) = Self::get_reg_by_index(&builder, inst, 1);
+                            let address = Self::get_value(&mut builder, inst.operands[2]);
+                            let op_type = helper::get_type_by_sizecode(sz);
+
+                            let val1 = builder.load(address, op_type);
+                            builder.write_reg(val1, dst_reg1, op_type);
+                            let address_offset = match op_type {
+                                I64 => builder.iconst(8),
+                                _ => builder.iconst(4),
+                            };
+                            let address = builder.add(address, address_offset, I64);
+                            let val2 = builder.load(address, op_type);
+                            builder.write_reg(val2, dst_reg2, op_type);
+                        }
+                        Opcode::LDPSW => {
+                            let (dst_reg1, _) = Self::get_reg_by_index(&builder, inst, 0);
+                            let (dst_reg2, _) = Self::get_reg_by_index(&builder, inst, 1);
+                            let address = Self::get_value(&mut builder, inst.operands[2]);
+
+                            let val1 = builder.load(address, I32);
+                            let val1 = builder.sext_i32(val1, I64);
+                            builder.write_reg(val1, dst_reg1, I64);
+                            let address_offset = builder.iconst(4);
+                            let address = builder.add(address, address_offset, I64);
+                            let val2 = builder.load(address, I32);
+                            let val2 = builder.sext_i32(val2, I64);
+                            builder.write_reg(val2, dst_reg2, I64);
                         }
                         Opcode::LDR | Opcode::LDUR | Opcode::LDAR | Opcode::LDXR => {
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);

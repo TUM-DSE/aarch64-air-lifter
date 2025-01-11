@@ -27,6 +27,7 @@ mod ldar;
 mod ldarb;
 mod ldarh;
 mod ldp;
+mod ldpsw;
 mod ldr;
 mod ldrb;
 mod ldrh;
