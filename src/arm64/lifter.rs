@@ -302,48 +302,6 @@ impl Lifter for AArch64Lifter {
 
                             builder.jumpif(condition, *block, Vec::new(), next_block, Vec::new());
                         }
-                        Opcode::CCMP => {
-                            let positive_condition_block = builder.create_block(
-                                "ccmp_positive_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
-                            let negative_condition_block = builder.create_block(
-                                "ccmp_negative_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
-                            let next_address = pc + INSTRUCTION_SIZE;
-                            let next_block = *label_resolver.get_block_by_address(next_address);
-
-                            let condition = Self::get_condition(&mut builder, inst.operands[3])?;
-                            let op_type =
-                                helper::get_type_by_sizecode(Self::get_size_code(inst.operands[0]));
-                            builder.jumpif(
-                                condition,
-                                positive_condition_block,
-                                Vec::new(),
-                                negative_condition_block,
-                                Vec::new(),
-                            );
-
-                            builder.set_insert_block(negative_condition_block);
-                            let flag_val = Self::get_value(&mut builder, inst.operands[2]);
-                            Self::set_flags_to_value(&mut builder, flag_val, op_type);
-                            builder.jump(next_block, Vec::new());
-
-                            builder.set_insert_block(positive_condition_block);
-                            let src1 = Self::get_value(&mut builder, inst.operands[0]);
-                            let src2 = Self::get_value(&mut builder, inst.operands[1]);
-                            let not_src2 = builder.not(src2, op_type);
-                            let carry = builder.iconst(0);
-                            Self::set_flags_using_adc(
-                                &mut builder,
-                                src1,
-                                not_src2.into(),
-                                op_type,
-                                carry,
-                            );
-                            builder.jump(next_block, Vec::new());
-                        }
                         Opcode::CCMN => {
                             let positive_condition_block = builder.create_block(
                                 "ccmp_positive_condition",
@@ -367,16 +325,58 @@ impl Lifter for AArch64Lifter {
                                 Vec::new(),
                             );
 
-                            builder.set_insert_block(negative_condition_block);
-                            let flag_val = Self::get_value(&mut builder, inst.operands[2]);
-                            Self::set_flags_to_value(&mut builder, flag_val, op_type);
-                            builder.jump(next_block, Vec::new());
-
                             builder.set_insert_block(positive_condition_block);
                             let src1 = Self::get_value(&mut builder, inst.operands[0]);
                             let src2 = Self::get_value(&mut builder, inst.operands[1]);
                             let carry = builder.iconst(0);
                             Self::set_flags_using_adc(&mut builder, src1, src2, op_type, carry);
+                            builder.jump(next_block, Vec::new());
+
+                            builder.set_insert_block(negative_condition_block);
+                            let flag_val = Self::get_value(&mut builder, inst.operands[2]);
+                            Self::set_flags_to_value(&mut builder, flag_val, op_type);
+                            builder.jump(next_block, Vec::new());
+                        }
+                        Opcode::CCMP => {
+                            let positive_condition_block = builder.create_block(
+                                "ccmp_positive_condition",
+                                Vec::<BlockParamData>::new(),
+                            );
+                            let negative_condition_block = builder.create_block(
+                                "ccmp_negative_condition",
+                                Vec::<BlockParamData>::new(),
+                            );
+                            let next_address = pc + INSTRUCTION_SIZE;
+                            let next_block = *label_resolver.get_block_by_address(next_address);
+
+                            let condition = Self::get_condition(&mut builder, inst.operands[3])?;
+                            let op_type =
+                                helper::get_type_by_sizecode(Self::get_size_code(inst.operands[0]));
+                            builder.jumpif(
+                                condition,
+                                positive_condition_block,
+                                Vec::new(),
+                                negative_condition_block,
+                                Vec::new(),
+                            );
+
+                            builder.set_insert_block(positive_condition_block);
+                            let src1 = Self::get_value(&mut builder, inst.operands[0]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[1]);
+                            let not_src2 = builder.not(src2, op_type);
+                            let carry = builder.iconst(0);
+                            Self::set_flags_using_adc(
+                                &mut builder,
+                                src1,
+                                not_src2.into(),
+                                op_type,
+                                carry,
+                            );
+                            builder.jump(next_block, Vec::new());
+
+                            builder.set_insert_block(negative_condition_block);
+                            let flag_val = Self::get_value(&mut builder, inst.operands[2]);
+                            Self::set_flags_to_value(&mut builder, flag_val, op_type);
                             builder.jump(next_block, Vec::new());
                         }
                         Opcode::CLS => {
@@ -385,9 +385,10 @@ impl Lifter for AArch64Lifter {
                             let op_type = helper::get_type_by_sizecode(sz);
 
                             let one = builder.iconst(1);
-                            let first_bit_clear_mask = builder.not(one, op_type);
-                            let val1 = builder.and(src, first_bit_clear_mask, op_type);
-                            let val2 = builder.lshl(src, one, op_type);
+                            let val1 = builder.lshr(src, one, op_type);
+                            let val2_mask = builder.ror(one, one, op_type);
+                            let val2_mask = builder.not(val2_mask, op_type);
+                            let val2 = builder.and(val2_mask, src, op_type);
                             let val = builder.xor(val1, val2, op_type);
 
                             let n = match op_type {
