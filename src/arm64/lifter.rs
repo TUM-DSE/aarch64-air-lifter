@@ -52,7 +52,7 @@ impl AArch64Lifter {
     }
 }
 
-// TODO: Implement comparison instruction that also set flags
+// TODO: Final block should be inserted at the end of all blocks
 impl Lifter for AArch64Lifter {
     type E = AArch64LifterError;
 
@@ -166,7 +166,7 @@ impl Lifter for AArch64Lifter {
                             let src = Self::get_value(&mut builder, inst.operands[1]);
                             let immr = Self::get_value(&mut builder, inst.operands[2]);
                             let imms = Self::get_value(&mut builder, inst.operands[3]);
-                            let cmp = builder.icmp(tnj::types::cmp::CmpTy::Ult, immr, imms, I64);
+                            let cmp = builder.icmp(tnj::types::cmp::CmpTy::Uge, imms, immr, I64);
                             builder.jumpif(
                                 cmp,
                                 positive_condition_block,

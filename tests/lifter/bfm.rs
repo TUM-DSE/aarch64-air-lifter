@@ -9,7 +9,7 @@ fn test_bfm_1() {
     let directives = r#"
         # check: // entry block
         # nextln:   v37 = i32.read_reg "x2"
-        # nextln:   v38 = i64.icmp.ult 0xc, 0x1e
+        # nextln:   v38 = i64.icmp.uge 0x1e, 0xc
         # nextln:   jumpif v38, bfm_positive_condition, bfm_negative_condition
         # check: bfm_positive_condition:
         # nextln:   v39 = i32.add 0x1, 0x1e
@@ -54,7 +54,7 @@ fn test_bfm_2() {
     let directives = r#"
         #0 check: // entry block
         # nextln:   v37 = i64.read_reg "x2"
-        # nextln:   v38 = i64.icmp.ult 0x1, 0x1
+        # nextln:   v38 = i64.icmp.uge 0x1, 0x1
         # nextln:   jumpif v38, bfm_positive_condition, bfm_negative_condition
         # check: bfm_positive_condition:
         # nextln:   v39 = i64.add 0x1, 0x1
@@ -98,7 +98,7 @@ fn test_bfm_3() {
     let directives = r#"
         check: // entry block
         nextln:   v37 = i64.read_reg "x2"
-        nextln:   v38 = i64.icmp.ult 0x2, 0x32
+        nextln:   v38 = i64.icmp.uge 0x32, 0x2
         nextln:   jumpif v38, bfm_positive_condition, bfm_negative_condition
         check: bfm_positive_condition: // preds: entry
         nextln:   v39 = i64.add 0x1, 0x32
