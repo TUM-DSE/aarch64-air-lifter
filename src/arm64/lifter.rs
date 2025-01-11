@@ -115,8 +115,11 @@ impl Lifter for AArch64Lifter {
                         Opcode::ADRP => {
                             let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
                             let offset = Self::get_value(&mut builder, inst.operands[1]);
+                            let reverse_mask = builder.iconst(0xFFF);
+                            let mask = builder.not(reverse_mask, I64);
                             let pc = Self::get_pc(&mut builder);
-                            let addr = builder.add(pc, offset, I64);
+                            let masked_pc = builder.and(pc, mask, I64);
+                            let addr = builder.add(masked_pc, offset, I64);
                             builder.write_reg(addr, dst_reg, I64);
                         }
                         Opcode::AND => {
