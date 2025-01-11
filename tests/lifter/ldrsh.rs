@@ -1,6 +1,6 @@
 use crate::common::lib::check_instruction;
 
-// Load register signed byte (immediate)
+// Load register signed halfword (immediate)
 #[test]
 fn test_ldrsh_1() {
     let bytes = [

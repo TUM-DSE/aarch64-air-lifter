@@ -669,6 +669,13 @@ impl Lifter for AArch64Lifter {
                             let val = builder.sext_i16(val, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
+                        Opcode::LDRSW => {
+                            let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
+                            let address = Self::get_value(&mut builder, inst.operands[1]);
+                            let val = builder.load(address, I32);
+                            let val = builder.sext_i32(val, I64);
+                            builder.write_reg(val, dst_reg, I64);
+                        }
                         Opcode::LSLV => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);

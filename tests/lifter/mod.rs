@@ -33,6 +33,7 @@ mod ldrb;
 mod ldrh;
 mod ldrsb;
 mod ldrsh;
+mod ldrsw;
 mod ldur;
 mod lslv;
 mod lsrv;
