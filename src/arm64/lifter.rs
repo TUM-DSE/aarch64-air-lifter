@@ -632,28 +632,36 @@ impl Lifter for AArch64Lifter {
                             let val2 = builder.sext_i32(val2, I64);
                             builder.write_reg(val2, dst_reg2, I64);
                         }
-                        Opcode::LDR | Opcode::LDUR | Opcode::LDAR | Opcode::LDXR => {
+                        Opcode::LDR | Opcode::LDUR | Opcode::LDAR | Opcode::LDXR | Opcode::LDTR => {
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             let val = builder.load(address, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
-                        Opcode::LDRB | Opcode::LDURB | Opcode::LDARB | Opcode::LDXRB => {
+                        Opcode::LDRB
+                        | Opcode::LDURB
+                        | Opcode::LDARB
+                        | Opcode::LDXRB
+                        | Opcode::LDTRB => {
                             let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             let val = builder.load(address, I8);
                             let val = builder.zext_i8(val, I32);
                             builder.write_reg(val, dst_reg, I32);
                         }
-                        Opcode::LDRH | Opcode::LDURH | Opcode::LDARH | Opcode::LDXRH => {
+                        Opcode::LDRH
+                        | Opcode::LDURH
+                        | Opcode::LDARH
+                        | Opcode::LDXRH
+                        | Opcode::LDTRH => {
                             let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             let val = builder.load(address, I16);
                             let val = builder.zext_i16(val, I32);
                             builder.write_reg(val, dst_reg, I32);
                         }
-                        Opcode::LDRSB => {
+                        Opcode::LDRSB | Opcode::LDTRSB => {
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
@@ -661,7 +669,7 @@ impl Lifter for AArch64Lifter {
                             let val = builder.sext_i8(val, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
-                        Opcode::LDRSH => {
+                        Opcode::LDRSH | Opcode::LDTRSH => {
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
@@ -669,7 +677,7 @@ impl Lifter for AArch64Lifter {
                             let val = builder.sext_i16(val, op_type);
                             builder.write_reg(val, dst_reg, op_type);
                         }
-                        Opcode::LDRSW => {
+                        Opcode::LDRSW | Opcode::LDTRSW => {
                             let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             let val = builder.load(address, I32);
