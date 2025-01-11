@@ -11,16 +11,15 @@ fn test_csinv_1() {
         nextln:   v37 = i1.read_reg "n"
         nextln:   v38 = i1.read_reg "v"
         nextln:   v39 = i1.icmp.eq v37, v38
-        nextln:   v40 = i1.icmp.eq v39, 0x1
-        nextln:   jumpif v40, csinv_positive_condition, csinv_negative_condition
+        nextln:   jumpif v39, csinv_positive_condition, csinv_negative_condition
         check: csinv_positive_condition:
-        nextln:   v41 = i32.read_reg "x2"
-        nextln:   i32.write_reg v41, "x1"
+        nextln:   $VAR_NAME = i32.read_reg "x2"
+        nextln:   i32.write_reg $VAR_NAME, "x1"
         nextln:   jump $LABEL
         check: csinv_negative_condition:
-        nextln:   v42 = i32.read_reg "x3"
-        nextln:   v43 = i32.not v42
-        nextln:   i32.write_reg v43, "x1"
+        nextln:   $VAR_NAME = i32.read_reg "x3"
+        nextln:   $VAR_NAME = i32.not $VAR_NAME 
+        nextln:   i32.write_reg $VAR_NAME, "x1"
         nextln:   jump $LABEL
     "#;
 
@@ -37,16 +36,15 @@ fn test_csinv_2() {
         nextln:   v37 = i1.read_reg "n"
         nextln:   v38 = i1.read_reg "v"
         nextln:   v39 = i1.icmp.eq v37, v38
-        nextln:   v40 = i1.icmp.eq v39, 0x1
-        nextln:   jumpif v40, csinv_positive_condition, csinv_negative_condition
+        nextln:   jumpif v39, csinv_positive_condition, csinv_negative_condition
         check: csinv_positive_condition:
-        nextln:   v41 = i64.read_reg "x2"
-        nextln:   i64.write_reg v41, "x1"
+        nextln:   $VAR_NAME = i64.read_reg "x2"
+        nextln:   i64.write_reg $VAR_NAME, "x1"
         nextln:   jump $LABEL
         check: csinv_negative_condition:
-        nextln:   v42 = i64.read_reg "x3"
-        nextln:   v43 = i64.not v42
-        nextln:   i64.write_reg v43, "x1"
+        nextln:   $VAR_NAME = i64.read_reg "x3"
+        nextln:   $VAR_NAME = i64.not $VAR_NAME
+        nextln:   i64.write_reg $VAR_NAME, "x1"
         nextln:   jump $LABEL
     "#;
 

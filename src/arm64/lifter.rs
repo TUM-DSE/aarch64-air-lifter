@@ -1319,60 +1319,57 @@ impl AArch64Lifter {
         builder: &mut InstructionBuilder,
         operand: Operand,
     ) -> Result<Inst, AArch64LifterError> {
-        let flag_is_true = builder.iconst(1);
-        let flag_is_false = builder.iconst(0);
+        let one = builder.iconst(1);
         match operand {
             Operand::ConditionCode(cc) => {
                 let inst = match cc {
                     0 => {
                         // EQ
                         let z = Self::flag_value(builder, Flag::Z);
-                        builder.icmp(tnj::types::cmp::CmpTy::Eq, z, flag_is_true, BOOL)
+                        builder.icmp(tnj::types::cmp::CmpTy::Eq, z, one, BOOL)
                     }
                     1 => {
                         // NE
                         let z = Self::flag_value(builder, Flag::Z);
-                        builder.icmp(tnj::types::cmp::CmpTy::Ne, z, flag_is_true, BOOL)
+                        builder.icmp(tnj::types::cmp::CmpTy::Ne, z, one, BOOL)
                     }
                     2 => {
                         // CS
                         let c = Self::flag_value(builder, Flag::C);
-                        builder.icmp(tnj::types::cmp::CmpTy::Eq, c, flag_is_true, BOOL)
+                        builder.icmp(tnj::types::cmp::CmpTy::Eq, c, one, BOOL)
                     }
                     3 => {
                         // CC
                         let c = Self::flag_value(builder, Flag::C);
-                        builder.icmp(tnj::types::cmp::CmpTy::Ne, c, flag_is_true, BOOL)
+                        builder.icmp(tnj::types::cmp::CmpTy::Ne, c, one, BOOL)
                     }
                     4 => {
                         // MI
                         let n = Self::flag_value(builder, Flag::N);
-                        builder.icmp(tnj::types::cmp::CmpTy::Eq, n, flag_is_true, BOOL)
+                        builder.icmp(tnj::types::cmp::CmpTy::Eq, n, one, BOOL)
                     }
                     5 => {
                         // PL
                         let n = Self::flag_value(builder, Flag::N);
-                        builder.icmp(tnj::types::cmp::CmpTy::Ne, n, flag_is_true, BOOL)
+                        builder.icmp(tnj::types::cmp::CmpTy::Ne, n, one, BOOL)
                     }
                     6 => {
                         // VS
                         let v = Self::flag_value(builder, Flag::V);
-                        builder.icmp(tnj::types::cmp::CmpTy::Eq, v, flag_is_true, BOOL)
+                        builder.icmp(tnj::types::cmp::CmpTy::Eq, v, one, BOOL)
                     }
                     7 => {
                         // VC
                         let v = Self::flag_value(builder, Flag::V);
-                        builder.icmp(tnj::types::cmp::CmpTy::Ne, v, flag_is_true, BOOL)
+                        builder.icmp(tnj::types::cmp::CmpTy::Ne, v, one, BOOL)
                     }
                     8 => {
                         // HI
                         let z = Self::flag_value(builder, Flag::Z);
                         let c = Self::flag_value(builder, Flag::C);
 
-                        let c_is_true =
-                            builder.icmp(tnj::types::cmp::CmpTy::Eq, c, flag_is_true, BOOL);
-                        let z_is_false =
-                            builder.icmp(tnj::types::cmp::CmpTy::Ne, z, flag_is_true, BOOL);
+                        let c_is_true = builder.icmp(tnj::types::cmp::CmpTy::Eq, c, one, BOOL);
+                        let z_is_false = builder.icmp(tnj::types::cmp::CmpTy::Ne, z, one, BOOL);
                         builder.and(c_is_true, z_is_false, BOOL)
                     }
                     9 => {
@@ -1381,10 +1378,9 @@ impl AArch64Lifter {
                         let c = Self::flag_value(builder, Flag::C);
 
                         let c_is_false: Inst =
-                            builder.icmp(tnj::types::cmp::CmpTy::Ne, c, flag_is_true, BOOL);
+                            builder.icmp(tnj::types::cmp::CmpTy::Ne, c, one, BOOL);
 
-                        let z_is_true =
-                            builder.icmp(tnj::types::cmp::CmpTy::Eq, z, flag_is_true, BOOL);
+                        let z_is_true = builder.icmp(tnj::types::cmp::CmpTy::Eq, z, one, BOOL);
                         builder.or(c_is_false, z_is_true, BOOL)
                     }
                     10 => {
@@ -1392,16 +1388,14 @@ impl AArch64Lifter {
                         let n = Self::flag_value(builder, Flag::N);
                         let v = Self::flag_value(builder, Flag::V);
 
-                        let n_eq_v = builder.icmp(tnj::types::cmp::CmpTy::Eq, n, v, BOOL);
-                        builder.icmp(tnj::types::cmp::CmpTy::Eq, n_eq_v, flag_is_true, BOOL)
+                        builder.icmp(tnj::types::cmp::CmpTy::Eq, n, v, BOOL)
                     }
                     11 => {
                         // LT
                         let n = Self::flag_value(builder, Flag::N);
                         let v = Self::flag_value(builder, Flag::V);
 
-                        let n_neq_v = builder.icmp(tnj::types::cmp::CmpTy::Ne, n, v, BOOL);
-                        builder.icmp(tnj::types::cmp::CmpTy::Eq, n_neq_v, flag_is_true, BOOL)
+                        builder.icmp(tnj::types::cmp::CmpTy::Ne, n, v, BOOL)
                     }
                     12 => {
                         // GT
@@ -1409,8 +1403,7 @@ impl AArch64Lifter {
                         let n = Self::flag_value(builder, Flag::N);
                         let v = Self::flag_value(builder, Flag::V);
 
-                        let z_is_false =
-                            builder.icmp(tnj::types::cmp::CmpTy::Ne, z, flag_is_true, BOOL);
+                        let z_is_false = builder.icmp(tnj::types::cmp::CmpTy::Ne, z, one, BOOL);
                         let n_eq_v = builder.icmp(tnj::types::cmp::CmpTy::Eq, n, v, BOOL);
                         builder.and(z_is_false, n_eq_v, BOOL)
                     }
@@ -1420,18 +1413,17 @@ impl AArch64Lifter {
                         let n = Self::flag_value(builder, Flag::N);
                         let v = Self::flag_value(builder, Flag::V);
 
-                        let z_is_true =
-                            builder.icmp(tnj::types::cmp::CmpTy::Eq, z, flag_is_true, BOOL);
+                        let z_is_true = builder.icmp(tnj::types::cmp::CmpTy::Eq, z, one, BOOL);
                         let n_neq_v = builder.icmp(tnj::types::cmp::CmpTy::Ne, n, v, BOOL);
                         builder.or(z_is_true, n_neq_v, BOOL)
                     }
                     14 => {
                         // AL
-                        builder.and(flag_is_true, flag_is_true, BOOL)
+                        builder.and(one, one, BOOL)
                     }
                     15 => {
                         // NV
-                        builder.and(flag_is_true, flag_is_false, BOOL)
+                        builder.icmp(tnj::types::cmp::CmpTy::Ne, one, one, BOOL)
                     }
                     _ => {
                         return Err(AArch64LifterError::CustomError(
