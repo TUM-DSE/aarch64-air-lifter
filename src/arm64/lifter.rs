@@ -6,7 +6,7 @@ use tnj::air::instructions::builder::InstructionBuilder;
 use tnj::air::instructions::{Blob, BlockParamData, Inst, Value};
 use tnj::arch::get_arch;
 use tnj::arch::reg::Reg;
-use tnj::types::{Type, BOOL, I128, I16, I32, I64, I8};
+use tnj::types::{Type, BOOL, I1, I128, I16, I32, I64, I8};
 use yaxpeax_arch::{Arch, Decoder, U8Reader};
 use yaxpeax_arm::armv8::a64::{
     ARMv8, DecodeError, Instruction, Opcode, Operand, ShiftStyle, SizeCode,
@@ -849,6 +849,7 @@ impl Lifter for AArch64Lifter {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let carry = Self::flag_value(&mut builder, Flag::C);
+                            let carry = builder.not(carry, I1);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let val = builder.sub(src1, src2, op_type);

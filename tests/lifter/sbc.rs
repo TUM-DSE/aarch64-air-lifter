@@ -10,9 +10,10 @@ fn test_sbc_1() {
         nextln: v37 = i32.read_reg "x2"
         nextln: v38 = i32.read_reg "x3"
         nextln: v39 = i1.read_reg "c"
-        nextln: v40 = i32.sub v37, v38
-        nextln: v41 = i32.sub v40, v39
-        nextln: i32.write_reg v41, "x1"
+        nextln: v40 = i1.not v39
+        nextln: v41 = i32.sub v37, v38
+        nextln: v42 = i32.sub v41, v40
+        nextln: i32.write_reg v42, "x1"
     "#;
 
     assert!(check_instruction(bytes, directives, None))
@@ -28,9 +29,10 @@ fn test_sbc_2() {
         nextln: v37 = i64.read_reg "x2"
         nextln: v38 = i64.read_reg "x3"
         nextln: v39 = i1.read_reg "c"
-        nextln: v40 = i64.sub v37, v38
-        nextln: v41 = i64.sub v40, v39
-        nextln: i64.write_reg v41, "x1"
+        nextln: v40 = i1.not v39
+        nextln: v41 = i64.sub v37, v38
+        nextln: v42 = i64.sub v41, v40
+        nextln: i64.write_reg v42, "x1"
     "#;
 
     assert!(check_instruction(bytes, directives, None))
