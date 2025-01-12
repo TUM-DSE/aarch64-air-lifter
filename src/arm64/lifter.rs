@@ -122,13 +122,19 @@ impl Lifter for AArch64Lifter {
                             let addr = builder.add(masked_pc, offset, I64);
                             builder.write_reg(addr, dst_reg, I64);
                         }
-                        Opcode::AND => {
+                        Opcode::AND | Opcode::ANDS => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let val = builder.and(src1, src2, op_type);
                             builder.write_reg(val, dst_reg, op_type);
+
+                            if inst.opcode == Opcode::ANDS {
+                                let zero = builder.iconst(0);
+                                Self::write_flag(&mut builder, zero, Flag::C);
+                                Self::write_flag(&mut builder, zero, Flag::V);
+                            }
                         }
                         Opcode::ASRV => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
@@ -877,7 +883,7 @@ impl Lifter for AArch64Lifter {
                             let src = Self::get_value(&mut builder, inst.operands[1]);
                             let immr = Self::get_value(&mut builder, inst.operands[2]);
                             let imms = Self::get_value(&mut builder, inst.operands[3]);
-                            let cmp = builder.icmp(tnj::types::cmp::CmpTy::Ult, immr, imms, I64);
+                            let cmp = builder.icmp(tnj::types::cmp::CmpTy::Uge, imms, immr, I64);
                             builder.jumpif(
                                 cmp,
                                 positive_condition_block,
@@ -937,6 +943,9 @@ impl Lifter for AArch64Lifter {
                             let val = builder.add(val, src3, I64);
                             builder.write_reg(val, dst_reg, I64);
                         }
+                        Opcode::SMC => {
+                            // Ignoring secure monitor calls
+                        }
                         Opcode::SMSUBL => {
                             let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
@@ -950,7 +959,7 @@ impl Lifter for AArch64Lifter {
                             let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
-                            let val = builder.imul(src1, src2, I128);
+                            let val = builder.imul(src1, src2, I64);
                             let sixtyfour = builder.iconst(64);
                             let val = builder.ashr(val, sixtyfour, I128);
                             builder.write_reg(val, dst_reg, I64);
@@ -975,7 +984,8 @@ impl Lifter for AArch64Lifter {
                         | Opcode::STLXR
                         | Opcode::STUR
                         | Opcode::STLUR
-                        | Opcode::STXR => {
+                        | Opcode::STXR
+                        | Opcode::STTR => {
                             let sz = Self::get_size_code(inst.operands[0]);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let value = Self::get_value(&mut builder, inst.operands[0]);
@@ -987,7 +997,8 @@ impl Lifter for AArch64Lifter {
                         | Opcode::STLXRB
                         | Opcode::STURB
                         | Opcode::STLURB
-                        | Opcode::STXRB => {
+                        | Opcode::STXRB
+                        | Opcode::STTRB => {
                             let value = Self::get_value(&mut builder, inst.operands[0]);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             builder.store(value, address, I8);
@@ -997,7 +1008,8 @@ impl Lifter for AArch64Lifter {
                         | Opcode::STLXRH
                         | Opcode::STURH
                         | Opcode::STLURH
-                        | Opcode::STXRH => {
+                        | Opcode::STXRH
+                        | Opcode::STTRH => {
                             let value = Self::get_value(&mut builder, inst.operands[0]);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             builder.store(value, address, I32);
@@ -1024,10 +1036,7 @@ impl Lifter for AArch64Lifter {
                         Opcode::SVC => {
                             // Ignoring supervisor calls
                         }
-                        Opcode::SYS(_data) => {
-                            // Ignoring system calls
-                        }
-                        Opcode::SYSL(_data) => {
+                        Opcode::SYS(_data) | Opcode::SYSL(_data) => {
                             // Ignoring system calls
                         }
                         Opcode::TBNZ => {
@@ -1158,7 +1167,7 @@ impl Lifter for AArch64Lifter {
                             let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
-                            let val = builder.umul(src1, src2, I128);
+                            let val = builder.umul(src1, src2, I64);
                             let sixtyfour = builder.iconst(64);
                             let val = builder.ashr(val, sixtyfour, I128);
                             builder.write_reg(val, dst_reg, I64);
