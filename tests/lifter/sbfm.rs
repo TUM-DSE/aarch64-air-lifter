@@ -8,7 +8,7 @@ fn test_sbfm_1() {
     let directives = r#"
         check: // entry block
         nextln:   v37 = i64.read_reg "x2"
-        nextln:   v38 = i64.icmp.ult 0xc, 0x16
+        nextln:   v38 = i64.icmp.uge 0x16, 0xc
         nextln:   jumpif v38, sbfm_positive_condition, sbfm_negative_condition
         check: sbfm_positive_condition:
         nextln:   v39 = i64.add 0x1, 0x16
@@ -40,7 +40,7 @@ fn test_sbfm_2() {
     let directives = r#"
         check: // entry block
         nextln:   v37 = i64.read_reg "x2"
-        nextln:   v38 = i64.icmp.ult 0xc, 0x16
+        nextln:   v38 = i64.icmp.uge 0x16, 0xc
         nextln:   jumpif v38, sbfm_positive_condition, sbfm_negative_condition
         check: sbfm_positive_condition:
         nextln:   v39 = i64.add 0x1, 0x16
