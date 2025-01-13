@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+elf = "0.7.4"
 filecheck = "0.5.0"
 target-lexicon = "0.12.16"
 thiserror = "2.0.0"
