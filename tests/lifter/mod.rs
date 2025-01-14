@@ -7,6 +7,7 @@ mod adrp;
 mod and;
 mod asrv;
 mod b;
+mod bcc;
 mod bfm;
 mod bic;
 mod bl;

@@ -77,7 +77,7 @@ impl LabelResolver {
         loop {
             match decoder.decode(&mut reader) {
                 Ok(inst) => {
-                    let imm: Option<(u64, CheckpointType)> = match inst.opcode {
+                    let imm: Option<(i64, CheckpointType)> = match inst.opcode {
                         Opcode::B | Opcode::BL | Opcode::Bcc(_) => Some((
                             helper::get_pc_offset_as_int(inst.operands[0]),
                             CheckpointType::Branch,
@@ -108,7 +108,7 @@ impl LabelResolver {
                     if let Some((imm, checkpoint_type)) = imm {
                         self.checkpoints.push(Reverse(address + INSTRUCTION_SIZE));
                         if checkpoint_type == CheckpointType::Branch {
-                            let jump_address = imm.wrapping_add(address);
+                            let jump_address = imm.wrapping_add(address as i64) as u64;
                             self.checkpoints.push(Reverse(jump_address));
                         }
                     }
