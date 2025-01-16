@@ -149,7 +149,14 @@ impl Lifter for AArch64Lifter {
                             let val = builder.ashr(src1, shift_val, op_type);
                             Self::write_reg(&mut builder, val, dst_reg, op_type);
                         }
-                        Opcode::B => {
+                        Opcode::B | Opcode::BL => {
+                            if inst.opcode == Opcode::BL {
+                                let instruction_size = builder.iconst(4);
+                                let pc_reg = Self::get_pc(&mut builder);
+                                let return_address = builder.add(pc_reg, instruction_size, I64);
+                                let x30 = Self::get_reg_val_by_name(&mut builder, "x30");
+                                Self::write_reg(&mut builder, return_address, x30, I64);
+                            }
                             let offset = helper::get_pc_offset_as_int(inst.operands[0]);
                             let next_address = (pc as i64).wrapping_add(offset) as u64;
                             let block = label_resolver.get_block_by_address(next_address);
@@ -259,23 +266,16 @@ impl Lifter for AArch64Lifter {
                             let val = builder.and(src1, neg_src2, op_type);
                             Self::write_reg(&mut builder, val, dst_reg, op_type);
                         }
-                        Opcode::BL => {
-                            let instruction_size = builder.iconst(4);
-                            let pc_reg = Self::get_pc(&mut builder);
-                            let return_address = builder.add(pc_reg, instruction_size, I64);
-                            let x30 = Self::get_reg_val_by_name(&mut builder, "x30");
-
-                            let offset = helper::get_pc_offset_as_int(inst.operands[0]);
-                            let next_address = (pc as i64).wrapping_add(offset) as u64;
-                            let block = label_resolver.get_block_by_address(next_address);
-                            Self::write_reg(&mut builder, return_address, x30, I64);
-                            builder.jump(*block, vec![]);
-                        }
-                        Opcode::BLR => {
-                            unimplemented!("BLR. Need to implement jump to register")
-                        }
-                        Opcode::BR => {
-                            unimplemented!("BR. Need to implement jump to register")
+                        Opcode::BLR | Opcode::BR => {
+                            if inst.opcode == Opcode::BLR {
+                                let pc = Self::get_pc(&mut builder);
+                                let four = builder.iconst(4);
+                                let ret_address = builder.add(pc, four, I64);
+                                let x30 = Self::get_reg_val_by_name(&mut builder, "x30");
+                                Self::write_reg(&mut builder, ret_address, x30, I64);
+                            }
+                            let address = Self::get_value(&mut builder, inst.operands[0]);
+                            builder.dynamic_jump(address);
                         }
                         Opcode::CAS(_memory_ordering) => {
                             // Untested

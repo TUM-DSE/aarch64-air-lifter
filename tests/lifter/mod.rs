@@ -11,6 +11,8 @@ mod bcc;
 mod bfm;
 mod bic;
 mod bl;
+mod blr;
+mod br;
 mod cbnz;
 mod cbz;
 mod ccmn;
