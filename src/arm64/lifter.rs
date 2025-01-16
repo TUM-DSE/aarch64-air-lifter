@@ -1156,6 +1156,9 @@ impl Lifter for AArch64Lifter {
                             Self::write_reg(&mut builder, val, dst_reg, op_type);
                             builder.jump(next_block, Vec::new());
                         }
+                        Opcode::UDF => {
+                            builder.trap();
+                        }
                         Opcode::UDIV => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);

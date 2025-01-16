@@ -8,7 +8,7 @@ use elf::abi::STT_FUNC;
 use elf::endian::AnyEndian;
 use elf::ElfBytes;
 
-fn read_cwasm_file(path: impl AsRef<Path>) {
+fn read_elf_file(path: impl AsRef<Path>) {
     let lifter = AArch64Lifter;
 
     let file_data = std::fs::read(path).expect("Could not read file.");
@@ -55,11 +55,7 @@ fn check_missing_instructions() {
         let path = entry.path();
 
         if path.is_file() {
-            if let Some(extension) = path.extension() {
-                if extension == "cwasm" {
-                    read_cwasm_file(&path);
-                }
-            }
+            read_elf_file(&path);
         }
     }
 }

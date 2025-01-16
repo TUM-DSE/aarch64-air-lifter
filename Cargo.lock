@@ -9,7 +9,7 @@ dependencies = [
  "elf",
  "filecheck",
  "target-lexicon",
- "thiserror 2.0.6",
+ "thiserror 2.0.11",
  "tnj",
  "yaxpeax-arch",
  "yaxpeax-arm",
@@ -27,12 +27,12 @@ dependencies = [
 [[package]]
 name = "air-macros"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13#d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=28b2b8c51110a017d8a50edc96cfce3257e99631#28b2b8c51110a017d8a50edc96cfce3257e99631"
 
 [[package]]
 name = "air-meta"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13#d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=28b2b8c51110a017d8a50edc96cfce3257e99631#28b2b8c51110a017d8a50edc96cfce3257e99631"
 dependencies = [
  "air-types",
  "convert_case",
@@ -41,20 +41,20 @@ dependencies = [
 [[package]]
 name = "air-sym"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13#d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=28b2b8c51110a017d8a50edc96cfce3257e99631#28b2b8c51110a017d8a50edc96cfce3257e99631"
 dependencies = [
  "air-macros",
  "air-types",
+ "compact_str",
  "itertools",
- "smol_str",
- "thiserror 2.0.6",
+ "thiserror 2.0.11",
  "tnj-arch",
 ]
 
 [[package]]
 name = "air-types"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13#d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=28b2b8c51110a017d8a50edc96cfce3257e99631#28b2b8c51110a017d8a50edc96cfce3257e99631"
 dependencies = [
  "num",
 ]
@@ -78,19 +78,33 @@ dependencies = [
 ]
 
 [[package]]
-name = "borsh"
-version = "1.5.3"
+name = "castaway"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2506947f73ad44e344215ccd6403ac2ae18cd8e046e581a441bf8d199f257f03"
+checksum = "0abae9be0aaf9ea96a3b1b8b1b55c602ca751eba1b1500220cea4ecbafe7c0d5"
 dependencies = [
- "cfg_aliases",
+ "rustversion",
 ]
 
 [[package]]
-name = "cfg_aliases"
-version = "0.2.1"
+name = "cfg-if"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
+checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
+
+[[package]]
+name = "compact_str"
+version = "0.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3b79c4069c6cad78e2e0cdfcbd26275770669fb39fd308a752dc110e83b9af32"
+dependencies = [
+ "castaway",
+ "cfg-if",
+ "itoa",
+ "rustversion",
+ "ryu",
+ "static_assertions",
+]
 
 [[package]]
 name = "convert_case"
@@ -137,12 +151,18 @@ checksum = "e6d5a32815ae3f33302d95fdcb2ce17862f8c65363dcfd29360480ba1001fc9c"
 
 [[package]]
 name = "itertools"
-version = "0.13.0"
+version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "413ee7dfc52ee1a4949ceeb7dbc8a33f2d6c088194d9f922fb8318faf1f01186"
+checksum = "2b192c782037fadd9cfa75548310488aabdbf3d2da73885b31bd0abd03351285"
 dependencies = [
  "either",
 ]
+
+[[package]]
+name = "itoa"
+version = "1.0.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d75a2a4b1b190afb6f5425f10f6a8f959d2ea0b9c2b1d79553551850539e4674"
 
 [[package]]
 name = "leb128"
@@ -283,6 +303,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 
 [[package]]
+name = "rustversion"
+version = "1.0.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f7c45b9784283f1b2e7fb61b42047c2fd678ef0960d4f6f1eba131594cc369d4"
+
+[[package]]
+name = "ryu"
+version = "1.0.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f3cb5ba0dc43242ce17de99c180e96db90b235b8a9fdc9543c96d2209116bd9f"
+
+[[package]]
 name = "serde"
 version = "1.0.215"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -303,14 +335,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "smol_str"
-version = "0.3.2"
+name = "static_assertions"
+version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9676b89cd56310a87b93dec47b11af744f34d5fc9f367b829474eec0a891350d"
-dependencies = [
- "borsh",
- "serde",
-]
+checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
 name = "syn"
@@ -331,9 +359,9 @@ checksum = "55937e1799185b12863d447f42597ed69d9928686b8d88a1df17376a097d8369"
 
 [[package]]
 name = "target-lexicon"
-version = "0.12.16"
+version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "61c41af27dd6d1e27b1b16b489db798443478cef1f06a660c96db617ba5de3b1"
+checksum = "dc12939a1c9b9d391e0b7135f72fd30508b73450753e28341fed159317582a77"
 
 [[package]]
 name = "thiserror"
@@ -346,11 +374,11 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "2.0.6"
+version = "2.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8fec2a1820ebd077e2b90c4df007bebf344cd394098a13c563957d0afc83ea47"
+checksum = "d452f284b73e6d76dd36758a0c8684b1d5be31f92b89d07fd5822175732206fc"
 dependencies = [
- "thiserror-impl 2.0.6",
+ "thiserror-impl 2.0.11",
 ]
 
 [[package]]
@@ -366,9 +394,9 @@ dependencies = [
 
 [[package]]
 name = "thiserror-impl"
-version = "2.0.6"
+version = "2.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d65750cab40f4ff1929fb1ba509e9914eb756131cef4210da8d5d700d26f6312"
+checksum = "26afc1baea8a989337eeb52b6e72a039780ce45c3edfcc9c5b9d112feeb173c2"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -378,7 +406,7 @@ dependencies = [
 [[package]]
 name = "tnj"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13#d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=28b2b8c51110a017d8a50edc96cfce3257e99631#28b2b8c51110a017d8a50edc96cfce3257e99631"
 dependencies = [
  "air-macros",
  "air-meta",
@@ -393,18 +421,18 @@ dependencies = [
 [[package]]
 name = "tnj-air"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13#d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=28b2b8c51110a017d8a50edc96cfce3257e99631#28b2b8c51110a017d8a50edc96cfce3257e99631"
 dependencies = [
  "air-macros",
  "air-meta",
  "air-sym",
  "air-types",
+ "compact_str",
  "flat_vec",
  "proc-macro2",
  "quote",
- "smol_str",
  "target-lexicon",
- "thiserror 2.0.6",
+ "thiserror 2.0.11",
  "tnj-arch",
  "tnj-pcc",
 ]
@@ -412,39 +440,39 @@ dependencies = [
 [[package]]
 name = "tnj-arch"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13#d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=28b2b8c51110a017d8a50edc96cfce3257e99631#28b2b8c51110a017d8a50edc96cfce3257e99631"
 dependencies = [
  "air-macros",
  "air-types",
- "smol_str",
+ "compact_str",
  "target-lexicon",
 ]
 
 [[package]]
 name = "tnj-pcc"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13#d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=28b2b8c51110a017d8a50edc96cfce3257e99631#28b2b8c51110a017d8a50edc96cfce3257e99631"
 dependencies = [
  "air-sym",
  "air-types",
+ "compact_str",
  "itertools",
  "leb128",
- "smol_str",
- "thiserror 2.0.6",
+ "thiserror 2.0.11",
  "tnj-arch",
 ]
 
 [[package]]
 name = "tnj-policy"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13#d23b95ebc2e5bc442bcab1c6c1ddf2c749667a13"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?rev=28b2b8c51110a017d8a50edc96cfce3257e99631#28b2b8c51110a017d8a50edc96cfce3257e99631"
 dependencies = [
  "air-sym",
  "air-types",
+ "compact_str",
  "itertools",
- "smol_str",
  "target-lexicon",
- "thiserror 2.0.6",
+ "thiserror 2.0.11",
  "tnj-air",
  "tnj-arch",
  "tnj-pcc",
