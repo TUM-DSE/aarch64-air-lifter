@@ -1345,7 +1345,7 @@ impl AArch64Lifter {
                     (Reg(reg as u32), sz)
                 }
             }
-            op => unimplemented!("dst op {:?}", op),
+            op => unimplemented!("Can not write into {:?}", op),
         };
         (dst_reg, sz)
     }
