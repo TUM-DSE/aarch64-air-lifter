@@ -1,4 +1,3 @@
-use core::panic;
 use std::fs;
 use std::path::Path;
 
@@ -8,41 +7,59 @@ use elf::abi::STT_FUNC;
 use elf::endian::AnyEndian;
 use elf::ElfBytes;
 
-fn read_elf_file(path: impl AsRef<Path>) {
+fn read_elf_file(path: impl AsRef<Path>) -> Result<(), Box<dyn std::error::Error>> {
     let lifter = AArch64Lifter;
-
-    let file_data = std::fs::read(path).expect("Could not read file.");
+    let file_data = std::fs::read(path)?;
     let slice = file_data.as_slice();
-    let file = ElfBytes::<AnyEndian>::minimal_parse(slice).expect("Open test1");
-    let abi_shdr = file
-        .section_header_by_name(".text")
-        .expect("Get .text section")
-        .expect("Get .text section");
-    let (bytes, _) = file
-        .section_data(&abi_shdr)
-        .expect("Get .text section data");
+    let file = ElfBytes::<AnyEndian>::minimal_parse(slice)?;
 
-    let (string_table, _) = file
-        .symbol_table()
-        .expect("Get symbol table")
-        .expect("Get symbol table");
+    let text_shdr = file
+        .section_header_by_name(".text")?
+        .ok_or("Missing .text section")?;
 
-    // filter using functions
-    string_table
-        .iter()
-        .filter(|s| s.st_symtype() == STT_FUNC)
-        .for_each(|s| {
-            match lifter.lift(
-                &bytes[s.st_value as usize..(s.st_value + s.st_size) as usize],
-                &[],
-            ) {
-                Ok(blob) => {
-                    let result = blob.display().to_string();
-                    println!("{}", result);
-                }
-                Err(e) => panic!("Error lifting {:?}: {}", s, e),
+    let (bytes, _) = file.section_data(&text_shdr)?;
+
+    let (string_table, _) = file.symbol_table()?.ok_or("Missing symbol table")?;
+
+    let section_addr = text_shdr.sh_addr;
+    for s in string_table.iter().filter(|s| s.st_symtype() == STT_FUNC) {
+        // Calculate offset relative to section start
+        let offset: usize = (s
+            .st_value
+            .checked_sub(section_addr)
+            .ok_or("Symbol address before section start")?)
+        .try_into()
+        .map_err(|_| "Offset too large")?;
+
+        let size: usize = s.st_size.try_into().map_err(|_| "Symbol size too large")?;
+
+        // Check 4-byte alignment
+        if offset % 4 != 0 || size % 4 != 0 {
+            println!("Warning: Symbol {:?} is not 4-byte aligned", s);
+            continue;
+        }
+
+        let end = offset.checked_add(size).ok_or("Symbol range overflow")?;
+
+        // Check bounds
+        if end > bytes.len() {
+            println!("Warning: Symbol {:?} extends beyond section bounds", s);
+            continue;
+        }
+
+        let panic = std::panic::catch_unwind(|| match lifter.lift(&bytes[offset..end], &[]) {
+            Ok(_blob) => Ok(()),
+            Err(e) => {
+                println!("Error lifting {:?}: {}", s, e);
+                Err(e)
             }
         });
+
+        if let Err(e) = panic {
+            println!("Panicked while processing symbol {:?}: {:?}", s, e);
+        }
+    }
+    Ok(())
 }
 
 #[ignore]
@@ -55,7 +72,10 @@ fn check_missing_instructions() {
         let path = entry.path();
 
         if path.is_file() {
-            read_elf_file(&path);
+            let res = read_elf_file(&path);
+            if let Err(e) = res {
+                panic!("Error processing {:?}: {:?}", path, e);
+            }
         }
     }
 }

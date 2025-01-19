@@ -1,3 +1,5 @@
+use core::panic;
+
 use crate::arm64::helper;
 use crate::Lifter;
 use target_lexicon::{Aarch64Architecture, Architecture};
@@ -818,7 +820,7 @@ impl Lifter for AArch64Lifter {
                             let val = builder.reverse_bits(src, op_type);
                             Self::write_reg(&mut builder, val, dst_reg, op_type);
                         }
-                        Opcode::RET => {
+                        Opcode::RET | Opcode::RETAB | Opcode::RETAA => {
                             builder.ret();
                         }
                         Opcode::REV | Opcode::REV64 => {
@@ -1586,7 +1588,13 @@ impl AArch64Lifter {
             Operand::RegisterOrSP(sz, _) => sz,
             Operand::RegShift(_, _, sz, _) => sz,
             Operand::RegRegOffset(_, _, sz, _, _) => sz,
-            _ => panic!("can not get size code for non-register types"),
+            Operand::SIMDRegister(_, _) => {
+                panic!("Lifting for SIMD instructions is not supported yet");
+            }
+            _ => {
+                println!("{:?}", operand);
+                panic!("can not get size code for non-register types");
+            }
         }
     }
 
