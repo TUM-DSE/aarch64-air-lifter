@@ -16,17 +16,35 @@ const VARIABLES: [(&str, Value); 2] = [
     ),
 ];
 
-pub fn check_instruction(
-    bytes: [u8; 4],
-    directives: &str,
-    variable_map: Option<SimpleVariableMap>,
-) -> bool {
+#[derive(Default)]
+pub struct CheckInstructionArgs {
+    pub variable_map: SimpleVariableMap,
+    pub print_to_std: bool,
+}
+
+impl CheckInstructionArgs {
+    pub fn new(variable_map: SimpleVariableMap, print_to_std: bool) -> Self {
+        Self {
+            variable_map,
+            print_to_std,
+        }
+    }
+}
+
+pub fn check_instruction(bytes: [u8; 4], directives: &str, args: CheckInstructionArgs) -> bool {
     let lifter = AArch64Lifter;
     let blob = lifter.lift(&bytes, &[]).unwrap();
     let result = blob.display().to_string();
-    println!("{}", result);
+    if args.print_to_std {
+        println!("{}", result);
 
-    let mut variable_map = variable_map.unwrap_or_default();
+        let blocks_count = blob.blocks().len();
+        println!("Block count: {}", blocks_count);
+        let inst_count = blob.blocks().iter().fold(0, |acc, b| acc + b.insts().len());
+        println!("Instruction count: {}", inst_count);
+    }
+
+    let mut variable_map = args.variable_map;
     for (var_name, value) in VARIABLES {
         variable_map.insert(var_name.to_string(), value);
     }

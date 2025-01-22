@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // Signed multiply-sub long
 #[test]
@@ -16,5 +16,5 @@ fn test_smaddl_1() {
         nextln: i64.write_reg v41, "x0"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // Negate
 #[test]
@@ -13,7 +13,7 @@ fn test_neg_1() {
         nextln:  i64.write_reg v38, "x0"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -28,7 +28,7 @@ fn test_neg_2() {
         nextln:  i32.write_reg v38, "x0"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -44,5 +44,5 @@ fn test_neg_3() {
         nextln:  i64.write_reg v39, "x1"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

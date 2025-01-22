@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // Multiply-sub
 #[test]
@@ -16,7 +16,7 @@ fn test_msub_1() {
         nextln:  i64.write_reg v41, "x0"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -34,5 +34,5 @@ fn test_msub_2() {
         nextln:  i32.write_reg v41, "x0"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

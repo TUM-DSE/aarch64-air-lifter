@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // Add with settings flags
 #[test]
@@ -30,7 +30,7 @@ fn test_add_1() {
         nextln: i1.write_reg v51, "v"
     "#;
 
-    assert!(check_instruction(bytes, directives, None));
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -62,5 +62,5 @@ fn test_add_2() {
         nextln: i1.write_reg v51, "v"
   "#;
 
-    assert!(check_instruction(bytes, directives, None));
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

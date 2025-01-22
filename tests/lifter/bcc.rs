@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // Branch
 #[test]
@@ -13,7 +13,7 @@ fn test_bcc_1() {
         nextln: jumpif v38, block_0, block_4
     "#;
 
-    assert!(check_instruction(bytes, directives, None));
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -28,5 +28,5 @@ fn test_bcc_2() {
     nextln: jumpif v38, block_0, block_4
     "#;
 
-    assert!(check_instruction(bytes, directives, None));
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // Load register byte
 #[test]
@@ -18,7 +18,7 @@ fn test_ldrb_1() {
         nextln:  i32.write_reg v43, "x0"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -38,7 +38,7 @@ fn test_ldrb_2() {
         nextln:  i32.write_reg v43, "x0"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -56,5 +56,5 @@ fn test_ldrb_3() {
         nextln:  i32.write_reg v41, "x0"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // Compare and branch on zero
 #[test]
@@ -14,7 +14,7 @@ fn test_cbz_1() {
         nextln:   jumpif v38, $LABEL, $LABEL
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -29,7 +29,7 @@ fn test_cbz_2() {
         nextln: jumpif v38, $LABEL, $LABEL
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -44,5 +44,5 @@ fn test_cbz_3() {
         nextln: jumpif v38, $LABEL, $LABEL
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

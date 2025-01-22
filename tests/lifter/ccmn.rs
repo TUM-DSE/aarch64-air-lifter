@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // Conditional compare negative (immediate)
 #[test]
@@ -46,7 +46,7 @@ fn test_ccmn_1() {
         nextln:   i1.write_reg v60, "v"
         nextln:   jump $LABEL
    "#;
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -94,7 +94,7 @@ fn test_ccmn_2() {
         nextln:   jump $LABEL
    "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -143,5 +143,5 @@ fn test_ccmn_3() {
         nextln:   jump $LABEL
    "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

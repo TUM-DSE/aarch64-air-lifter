@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // Move with keep
 #[test]
@@ -11,7 +11,7 @@ fn test_movk_1() {
         nextln: i16.write_reg 0xc0000, "x1"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -24,5 +24,5 @@ fn test_movk_2() {
         nextln: i16.write_reg 0xd, "x1"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // bit-wise exclusive OR
 #[test]
@@ -17,7 +17,7 @@ fn test_extr_1() {
         nextln:  i64.write_reg v42, "x0"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -36,7 +36,7 @@ fn test_extr_2() {
         nextln:  i64.write_reg v42, "x0"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -55,5 +55,5 @@ fn test_extr_3() {
         nextln:  i32.write_reg v42, "x1"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

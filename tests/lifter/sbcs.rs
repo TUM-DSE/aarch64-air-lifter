@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 #[test]
 fn test_sbcs_1() {
@@ -33,7 +33,7 @@ fn test_sbcs_1() {
         nextln: i1.write_reg v55, "v"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -69,5 +69,5 @@ fn test_sbcs_2() {
         nextln: i1.write_reg v55, "v"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

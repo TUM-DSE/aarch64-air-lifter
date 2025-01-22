@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 #[test]
 fn test_movn_1() {
@@ -12,7 +12,7 @@ fn test_movn_1() {
         nextln: i16.write_reg v37, "x1"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -27,5 +27,5 @@ fn test_movn_2() {
         nextln:  i16.write_reg v37, "x1"
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

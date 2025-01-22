@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 #[test]
 fn test_rev32_1() {
@@ -18,5 +18,5 @@ fn test_rev32_1() {
         nextln: i64.write_reg v44, "x1"
    "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

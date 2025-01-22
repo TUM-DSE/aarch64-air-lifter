@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // Form PC-relative address to 4KB page
 #[test]
@@ -15,7 +15,7 @@ fn test_adrp_1() {
         nextln: i64.write_reg v40, "x0"
     "#;
 
-    assert!(check_instruction(bytes, directives, None));
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -32,5 +32,5 @@ fn test_adrp_2() {
         nextln: i64.write_reg v40, "x0"
     "#;
 
-    assert!(check_instruction(bytes, directives, None));
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

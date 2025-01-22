@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 #[test]
 fn test_sbfm_1() {
@@ -29,7 +29,7 @@ fn test_sbfm_1() {
         nextln:   i64.write_reg v50, "x1"
         nextln:   jump $LABEL
         "#;
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -62,5 +62,5 @@ fn test_sbfm_2() {
         nextln:   jump $LABEL
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

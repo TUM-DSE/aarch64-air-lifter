@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // Branch
 #[test]
@@ -13,5 +13,5 @@ fn test_b_1() {
         check: block_4: // no preds!
     "#;
 
-    assert!(check_instruction(bytes, directives, None));
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

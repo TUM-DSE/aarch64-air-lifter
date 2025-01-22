@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // Load pair of registers signed word
 #[test]
@@ -19,5 +19,5 @@ fn test_ldpsw_1() {
         nextln: i64.write_reg v43, "x2"       
    "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

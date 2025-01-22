@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // Conditional select increment
 #[test]
@@ -22,7 +22,7 @@ fn test_csinc_1() {
         nextln:   jump $LABEL
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -46,7 +46,7 @@ fn test_csinc_2() {
         nextln:   jump $LABEL
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -74,5 +74,5 @@ fn test_csinc_3() {
         nextln:   jump $LABEL
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

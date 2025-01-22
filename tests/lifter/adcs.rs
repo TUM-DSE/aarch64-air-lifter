@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // Add with carry with settings flags
 #[test]
@@ -32,7 +32,7 @@ fn test_adcs_1() {
         nextln:  i1.write_reg v53, "v"
     "#;
 
-    assert!(check_instruction(bytes, directives, None));
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -66,5 +66,5 @@ fn test_adcs_2() {
         nextln: i1.write_reg v53, "v"
     "#;
 
-    assert!(check_instruction(bytes, directives, None));
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }

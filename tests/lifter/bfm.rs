@@ -1,4 +1,4 @@
-use crate::common::lib::check_instruction;
+use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // Bitfield move
 #[test]
@@ -43,7 +43,7 @@ fn test_bfm_1() {
         # nextln:   jump block_4
     "#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -87,7 +87,7 @@ fn test_bfm_2() {
         # nextln:   i64.write_reg v62, "x1"
         # nextln:   jump block_4"#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
 
 #[test]
@@ -131,5 +131,5 @@ fn test_bfm_3() {
         nextln:   i64.write_reg v62, "x1"
         nextln:   jump block_4"#;
 
-    assert!(check_instruction(bytes, directives, None))
+    check_instruction(bytes, directives, CheckInstructionArgs::default());
 }
