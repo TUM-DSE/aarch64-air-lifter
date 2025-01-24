@@ -21,7 +21,7 @@ fn test_bfm_1() {
         # nextln:   v45 = i32.lshr v44, 0xc
         # nextln:   v46 = i32.lshl 0x1, v40
         # nextln:   v47 = i32.sub v46, 0x1
-        # nextln:   v48 = i32.not v47
+        # nextln:   v48 = i32.bitwise_not v47
         # nextln:   v49 = i32.and v37, v48
         # nextln:   v50 = i32.or v45, v49
         # nextln:   i32.write_reg v50, "x1"
@@ -36,7 +36,7 @@ fn test_bfm_1() {
         # nextln:   v57 = i32.lshl 0x1, v51
         # nextln:   v58 = i32.sub v57, 0x1
         # nextln:   v59 = i32.lshl v58, v55
-        # nextln:   v60 = i32.not v59
+        # nextln:   v60 = i32.bitwise_not v59
         # nextln:   v61 = i32.and v37, v60
         # nextln:   v62 = i32.or v56, v61
         # nextln:   i32.write_reg v62, "x1"
@@ -66,7 +66,7 @@ fn test_bfm_2() {
         # nextln:   v45 = i64.lshr v44, 0x1
         # nextln:   v46 = i64.lshl 0x1, v40
         # nextln:   v47 = i64.sub v46, 0x1
-        # nextln:   v48 = i64.not v47
+        # nextln:   v48 = i64.bitwise_not v47
         # nextln:   v49 = i64.and v37, v48
         # nextln:   v50 = i64.or v45, v49
         # nextln:   i64.write_reg v50, "x1"
@@ -81,7 +81,7 @@ fn test_bfm_2() {
         # nextln:   v57 = i64.lshl 0x1, v51
         # nextln:   v58 = i64.sub v57, 0x1
         # nextln:   v59 = i64.lshl v58, v55
-        # nextln:   v60 = i64.not v59
+        # nextln:   v60 = i64.bitwise_not v59
         # nextln:   v61 = i64.and v37, v60
         # nextln:   v62 = i64.or v56, v61
         # nextln:   i64.write_reg v62, "x1"
@@ -110,7 +110,7 @@ fn test_bfm_3() {
         nextln:   v45 = i64.lshr v44, 0x2
         nextln:   v46 = i64.lshl 0x1, v40
         nextln:   v47 = i64.sub v46, 0x1
-        nextln:   v48 = i64.not v47
+        nextln:   v48 = i64.bitwise_not v47
         nextln:   v49 = i64.and v37, v48
         nextln:   v50 = i64.or v45, v49
         nextln:   i64.write_reg v50, "x1"
@@ -125,7 +125,7 @@ fn test_bfm_3() {
         nextln:   v57 = i64.lshl 0x1, v51
         nextln:   v58 = i64.sub v57, 0x1
         nextln:   v59 = i64.lshl v58, v55
-        nextln:   v60 = i64.not v59
+        nextln:   v60 = i64.bitwise_not v59
         nextln:   v61 = i64.and v37, v60
         nextln:   v62 = i64.or v56, v61
         nextln:   i64.write_reg v62, "x1"

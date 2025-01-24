@@ -11,7 +11,7 @@ fn test_subs_1() {
         nextln:  v38 = i64.read_reg "x0"
         nextln:  v39 = i64.sub v37, v38
         nextln:  i64.write_reg v39, "x1"
-        nextln:  v40 = i64.not v38
+        nextln:  v40 = i64.bitwise_not v38
         nextln:  v41 = i64.add v37, v40
         nextln:  v42 = i64.add v41, 0x1
         nextln:  v43 = i64.icmp.eq v42, 0x0
@@ -44,7 +44,7 @@ fn test_subs_2() {
         nextln:  v38 = i32.read_reg "x0"
         nextln:  v39 = i32.sub v37, v38
         nextln:  i32.write_reg v39, "x1"
-        nextln:  v40 = i32.not v38
+        nextln:  v40 = i32.bitwise_not v38
         nextln:  v41 = i32.add v37, v40
         nextln:  v42 = i32.add v41, 0x1
         nextln:  v43 = i32.icmp.eq v42, 0x0

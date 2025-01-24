@@ -14,7 +14,7 @@ fn test_ccmp_1() {
         check: ccmp_positive_condition:
         nextln:   v39 = i64.read_reg "x0"
         nextln:   v40 = i64.read_reg "x1"
-        nextln:   v41 = i64.not v40
+        nextln:   v41 = i64.bitwise_not v40
         nextln:   v42 = i64.add v39, v41
         nextln:   v43 = i64.add v42, 0x0
         nextln:   v44 = i64.icmp.eq v43, 0x0
@@ -64,7 +64,7 @@ fn test_ccmp_2() {
         check: ccmp_positive_condition:
         nextln:   v39 = i32.read_reg "x0"
         nextln:   v40 = i32.read_reg "x2"
-        nextln:   v41 = i32.not v40
+        nextln:   v41 = i32.bitwise_not v40
         nextln:   v42 = i32.add v39, v41
         nextln:   v43 = i32.add v42, 0x0
         nextln:   v44 = i32.icmp.eq v43, 0x0
@@ -113,7 +113,7 @@ fn test_ccmp_3() {
         check: ccmp_positive_condition:
         nextln:   v38 = i64.read_reg "x6"
         nextln:   v39 = i64.read_reg "x6"
-        nextln:   v40 = i64.not v39
+        nextln:   v40 = i64.bitwise_not v39
         nextln:   v41 = i64.add v38, v40
         nextln:   v42 = i64.add v41, 0x0
         nextln:   v43 = i64.icmp.eq v42, 0x0
