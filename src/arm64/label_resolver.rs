@@ -4,8 +4,8 @@ use std::cmp::Reverse;
 use std::collections::HashMap;
 use std::collections::{BinaryHeap, HashSet};
 use std::hash::Hash;
+use tnj::air::instructions::builder::InstructionBuilder;
 use tnj::air::instructions::BasicBlock;
-use tnj::air::instructions::{builder::InstructionBuilder, BlockParamData};
 use yaxpeax_arch::{Decoder, U8Reader};
 use yaxpeax_arm::armv8::a64::{DecodeError, InstDecoder, Opcode};
 
@@ -129,7 +129,7 @@ impl LabelResolver {
                 None => break,
             };
             let name = helper::get_block_name(checkpoint);
-            let b = builder.create_block(name.clone(), Vec::<BlockParamData>::new());
+            let b = builder.create_block(name.clone(), []);
             self.blocks.insert(name, b);
         }
     }

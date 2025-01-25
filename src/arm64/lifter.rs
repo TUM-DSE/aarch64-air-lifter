@@ -5,7 +5,7 @@ use crate::Lifter;
 use target_lexicon::{Aarch64Architecture, Architecture};
 use thiserror::Error;
 use tnj::air::instructions::builder::InstructionBuilder;
-use tnj::air::instructions::{Blob, BlockParamData, Inst, Value};
+use tnj::air::instructions::{Blob, Inst, Value};
 use tnj::arch::get_arch;
 use tnj::arch::reg::Reg;
 use tnj::types::{Type, BOOL, I1, I128, I16, I32, I64, I8};
@@ -117,7 +117,7 @@ impl Lifter for AArch64Lifter {
                             let (dst_reg, _) = Self::get_dst_reg(&builder, inst);
                             let offset = Self::get_value(&mut builder, inst.operands[1]);
                             let reverse_mask = builder.iconst(0xFFF);
-                            let mask = builder.not(reverse_mask, I64);
+                            let mask = builder.bitwise_not(reverse_mask, I64);
                             let pc = Self::get_pc(&mut builder);
                             let masked_pc = builder.and(pc, mask, I64);
                             let addr = builder.add(masked_pc, offset, I64);
@@ -182,14 +182,10 @@ impl Lifter for AArch64Lifter {
                             );
                         }
                         Opcode::BFM => {
-                            let positive_condition_block = builder.create_block(
-                                "bfm_positive_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
-                            let negative_condition_block = builder.create_block(
-                                "bfm_negative_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
+                            let positive_condition_block =
+                                builder.create_block("bfm_positive_condition", []);
+                            let negative_condition_block =
+                                builder.create_block("bfm_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
                             let next_block = *label_resolver.get_block_by_address(next_address);
 
@@ -221,7 +217,7 @@ impl Lifter for AArch64Lifter {
                             // clear dst bits that are replaced by the src bitfield
                             let dst_mask = builder.lshl(one, src_bitfield_size, op_type);
                             let dst_mask = builder.sub(dst_mask, one, op_type);
-                            let dst_mask = builder.not(dst_mask, op_type);
+                            let dst_mask = builder.bitwise_not(dst_mask, op_type);
                             let dst_bitfield = builder.and(src, dst_mask, op_type);
                             // merge and write bitfield
                             let val = builder.or(src_bitfield, dst_bitfield, op_type);
@@ -246,7 +242,7 @@ impl Lifter for AArch64Lifter {
                             let dst_mask = builder.lshl(one, src_bitfield_size, op_type);
                             let dst_mask = builder.sub(dst_mask, one, op_type);
                             let dst_mask = builder.lshl(dst_mask, starting_position, op_type);
-                            let dst_mask = builder.not(dst_mask, op_type);
+                            let dst_mask = builder.bitwise_not(dst_mask, op_type);
                             let dst_bitfield = builder.and(src, dst_mask, op_type);
                             // merge and write bitfield
                             let val = builder.or(src_bitfield, dst_bitfield, op_type);
@@ -258,7 +254,7 @@ impl Lifter for AArch64Lifter {
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
-                            let neg_src2 = builder.not(src2, op_type);
+                            let neg_src2 = builder.bitwise_not(src2, op_type);
                             let val = builder.and(src1, neg_src2, op_type);
                             Self::write_reg(&mut builder, val, dst_reg, op_type);
                         }
@@ -275,8 +271,7 @@ impl Lifter for AArch64Lifter {
                         }
                         Opcode::CAS(_memory_ordering) => {
                             // Untested
-                            let swap_block =
-                                builder.create_block("cas_swap", Vec::<BlockParamData>::new());
+                            let swap_block = builder.create_block("cas_swap", []);
                             let next_address = pc + INSTRUCTION_SIZE;
                             let next_block = *label_resolver.get_block_by_address(next_address);
 
@@ -328,14 +323,10 @@ impl Lifter for AArch64Lifter {
                             builder.jumpif(condition, *block, Vec::new(), next_block, Vec::new());
                         }
                         Opcode::CCMN => {
-                            let positive_condition_block = builder.create_block(
-                                "ccmp_positive_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
-                            let negative_condition_block = builder.create_block(
-                                "ccmp_negative_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
+                            let positive_condition_block =
+                                builder.create_block("ccmp_positive_condition", []);
+                            let negative_condition_block =
+                                builder.create_block("ccmp_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
                             let next_block = *label_resolver.get_block_by_address(next_address);
 
@@ -363,14 +354,10 @@ impl Lifter for AArch64Lifter {
                             builder.jump(next_block, Vec::new());
                         }
                         Opcode::CCMP => {
-                            let positive_condition_block = builder.create_block(
-                                "ccmp_positive_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
-                            let negative_condition_block = builder.create_block(
-                                "ccmp_negative_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
+                            let positive_condition_block =
+                                builder.create_block("ccmp_positive_condition", []);
+                            let negative_condition_block =
+                                builder.create_block("ccmp_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
                             let next_block = *label_resolver.get_block_by_address(next_address);
 
@@ -388,7 +375,7 @@ impl Lifter for AArch64Lifter {
                             builder.set_insert_block(positive_condition_block);
                             let src1 = Self::get_value(&mut builder, inst.operands[0]);
                             let src2 = Self::get_value(&mut builder, inst.operands[1]);
-                            let not_src2 = builder.not(src2, op_type);
+                            let not_src2 = builder.bitwise_not(src2, op_type);
                             let carry = builder.iconst(0);
                             Self::set_flags_using_adc(
                                 &mut builder,
@@ -412,7 +399,7 @@ impl Lifter for AArch64Lifter {
                             let one = builder.iconst(1);
                             let val1 = builder.lshr(src, one, op_type);
                             let val2_mask = builder.ror(one, one, op_type);
-                            let val2_mask = builder.not(val2_mask, op_type);
+                            let val2_mask = builder.bitwise_not(val2_mask, op_type);
                             let val2 = builder.and(val2_mask, src, op_type);
                             let val = builder.xor(val1, val2, op_type);
 
@@ -443,14 +430,10 @@ impl Lifter for AArch64Lifter {
                             Self::write_reg(&mut builder, val, dst_reg, op_type);
                         }
                         Opcode::CSEL => {
-                            let positive_condition_block = builder.create_block(
-                                "csel_positive_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
-                            let negative_condition_block = builder.create_block(
-                                "csel_negative_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
+                            let positive_condition_block =
+                                builder.create_block("csel_positive_condition", []);
+                            let negative_condition_block =
+                                builder.create_block("csel_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
                             let next_block = *label_resolver.get_block_by_address(next_address);
 
@@ -476,14 +459,10 @@ impl Lifter for AArch64Lifter {
                             builder.jump(next_block, Vec::new());
                         }
                         Opcode::CSINC => {
-                            let positive_condition_block = builder.create_block(
-                                "csinc_positive_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
-                            let negative_condition_block = builder.create_block(
-                                "csinc_negative_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
+                            let positive_condition_block =
+                                builder.create_block("csinc_positive_condition", []);
+                            let negative_condition_block =
+                                builder.create_block("csinc_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
                             let next_block = *label_resolver.get_block_by_address(next_address);
 
@@ -513,14 +492,10 @@ impl Lifter for AArch64Lifter {
                             builder.jump(next_block, Vec::new());
                         }
                         Opcode::CSINV => {
-                            let positive_condition_block = builder.create_block(
-                                "csinv_positive_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
-                            let negative_condition_block = builder.create_block(
-                                "csinv_negative_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
+                            let positive_condition_block =
+                                builder.create_block("csinv_positive_condition", []);
+                            let negative_condition_block =
+                                builder.create_block("csinv_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
                             let next_block = *label_resolver.get_block_by_address(next_address);
 
@@ -544,19 +519,15 @@ impl Lifter for AArch64Lifter {
                             // Condition is false
                             builder.set_insert_block(negative_condition_block);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
-                            let val = builder.not(src2, op_type);
+                            let val = builder.bitwise_not(src2, op_type);
                             Self::write_reg(&mut builder, val, dst_reg, op_type);
                             builder.jump(next_block, Vec::new());
                         }
                         Opcode::CSNEG => {
-                            let positive_condition_block = builder.create_block(
-                                "csneg_positive_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
-                            let negative_condition_block = builder.create_block(
-                                "csneg_negative_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
+                            let positive_condition_block =
+                                builder.create_block("csneg_positive_condition", []);
+                            let negative_condition_block =
+                                builder.create_block("csneg_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
                             let next_block = *label_resolver.get_block_by_address(next_address);
 
@@ -591,7 +562,7 @@ impl Lifter for AArch64Lifter {
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
 
-                            let src2 = builder.not(src2, op_type);
+                            let src2 = builder.bitwise_not(src2, op_type);
                             let val = builder.xor(src1, src2, op_type);
                             Self::write_reg(&mut builder, val, dst_reg, op_type);
                         }
@@ -757,7 +728,7 @@ impl Lifter for AArch64Lifter {
                             Self::write_reg(&mut builder, zero, dst_reg, op_type);
 
                             let src = Self::get_value(&mut builder, inst.operands[1]);
-                            let src = builder.not(src, I16);
+                            let src = builder.bitwise_not(src, I16);
                             Self::write_reg(&mut builder, src, dst_reg, I16);
                         }
                         Opcode::MOVZ => {
@@ -792,7 +763,7 @@ impl Lifter for AArch64Lifter {
                             let op_type = helper::get_type_by_sizecode(sz);
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
-                            let val = builder.not(src2, op_type);
+                            let val = builder.bitwise_not(src2, op_type);
                             let val = builder.or(src1, val, op_type);
                             Self::write_reg(&mut builder, val, dst_reg, op_type);
                         }
@@ -874,7 +845,7 @@ impl Lifter for AArch64Lifter {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let carry = Self::flag_value(&mut builder, Flag::C);
-                            let carry = builder.not(carry, I1);
+                            let carry = builder.bitwise_not(carry, I1);
                             let (dst_reg, sz) = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_sizecode(sz);
                             let val = builder.sub(src1, src2, op_type);
@@ -886,14 +857,10 @@ impl Lifter for AArch64Lifter {
                             }
                         }
                         Opcode::SBFM => {
-                            let positive_condition_block = builder.create_block(
-                                "sbfm_positive_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
-                            let negative_condition_block = builder.create_block(
-                                "sbfm_negative_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
+                            let positive_condition_block =
+                                builder.create_block("sbfm_positive_condition", []);
+                            let negative_condition_block =
+                                builder.create_block("sbfm_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
                             let next_block = *label_resolver.get_block_by_address(next_address);
 
@@ -949,7 +916,7 @@ impl Lifter for AArch64Lifter {
                             let zero = builder.iconst(0);
                             let trap =
                                 builder.icmp(tnj::types::cmp::CmpTy::Eq, src2, zero, op_type);
-                            builder.trapif(trap, op_type);
+                            builder.trapif(trap);
                             let val = builder.idiv(src1, src2, op_type);
                             Self::write_reg(&mut builder, val, dst_reg, op_type);
                         }
@@ -1042,7 +1009,7 @@ impl Lifter for AArch64Lifter {
                             Self::write_reg(&mut builder, val, dst_reg, op_type);
                             if inst.opcode == Opcode::SUBS {
                                 let one = builder.iconst(1);
-                                let not_src2 = builder.not(src2, op_type).into();
+                                let not_src2 = builder.bitwise_not(src2, op_type).into();
                                 Self::set_flags_using_adc(
                                     &mut builder,
                                     src1,
@@ -1097,14 +1064,10 @@ impl Lifter for AArch64Lifter {
                             builder.jumpif(cmp, jump_block, Vec::new(), next_block, Vec::new());
                         }
                         Opcode::UBFM => {
-                            let positive_condition_block = builder.create_block(
-                                "ubfm_positive_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
-                            let negative_condition_block = builder.create_block(
-                                "ubfm_negative_condition",
-                                Vec::<BlockParamData>::new(),
-                            );
+                            let positive_condition_block =
+                                builder.create_block("ubfm_positive_condition", []);
+                            let negative_condition_block =
+                                builder.create_block("ubfm_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
                             let next_block = *label_resolver.get_block_by_address(next_address);
 
@@ -1163,7 +1126,7 @@ impl Lifter for AArch64Lifter {
                             let zero = builder.iconst(0);
                             let trap =
                                 builder.icmp(tnj::types::cmp::CmpTy::Eq, src2, zero, op_type);
-                            builder.trapif(trap, op_type);
+                            builder.trapif(trap);
                             let val = builder.udiv(src1, src2, op_type);
                             Self::write_reg(&mut builder, val, dst_reg, op_type);
                         }

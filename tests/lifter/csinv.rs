@@ -18,7 +18,7 @@ fn test_csinv_1() {
         nextln:   jump $LABEL
         check: csinv_negative_condition:
         nextln:   $VAR_NAME = i32.read_reg "x3"
-        nextln:   $VAR_NAME = i32.not $VAR_NAME 
+        nextln:   $VAR_NAME = i32.bitwise_not $VAR_NAME
         nextln:   i32.write_reg $VAR_NAME, "x1"
         nextln:   jump $LABEL
     "#;
@@ -43,7 +43,7 @@ fn test_csinv_2() {
         nextln:   jump $LABEL
         check: csinv_negative_condition:
         nextln:   $VAR_NAME = i64.read_reg "x3"
-        nextln:   $VAR_NAME = i64.not $VAR_NAME
+        nextln:   $VAR_NAME = i64.bitwise_not $VAR_NAME
         nextln:   i64.write_reg $VAR_NAME, "x1"
         nextln:   jump $LABEL
     "#;
@@ -67,7 +67,7 @@ fn test_csinv_3() {
         nextln:   jump $LABEL
         check: csinv_negative_condition:
         nextln:   v40 = i64.read_reg "x2"
-        nextln:   v41 = i64.not v40
+        nextln:   v41 = i64.bitwise_not v40
         nextln:   i64.write_reg v41, "x1"
         nextln:   jump $LABEL
     "#;

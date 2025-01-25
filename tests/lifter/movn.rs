@@ -8,7 +8,7 @@ fn test_movn_1() {
     let directives = r#"
         check: // entry block
         nextln: i32.write_reg 0x0, "x1"
-        nextln: v37 = i16.not 0xc0000
+        nextln: v37 = i16.bitwise_not 0xc0000
         nextln: i16.write_reg v37, "x1"
     "#;
 
@@ -23,7 +23,7 @@ fn test_movn_2() {
     let directives = r#"
         check: // entry block
         nextln:  i64.write_reg 0x0, "x1"
-        nextln:  v37 = i16.not 0xd
+        nextln:  v37 = i16.bitwise_not 0xd
         nextln:  i16.write_reg v37, "x1"
     "#;
 

@@ -11,7 +11,7 @@ fn test_cls_1() {
         nextln: v37 = i64.read_reg "x2"
         nextln: v38 = i64.lshr v37, 0x1
         nextln: v39 = i64.ror 0x1, 0x1
-        nextln: v40 = i64.not v39
+        nextln: v40 = i64.bitwise_not v39
         nextln: v41 = i64.and v40, v37
         nextln: v42 = i64.xor v38, v41
         nextln: v43 = i64.highest_set_bit v42
@@ -33,7 +33,7 @@ fn test_cls_2() {
         nextln: v37 = i32.read_reg "x2"
         nextln: v38 = i32.lshr v37, 0x1
         nextln: v39 = i32.ror 0x1, 0x1
-        nextln: v40 = i32.not v39
+        nextln: v40 = i32.bitwise_not v39
         nextln: v41 = i32.and v40, v37
         nextln: v42 = i32.xor v38, v41
         nextln: v43 = i32.highest_set_bit v42

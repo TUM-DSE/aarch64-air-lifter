@@ -8,6 +8,6 @@ elf = "0.7.4"
 filecheck = "0.5.0"
 target-lexicon = "0.13.1"
 thiserror = "2.0.0"
-tnj = { git = "ssh://git@github.com/TUM-DSE/tnj.git", rev = "28b2b8c51110a017d8a50edc96cfce3257e99631" }
+tnj = { git = "ssh://git@github.com/TUM-DSE/tnj.git", branch = "main" }
 yaxpeax-arch = "0.3.2"
 yaxpeax-arm = "0.3.0"

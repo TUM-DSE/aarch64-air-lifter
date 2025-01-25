@@ -8,7 +8,7 @@ fn test_adrp_1() {
     ];
     let directives = r#"
         check: // entry block
-        nextln: v37 = i64.not 0xfff
+        nextln: v37 = i64.bitwise_not 0xfff
         nextln: v38 = i64.read_reg "pc"
         nextln: v39 = i64.and v38, v37
         nextln: v40 = i64.add v39, 0x0
@@ -25,7 +25,7 @@ fn test_adrp_2() {
     ];
     let directives = r#"
         check: // entry block
-        nextln: v37 = i64.not 0xfff
+        nextln: v37 = i64.bitwise_not 0xfff
         nextln: v38 = i64.read_reg "pc"
         nextln: v39 = i64.and v38, v37
         nextln: v40 = i64.add v39, 0x1000

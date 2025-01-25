@@ -11,7 +11,7 @@ fn test_and_1() {
         nextln:  v37 = i32.read_reg "x1"
         nextln:  v38 = i32.read_reg "x2"
         nextln:  v39 = i32.lshl v38, 0x3
-        nextln:  v40 = i32.not v39
+        nextln:  v40 = i32.bitwise_not v39
         nextln:  v41 = i32.or v37, v40
         nextln:  i32.write_reg v41, "x0"
     "#;
@@ -28,7 +28,7 @@ fn test_and_2() {
         check: // entry block
         nextln:  v37 = i64.read_reg "x2"
         nextln:  v38 = i64.read_reg "x1"
-        nextln:  v39 = i64.not v38
+        nextln:  v39 = i64.bitwise_not v38
         nextln:  v40 = i64.or v37, v39
         nextln:  i64.write_reg v40, "x1"
     "#;
@@ -46,7 +46,7 @@ fn test_orn_3() {
         nextln:  v37 = i64.read_reg "x1"
         nextln:  v38 = i64.read_reg "x2"
         nextln:  v39 = i64.lshl v38, 0x4
-        nextln:  v40 = i64.not v39
+        nextln:  v40 = i64.bitwise_not v39
         nextln:  v41 = i64.or v37, v40
         nextln:  i64.write_reg v41, "x0"
     "#;

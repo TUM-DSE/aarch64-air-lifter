@@ -11,7 +11,7 @@ fn test_eon_1() {
         nextln:  v37 = i64.read_reg "x2"
         nextln:  v38 = i64.read_reg "x3"
         nextln:  v39 = i64.lshr v38, 0xc
-        nextln:  v40 = i64.not v39
+        nextln:  v40 = i64.bitwise_not v39
         nextln:  v41 = i64.xor v37, v40
         nextln:  i64.write_reg v41, "x1"
     "#;
@@ -29,7 +29,7 @@ fn test_eon_2() {
         nextln:  v37 = i64.read_reg "x2"
         nextln:  v38 = i64.read_reg "x3"
         nextln:  v39 = i64.ashr v38, 0x1
-        nextln:  v40 = i64.not v39
+        nextln:  v40 = i64.bitwise_not v39
         nextln:  v41 = i64.xor v37, v40
         nextln:  i64.write_reg v41, "x1"
     "#;
@@ -47,7 +47,7 @@ fn test_eon_3() {
         nextln:  v37 = i32.read_reg "x2"
         nextln:  v38 = i32.read_reg "x3"
         nextln:  v39 = i32.ashr v38, 0x1
-        nextln:  v40 = i32.not v39
+        nextln:  v40 = i32.bitwise_not v39
         nextln:  v41 = i32.xor v37, v40
         nextln:  i32.write_reg v41, "x1"
     "#;
