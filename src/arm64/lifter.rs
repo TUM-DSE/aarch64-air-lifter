@@ -78,7 +78,6 @@ impl Lifter for AArch64Lifter {
                         builder.set_insert_block(*block);
                     }
 
-                    println!("{}", inst);
                     match inst.opcode {
                         Opcode::ADC | Opcode::ADCS => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
@@ -171,11 +170,6 @@ impl Lifter for AArch64Lifter {
                             let jump_block = *label_resolver.get_block_by_address(jump_address);
                             let next_address: u64 = pc + INSTRUCTION_SIZE;
                             let next_block = *label_resolver.get_block_by_address(next_address);
-
-                            println!(
-                                "Next address {} and jump addres {} ",
-                                next_address, jump_address
-                            );
 
                             let operand = Operand::ConditionCode(condition);
                             let condition = Self::get_condition(&mut builder, operand)?;
@@ -1217,7 +1211,6 @@ impl Lifter for AArch64Lifter {
 impl AArch64Lifter {
     /// Returns the value of a register as a 64-bit value.
     fn get_value(builder: &mut InstructionBuilder, operand: Operand) -> Value {
-        println!("{:?}", operand);
         match operand {
             Operand::Register(sz, reg) => Self::reg_val(builder, sz, reg, SpOrZrReg::Zr),
             Operand::RegisterOrSP(sz, reg) => Self::reg_val(builder, sz, reg, SpOrZrReg::Sp),
@@ -1592,8 +1585,10 @@ impl AArch64Lifter {
                 panic!("Lifting for SIMD instructions is not supported yet");
             }
             _ => {
-                println!("{:?}", operand);
-                panic!("can not get size code for non-register types");
+                panic!(
+                    "Can not get size code for non-register types of operand {:?}",
+                    operand
+                );
             }
         }
     }

@@ -16,18 +16,25 @@ const VARIABLES: [(&str, Value); 2] = [
     ),
 ];
 
-#[derive(Default)]
 pub struct CheckInstructionArgs {
     pub variable_map: SimpleVariableMap,
     pub print_to_std: bool,
+    pub debug: bool,
 }
 
 impl CheckInstructionArgs {
-    pub fn new(variable_map: SimpleVariableMap, print_to_std: bool) -> Self {
+    pub fn new(variable_map: SimpleVariableMap, print_to_std: bool, debug: bool) -> Self {
         Self {
             variable_map,
             print_to_std,
+            debug,
         }
+    }
+}
+
+impl Default for CheckInstructionArgs {
+    fn default() -> Self {
+        Self::new(SimpleVariableMap::default(), true, false)
     }
 }
 
@@ -35,13 +42,13 @@ pub fn check_instruction(bytes: [u8; 4], directives: &str, args: CheckInstructio
     let lifter = AArch64Lifter;
     let blob = lifter.lift(&bytes, &[]).unwrap();
     let result = blob.display().to_string();
+    if args.debug {
+        let blocks_count = blob.blocks().len();
+        let inst_count = blob.blocks().iter().fold(0, |acc, b| acc + b.insts().len());
+        println!("Blocks: {}, Instructions: {}", blocks_count, inst_count);
+    }
     if args.print_to_std {
         println!("{}", result);
-
-        let blocks_count = blob.blocks().len();
-        println!("Block count: {}", blocks_count);
-        let inst_count = blob.blocks().iter().fold(0, |acc, b| acc + b.insts().len());
-        println!("Instruction count: {}", inst_count);
     }
 
     let mut variable_map = args.variable_map;
