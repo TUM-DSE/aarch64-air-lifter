@@ -1,5 +1,6 @@
 use std::fs;
 use std::path::Path;
+use std::time::{Duration, Instant};
 
 use aarch64_air_lifter::arm64::AArch64Lifter;
 use aarch64_air_lifter::Lifter;
@@ -22,6 +23,7 @@ fn read_elf_file(path: impl AsRef<Path>) -> Result<(), Box<dyn std::error::Error
     let (string_table, _) = file.symbol_table()?.ok_or("Missing symbol table")?;
 
     let section_addr = text_shdr.sh_addr;
+    let mut execution_time = Duration::from_millis(0);
     for s in string_table.iter().filter(|s| s.st_symtype() == STT_FUNC) {
         // Calculate offset relative to section start
         let offset: usize = (s
@@ -47,6 +49,7 @@ fn read_elf_file(path: impl AsRef<Path>) -> Result<(), Box<dyn std::error::Error
             continue;
         }
 
+        let start = Instant::now();
         let panic = std::panic::catch_unwind(|| match lifter.lift(&bytes[offset..end], &[]) {
             Ok(_blob) => Ok(()),
             Err(e) => {
@@ -57,8 +60,11 @@ fn read_elf_file(path: impl AsRef<Path>) -> Result<(), Box<dyn std::error::Error
 
         if let Err(e) = panic {
             println!("Panicked while processing symbol {:?}: {:?}", s, e);
+        } else {
+            execution_time += start.elapsed();
         }
     }
+    println!("Execution time: {:?}", execution_time);
     Ok(())
 }
 
