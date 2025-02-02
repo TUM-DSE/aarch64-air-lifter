@@ -1,1 +1,3 @@
+mod exclusive_simd_instructions;
+mod inclusive_simd_instructions;
 mod missing_instructions;

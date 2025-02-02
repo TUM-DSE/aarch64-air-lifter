@@ -14,24 +14,20 @@ pub fn get_block_name(jump_address: u64) -> String {
 }
 
 pub fn get_type_by_inst(inst: Instruction) -> Type {
-    match inst.operands[0] {
+    get_type_by_operand(inst.operands[0])
+}
+
+pub fn get_type_by_operand(op: Operand) -> Type {
+    match op {
         Operand::Register(sz, _) => get_type_by_sizecode(sz),
         Operand::RegisterOrSP(sz, _) => get_type_by_sizecode(sz),
         Operand::RegisterPair(sz, _) => get_type_by_sizecode(sz),
         Operand::SIMDRegister(sz, _) => get_type_by_simd_sizecode(sz),
         Operand::SIMDRegisterElements(sz, _, _) => get_type_by_simd_sizecode(sz),
-        Operand::SIMDRegisterElementsLane(_, _, _, _) => {
-            unimplemented!("TODO: Implement get_type_by_inst for SIMDRegisterElementsLane")
-        }
-        Operand::SIMDRegisterElementsMultipleLane(_, _, _, _, _) => {
-            unimplemented!("TODO: Implement get_type_by_inst for SIMDRegisterElementsMultipleLane")
-        }
-        Operand::SIMDRegisterGroup(_, _, _, _) => {
-            unimplemented!("TODO: Implement get_type_by_inst for SIMDRegisterGroup")
-        }
-        Operand::SIMDRegisterGroupLane(_, _, _, _) => {
-            unimplemented!("TODO: Implement get_type_by_inst for SIMDRegisterGroupLane")
-        }
+        Operand::SIMDRegisterElementsLane(sz, _, _, _) => get_type_by_simd_sizecode(sz),
+        Operand::SIMDRegisterElementsMultipleLane(sz, _, _, _, _) => get_type_by_simd_sizecode(sz),
+        Operand::SIMDRegisterGroup(sz, _, _, _) => get_type_by_simd_sizecode(sz),
+        Operand::SIMDRegisterGroupLane(_, sz, _, _) => get_type_by_simd_sizecode(sz),
         op => unimplemented!("Destination operand invalid {:?}", op),
     }
 }

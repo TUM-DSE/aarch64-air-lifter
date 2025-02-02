@@ -1241,7 +1241,7 @@ impl AArch64Lifter {
             }
             Operand::RegPostIndexReg(_, _) => unimplemented!("RegPostIndexReg"),
             Operand::PCOffset(n) => builder.iconst(n as u64),
-            op => unreachable!("incorrect operand for `get_reg_value`: {:?}", op),
+            _ => builder.opaque(helper::get_type_by_operand(operand)).into(),
         }
     }
 
@@ -1264,8 +1264,7 @@ impl AArch64Lifter {
                     I64,
                 ),
                 SpOrZrReg::Zr => {
-                    // here we directly return the value as 64 bits
-                    return builder.iconst(0);
+                    return builder.opaque(op_type).into();
                 }
             }
         } else {
@@ -1289,7 +1288,7 @@ impl AArch64Lifter {
                     Reg(reg as u32)
                 }
             }
-            op => unimplemented!("Can not write into {:?}", op),
+            _ => Reg(31),
         };
         dst_reg
     }
