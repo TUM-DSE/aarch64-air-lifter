@@ -1151,8 +1151,8 @@ impl Lifter for AArch64Lifter {
                             let sixtyfour = builder.iconst(64);
                             let val = builder.ashr(val, sixtyfour, I128);
                             Self::write_reg(&mut builder, val, dst_reg, I64);
-                        }
-                        op => unimplemented!("{}", op),
+                        } // op => unimplemented!("{}", op),
+                        _ => {}
                     }
                 }
                 Err(DecodeError::ExhaustedInput) => break,
