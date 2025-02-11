@@ -133,6 +133,12 @@ impl Lifter for AArch64Lifter {
                                 let zero = builder.iconst(0);
                                 Self::write_flag(&mut builder, zero, Flag::C);
                                 Self::write_flag(&mut builder, zero, Flag::V);
+                                let is_zero =
+                                    builder.icmp(tnj::types::cmp::CmpTy::Eq, val, zero, op_type);
+                                Self::write_flag(&mut builder, is_zero.into(), Flag::Z);
+                                let is_negative =
+                                    builder.icmp(tnj::types::cmp::CmpTy::Slt, val, zero, op_type);
+                                Self::write_flag(&mut builder, is_negative.into(), Flag::N);
                             }
                         }
                         Opcode::ASRV => {

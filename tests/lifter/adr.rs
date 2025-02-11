@@ -2,7 +2,7 @@ use crate::common::lib::{check_instruction, CheckInstructionArgs};
 
 // Form pc-relative address
 #[test]
-fn test_addr_1() {
+fn test_adr_1() {
     let bytes = [
         0x00, 0x00, 0x00, 0x10, // adr x0, pc
     ];
@@ -17,7 +17,7 @@ fn test_addr_1() {
 }
 
 #[test]
-fn test_addr_2() {
+fn test_adr_2() {
     let bytes = [
         0x21, 0x00, 0x00, 0x10, // adr x1, pc+1
     ];
@@ -32,7 +32,7 @@ fn test_addr_2() {
 }
 
 #[test]
-fn test_addr_3() {
+fn test_adr_3() {
     let bytes = [
         0xC0, 0xFF, 0xFF, 0x10, // adr x0, pc-2
     ];
