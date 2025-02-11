@@ -266,6 +266,9 @@ impl Lifter for AArch64Lifter {
                             }
                             let address = Self::get_value(&mut builder, inst.operands[0]);
                             builder.dynamic_jump(address);
+                            if inst.opcode == Opcode::BLR {
+                                builder.invalidate_regs();
+                            }
                         }
                         Opcode::CAS(_memory_ordering) => {
                             // Untested
@@ -590,6 +593,7 @@ impl Lifter for AArch64Lifter {
                         }
                         Opcode::HVC => {
                             // We are ignoring hypervisor calls
+                            builder.invalidate_regs();
                         }
                         Opcode::LDP | Opcode::LDXP => {
                             let dst_reg1 = Self::get_reg_by_index(&builder, inst, 0);
@@ -1016,9 +1020,11 @@ impl Lifter for AArch64Lifter {
                         }
                         Opcode::SVC => {
                             // Ignoring supervisor calls
+                            builder.invalidate_regs();
                         }
                         Opcode::SYS(_data) | Opcode::SYSL(_data) => {
                             // Ignoring system calls
+                            builder.invalidate_regs();
                         }
                         Opcode::TBNZ => {
                             let next_address = pc + INSTRUCTION_SIZE;
@@ -1152,7 +1158,16 @@ impl Lifter for AArch64Lifter {
                             let val = builder.ashr(val, sixtyfour, I128);
                             Self::write_reg(&mut builder, val, dst_reg, I64);
                         } // op => unimplemented!("{}", op),
-                        _ => {}
+                        _ => {
+                            let is_general_purpose =
+                                helper::is_operand_general_purpose(inst.operands[0]);
+                            if is_general_purpose {
+                                let dst_reg = Self::get_dst_reg(&builder, inst);
+                                let op_type = helper::get_type_by_inst(inst);
+                                let val = builder.opaque(op_type);
+                                Self::write_reg(&mut builder, val, dst_reg, op_type);
+                            }
+                        }
                     }
                 }
                 Err(DecodeError::ExhaustedInput) => break,

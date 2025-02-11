@@ -27,12 +27,12 @@ dependencies = [
 [[package]]
 name = "air-macros"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#f516cbc1e169eacd591859d321fc7e2f96ae58ac"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#db408bdc83b180ee3d42c916c26fdeaf52f45f72"
 
 [[package]]
 name = "air-meta"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#f516cbc1e169eacd591859d321fc7e2f96ae58ac"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#db408bdc83b180ee3d42c916c26fdeaf52f45f72"
 dependencies = [
  "air-types",
  "convert_case",
@@ -41,7 +41,7 @@ dependencies = [
 [[package]]
 name = "air-sym"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#f516cbc1e169eacd591859d321fc7e2f96ae58ac"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#db408bdc83b180ee3d42c916c26fdeaf52f45f72"
 dependencies = [
  "air-macros",
  "air-types",
@@ -54,7 +54,7 @@ dependencies = [
 [[package]]
 name = "air-types"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#f516cbc1e169eacd591859d321fc7e2f96ae58ac"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#db408bdc83b180ee3d42c916c26fdeaf52f45f72"
 dependencies = [
  "num",
 ]
@@ -310,9 +310,9 @@ checksum = "f7c45b9784283f1b2e7fb61b42047c2fd678ef0960d4f6f1eba131594cc369d4"
 
 [[package]]
 name = "ryu"
-version = "1.0.18"
+version = "1.0.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3cb5ba0dc43242ce17de99c180e96db90b235b8a9fdc9543c96d2209116bd9f"
+checksum = "6ea1a2d0a644769cc99faa24c3ad26b379b786fe7c36fd3c546254801650e6dd"
 
 [[package]]
 name = "serde"
@@ -342,9 +342,9 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
 name = "syn"
-version = "2.0.96"
+version = "2.0.98"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5d0adab1ae378d7f53bdebc67a39f1f151407ef230f0ce2883572f5d8985c80"
+checksum = "36147f1a48ae0ec2b5b3bc5b537d267457555a10dc06f3dbc8cb11ba3006d3b1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -359,9 +359,9 @@ checksum = "55937e1799185b12863d447f42597ed69d9928686b8d88a1df17376a097d8369"
 
 [[package]]
 name = "target-lexicon"
-version = "0.13.1"
+version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc12939a1c9b9d391e0b7135f72fd30508b73450753e28341fed159317582a77"
+checksum = "e502f78cdbb8ba4718f566c418c52bc729126ffd16baee5baa718cf25dd5a69a"
 
 [[package]]
 name = "thiserror"
@@ -406,7 +406,7 @@ dependencies = [
 [[package]]
 name = "tnj"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#f516cbc1e169eacd591859d321fc7e2f96ae58ac"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#db408bdc83b180ee3d42c916c26fdeaf52f45f72"
 dependencies = [
  "air-macros",
  "air-meta",
@@ -421,7 +421,7 @@ dependencies = [
 [[package]]
 name = "tnj-air"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#f516cbc1e169eacd591859d321fc7e2f96ae58ac"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#db408bdc83b180ee3d42c916c26fdeaf52f45f72"
 dependencies = [
  "air-macros",
  "air-meta",
@@ -440,7 +440,7 @@ dependencies = [
 [[package]]
 name = "tnj-arch"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#f516cbc1e169eacd591859d321fc7e2f96ae58ac"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#db408bdc83b180ee3d42c916c26fdeaf52f45f72"
 dependencies = [
  "air-macros",
  "air-types",
@@ -451,7 +451,7 @@ dependencies = [
 [[package]]
 name = "tnj-pcc"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#f516cbc1e169eacd591859d321fc7e2f96ae58ac"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#db408bdc83b180ee3d42c916c26fdeaf52f45f72"
 dependencies = [
  "air-sym",
  "air-types",
@@ -465,7 +465,7 @@ dependencies = [
 [[package]]
 name = "tnj-policy"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#f516cbc1e169eacd591859d321fc7e2f96ae58ac"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#db408bdc83b180ee3d42c916c26fdeaf52f45f72"
 dependencies = [
  "air-sym",
  "air-types",
@@ -480,9 +480,9 @@ dependencies = [
 
 [[package]]
 name = "unicode-ident"
-version = "1.0.15"
+version = "1.0.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "11cd88e12b17c6494200a9c1b683a04fcac9573ed74cd1b62aeb2727c5592243"
+checksum = "a210d160f08b701c8721ba1c726c11662f877ea6b7094007e1ca9a1041945034"
 
 [[package]]
 name = "unicode-segmentation"
@@ -512,9 +512,9 @@ dependencies = [
 
 [[package]]
 name = "yaxpeax-arm"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e1c6a2af41f88546a08df3bc77aadf7263884d6dffdac5b32dea7dc2df23f241"
+checksum = "1db82aac85bc577d19b6255bf54ad97241c436eeb997ba159f399adacc5fb69e"
 dependencies = [
  "bitvec",
  "serde",

@@ -17,6 +17,13 @@ pub fn get_type_by_inst(inst: Instruction) -> Type {
     get_type_by_operand(inst.operands[0])
 }
 
+pub fn is_operand_general_purpose(op: Operand) -> bool {
+    matches!(
+        op,
+        Operand::Register(_, _) | Operand::RegisterOrSP(_, _) | Operand::RegisterPair(_, _)
+    )
+}
+
 pub fn get_type_by_operand(op: Operand) -> Type {
     match op {
         Operand::Register(sz, _) => get_type_by_sizecode(sz),
