@@ -5,6 +5,7 @@ mod adds;
 mod adr;
 mod adrp;
 mod and;
+mod ands;
 mod asrv;
 mod b;
 mod bcc;
