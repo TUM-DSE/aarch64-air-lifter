@@ -631,7 +631,12 @@ impl Lifter for AArch64Lifter {
                             let val2 = builder.sext_i32(val2, I64);
                             Self::write_reg(&mut builder, val2, dst_reg2, I64);
                         }
-                        Opcode::LDR | Opcode::LDUR | Opcode::LDAR | Opcode::LDXR | Opcode::LDTR => {
+                        Opcode::LDR
+                        | Opcode::LDUR
+                        | Opcode::LDAR
+                        | Opcode::LDXR
+                        | Opcode::LDAXR
+                        | Opcode::LDTR => {
                             let dst_reg = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_inst(inst);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
@@ -642,6 +647,7 @@ impl Lifter for AArch64Lifter {
                         | Opcode::LDURB
                         | Opcode::LDARB
                         | Opcode::LDXRB
+                        | Opcode::LDAXRB
                         | Opcode::LDTRB => {
                             let dst_reg = Self::get_dst_reg(&builder, inst);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
@@ -653,6 +659,7 @@ impl Lifter for AArch64Lifter {
                         | Opcode::LDURH
                         | Opcode::LDARH
                         | Opcode::LDXRH
+                        | Opcode::LDAXRH
                         | Opcode::LDTRH => {
                             let dst_reg = Self::get_dst_reg(&builder, inst);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
@@ -957,7 +964,7 @@ impl Lifter for AArch64Lifter {
                             let val = builder.ashr(val, sixtyfour, I128);
                             Self::write_reg(&mut builder, val, dst_reg, I64);
                         }
-                        Opcode::STP | Opcode::STLXP | Opcode::STXP | Opcode::STNP => {
+                        Opcode::STP | Opcode::STNP => {
                             let src1 = Self::get_value(&mut builder, inst.operands[0]);
                             let src2 = Self::get_value(&mut builder, inst.operands[1]);
                             let address = Self::get_value(&mut builder, inst.operands[2]);
@@ -971,39 +978,75 @@ impl Lifter for AArch64Lifter {
                             let address = builder.add(address, address_offset, I64);
                             builder.store(src2, address, op_type);
                         }
+                        Opcode::STXP | Opcode::STLXP => {
+                            let src1 = Self::get_value(&mut builder, inst.operands[1]);
+                            let src2 = Self::get_value(&mut builder, inst.operands[2]);
+                            let address = Self::get_value(&mut builder, inst.operands[3]);
+                            let op_type = helper::get_type_by_inst(inst);
+
+                            builder.store(src1, address, op_type);
+                            let address_offset = match op_type {
+                                I64 => builder.iconst(8),
+                                _ => builder.iconst(4),
+                            };
+                            let address = builder.add(address, address_offset, I64);
+                            builder.store(src2, address, op_type);
+                            let dst_reg = Self::get_dst_reg(&builder, inst);
+                            let opaque = builder.opaque(op_type);
+                            builder.write_reg(opaque, dst_reg, op_type);
+                        }
                         Opcode::STR
                         | Opcode::STLR
-                        | Opcode::STLXR
                         | Opcode::STUR
                         | Opcode::STLUR
-                        | Opcode::STXR
                         | Opcode::STTR => {
                             let op_type = helper::get_type_by_inst(inst);
                             let value = Self::get_value(&mut builder, inst.operands[0]);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             builder.store(value, address, op_type);
                         }
+                        Opcode::STLXR | Opcode::STXR => {
+                            let op_type = helper::get_type_by_inst(inst);
+                            let value = Self::get_value(&mut builder, inst.operands[1]);
+                            let address = Self::get_value(&mut builder, inst.operands[2]);
+                            builder.store(value, address, op_type);
+                            let opaque = builder.opaque(op_type);
+                            let dst_reg = Self::get_dst_reg(&builder, inst);
+                            Self::write_reg(&mut builder, opaque, dst_reg, op_type);
+                        }
                         Opcode::STRB
                         | Opcode::STLRB
-                        | Opcode::STLXRB
                         | Opcode::STURB
                         | Opcode::STLURB
-                        | Opcode::STXRB
                         | Opcode::STTRB => {
                             let value = Self::get_value(&mut builder, inst.operands[0]);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             builder.store(value, address, I8);
                         }
+                        Opcode::STLXRB | Opcode::STXRB => {
+                            let value = Self::get_value(&mut builder, inst.operands[1]);
+                            let address = Self::get_value(&mut builder, inst.operands[2]);
+                            builder.store(value, address, I8);
+                            let dst_reg = Self::get_dst_reg(&builder, inst);
+                            let opaque = builder.opaque(I8);
+                            Self::write_reg(&mut builder, opaque, dst_reg, I8);
+                        }
                         Opcode::STRH
                         | Opcode::STLRH
-                        | Opcode::STLXRH
                         | Opcode::STURH
                         | Opcode::STLURH
-                        | Opcode::STXRH
                         | Opcode::STTRH => {
                             let value = Self::get_value(&mut builder, inst.operands[0]);
                             let address = Self::get_value(&mut builder, inst.operands[1]);
                             builder.store(value, address, I32);
+                        }
+                        Opcode::STLXRH | Opcode::STXRH => {
+                            let value = Self::get_value(&mut builder, inst.operands[1]);
+                            let address = Self::get_value(&mut builder, inst.operands[2]);
+                            builder.store(value, address, I32);
+                            let dst_reg = Self::get_dst_reg(&builder, inst);
+                            let opaque = builder.opaque(I32);
+                            Self::write_reg(&mut builder, opaque, dst_reg, I32);
                         }
                         Opcode::SUB | Opcode::SUBS => {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);

@@ -82,7 +82,7 @@ impl LabelResolver {
                             helper::get_pc_offset_as_int(inst.operands[0]),
                             CheckpointType::Branch,
                         )),
-                        Opcode::CBNZ | Opcode::CBZ | Opcode::TBL | Opcode::TBX => Some((
+                        Opcode::CBNZ | Opcode::CBZ => Some((
                             helper::get_pc_offset_as_int(inst.operands[1]),
                             CheckpointType::Branch,
                         )),
