@@ -71,7 +71,7 @@ fn read_elf_file(path: impl AsRef<Path>) -> Result<(), Box<dyn std::error::Error
 #[ignore]
 #[test]
 fn check_missing_instructions() {
-    let subdir_path = "tests/completeness/bin";
+    let subdir_path = "tests/bin";
 
     for entry in fs::read_dir(subdir_path).expect("Failed to read directory") {
         let entry = entry.expect("Failed to read entry");
