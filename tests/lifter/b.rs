@@ -13,5 +13,9 @@ fn test_b_1() {
         check: block_4: // no preds!
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

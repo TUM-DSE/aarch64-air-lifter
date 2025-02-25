@@ -46,7 +46,6 @@ mod movk;
 mod movn;
 mod movz;
 mod msub;
-mod neg;
 mod orn;
 mod orr;
 mod rbit;

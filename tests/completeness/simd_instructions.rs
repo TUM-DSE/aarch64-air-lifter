@@ -13,7 +13,11 @@ fn test_simd_scalar() {
         nextln: v39 = i64.add v37, v38
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -24,12 +28,16 @@ fn test_simd_vector() {
 
     let directives = r#"
         check: // entry block
-        nextln: v37 = i64.opaque
-        nextln: v38 = i64.opaque
+        nextln: v37 = i128.opaque
+        nextln: v38 = i128.opaque
         nextln: v39 = i128.add v37, v38
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -42,7 +50,12 @@ fn test_simd_vector_2() {
         check: // entry block
         nextln: v37 = i64.opaque
         nextln: v38 = i64.opaque
+        nextln: v39 = i64.add v37, v38
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

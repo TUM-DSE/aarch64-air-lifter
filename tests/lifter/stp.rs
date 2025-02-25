@@ -17,7 +17,11 @@ fn test_stp_1() {
         nextln:  i64.store v38, v41
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -36,7 +40,11 @@ fn test_stp_2() {
         nextln:  i32.store v38, v41
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -55,5 +63,9 @@ fn test_stp_3() {
         nextln:  i64.store v38, v41
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

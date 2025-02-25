@@ -13,7 +13,11 @@ fn test_strb_1() {
         nextln: i8.store v37, v39
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -29,7 +33,11 @@ fn test_strb_2() {
         nextln: i8.store v37, v39
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -48,5 +56,9 @@ fn test_strb_3() {
         nextln: i8.store v37, v42
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

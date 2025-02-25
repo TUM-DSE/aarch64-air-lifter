@@ -14,7 +14,11 @@ fn test_cbz_1() {
         nextln:   jumpif v38, $LABEL, $LABEL
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -29,7 +33,11 @@ fn test_cbz_2() {
         nextln: jumpif v38, $LABEL, $LABEL
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -44,5 +52,9 @@ fn test_cbz_3() {
         nextln: jumpif v38, $LABEL, $LABEL
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

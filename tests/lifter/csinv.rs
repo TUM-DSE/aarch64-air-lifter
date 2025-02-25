@@ -23,7 +23,11 @@ fn test_csinv_1() {
         nextln:   jump $LABEL
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -48,7 +52,11 @@ fn test_csinv_2() {
         nextln:   jump $LABEL
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -72,5 +80,9 @@ fn test_csinv_3() {
         nextln:   jump $LABEL
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

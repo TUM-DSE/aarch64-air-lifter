@@ -16,7 +16,11 @@ fn test_and_1() {
         nextln:  i32.write_reg v41, "x0"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -33,7 +37,11 @@ fn test_and_2() {
         nextln:  i64.write_reg v40, "x1"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -51,5 +59,9 @@ fn test_orn_3() {
         nextln:  i64.write_reg v41, "x0"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

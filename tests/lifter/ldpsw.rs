@@ -19,5 +19,9 @@ fn test_ldpsw_1() {
         nextln: i64.write_reg v43, "x2"       
    "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

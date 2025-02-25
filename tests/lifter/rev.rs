@@ -12,7 +12,11 @@ fn test_rev_1() {
         nextln: i64.write_reg v38, "x1"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -27,5 +31,9 @@ fn test_rev_2() {
         nextln: i32.write_reg v38, "x1"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

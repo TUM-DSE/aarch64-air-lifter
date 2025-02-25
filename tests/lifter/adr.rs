@@ -13,7 +13,11 @@ fn test_adr_1() {
         nextln: i64.write_reg v38, "x0"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -28,7 +32,11 @@ fn test_adr_2() {
         nextln: i64.write_reg v38, "x1"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -43,5 +51,9 @@ fn test_adr_3() {
         nextln: i64.write_reg v38, "x0"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

@@ -36,5 +36,3 @@ just test
 EOF
 chmod +x .git/hooks/pre-commit
 ```
-
-

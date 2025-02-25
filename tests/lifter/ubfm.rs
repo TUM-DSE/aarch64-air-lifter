@@ -29,7 +29,11 @@ fn test_ubfm_1() {
         nextln:   i64.write_reg v50, "x1"
         nextln:   jump $LABEL
         "#;
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -62,5 +66,9 @@ fn test_ubfm_2() {
         nextln:   jump block_4
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

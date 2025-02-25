@@ -12,7 +12,11 @@ fn test_movn_1() {
         nextln: i16.write_reg v37, "x1"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -27,5 +31,9 @@ fn test_movn_2() {
         nextln:  i16.write_reg v37, "x1"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

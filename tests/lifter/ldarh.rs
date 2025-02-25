@@ -15,7 +15,11 @@ fn test_ldarh_1() {
         nextln:  i32.write_reg v40, "x1"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -32,5 +36,9 @@ fn test_ldarh_2() {
         nextln:  i32.write_reg v40, "x1"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

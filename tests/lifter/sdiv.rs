@@ -16,7 +16,11 @@ fn test_sdiv_1() {
         nextln: i64.write_reg v40, "x0"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -34,5 +38,9 @@ fn test_sdiv_2() {
         nextln: i32.write_reg v40, "x0"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

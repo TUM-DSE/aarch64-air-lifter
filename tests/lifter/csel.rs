@@ -20,7 +20,11 @@ fn test_csel_1() {
         nextln:   i64.write_reg v40, "x0"
         nextln:   jump $LABEL
         "#;
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -43,7 +47,11 @@ fn test_csel_2() {
         nextln:   jump $LABEL
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -66,5 +74,9 @@ fn test_csel_3() {
         nextln:   jump $LABEL
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

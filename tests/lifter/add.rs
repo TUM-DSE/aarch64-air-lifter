@@ -14,7 +14,11 @@ fn test_add_1() {
         #4 nextln: i64.write_reg v39, "x1"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -30,7 +34,11 @@ fn test_add_2() {
         nextln: i32.write_reg v39, "x1"
   "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -46,5 +54,9 @@ fn test_add_3() {
         nextln: i32.write_reg $VAR_NAME, "x2"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

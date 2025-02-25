@@ -46,7 +46,11 @@ fn test_ccmn_1() {
         nextln:   i1.write_reg v60, "v"
         nextln:   jump $LABEL
    "#;
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -94,7 +98,11 @@ fn test_ccmn_2() {
         nextln:   jump $LABEL
    "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -143,5 +151,9 @@ fn test_ccmn_3() {
         nextln:   jump $LABEL
    "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

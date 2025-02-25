@@ -18,5 +18,9 @@ fn test_rev32_1() {
         nextln: i64.write_reg v44, "x1"
    "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

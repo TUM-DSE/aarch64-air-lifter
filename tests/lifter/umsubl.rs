@@ -15,5 +15,9 @@ fn test_umsubl_1() {
         nextln: i64.write_reg v41, "x1"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

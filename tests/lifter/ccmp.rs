@@ -48,7 +48,11 @@ fn test_ccmp_1() {
         nextln:   jump $LABEL
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -98,7 +102,11 @@ fn test_ccmp_2() {
         nextln:   jump $LABEL
   "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -147,5 +155,9 @@ fn test_ccmp_3() {
         nextln:   jump $LABEL
   "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

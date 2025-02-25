@@ -12,5 +12,9 @@ fn test_blr_1() {
         nextln: dynamic_jump v37
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

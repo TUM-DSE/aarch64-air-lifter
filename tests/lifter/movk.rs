@@ -11,7 +11,11 @@ fn test_movk_1() {
         nextln: i16.write_reg 0xc0000, "x1"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -24,5 +28,9 @@ fn test_movk_2() {
         nextln: i16.write_reg 0xd, "x1"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

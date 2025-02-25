@@ -16,5 +16,9 @@ fn test_smaddl_1() {
         nextln: i64.write_reg v41, "x0"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

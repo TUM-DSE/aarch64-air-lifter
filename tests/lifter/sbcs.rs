@@ -33,7 +33,11 @@ fn test_sbcs_1() {
         nextln: i1.write_reg v55, "v"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -69,5 +73,9 @@ fn test_sbcs_2() {
         nextln: i1.write_reg v55, "v"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

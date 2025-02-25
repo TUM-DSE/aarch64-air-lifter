@@ -30,7 +30,11 @@ fn test_add_1() {
         nextln: i1.write_reg v51, "v"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
 
 #[test]
@@ -62,5 +66,9 @@ fn test_add_2() {
         nextln: i1.write_reg v51, "v"
   "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }

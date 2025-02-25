@@ -14,5 +14,9 @@ fn test_smulh_1() {
         nextln: i64.write_reg v40, "x1"
     "#;
 
-    check_instruction(bytes, directives, CheckInstructionArgs::default());
+    assert!(check_instruction(
+        bytes,
+        directives,
+        CheckInstructionArgs::default()
+    ));
 }
