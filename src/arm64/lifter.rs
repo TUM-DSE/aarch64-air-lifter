@@ -52,7 +52,6 @@ impl AArch64Lifter {
     }
 }
 
-// TODO: Final block should be inserted at the end of all blocks
 impl Lifter for AArch64Lifter {
     type E = AArch64LifterError;
 
@@ -73,6 +72,7 @@ impl Lifter for AArch64Lifter {
                     let block_name = helper::get_block_name(pc);
                     let block = label_resolver.get_block_option_by_name(block_name.as_str());
                     if let Some(block) = block {
+                        builder.jump(*block, vec![]);
                         builder.set_insert_block(*block);
                     }
 
@@ -167,7 +167,6 @@ impl Lifter for AArch64Lifter {
                             let block = label_resolver.get_block_by_address(next_address);
                             builder.jump(*block, vec![]);
                         }
-                        // TODO: line iwith wrapping add should add signed and not unsigned offset
                         Opcode::Bcc(condition) => {
                             let offset = helper::get_pc_offset_as_int(inst.operands[0]);
                             let jump_address = (pc as i64).wrapping_add(offset) as u64;

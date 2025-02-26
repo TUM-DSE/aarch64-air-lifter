@@ -8,7 +8,8 @@ fn test_b_1() {
     ];
     let directives = r#"
         check: // entry block    
-        check: block_0: // preds: block_0
+        nextln: jump block_0
+        check: block_0: // preds: entry block_0
         nextln: jump block_0
         check: block_4: // no preds!
     "#;

@@ -100,7 +100,7 @@ impl LabelResolver {
                         | Opcode::UBFM
                         | Opcode::BFM => Some((0, CheckpointType::Conditional)),
                         Opcode::BLR | Opcode::BR => {
-                            // TODO: Uses dynamic address stored in register. Might need to be handled in the future differently
+                            // TODO: Dynamic address resolution currently not supported
                             None
                         }
                         _ => None,
