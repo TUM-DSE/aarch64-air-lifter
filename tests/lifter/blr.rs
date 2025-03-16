@@ -13,6 +13,7 @@ fn test_blr_1() {
         nextln: i64.write_reg v38, "x30"
         nextln: v39 = i64.read_reg "x1"
         nextln: dynamic_jump v39
+        nextln: invalidate_regs
     "#;
 
     assert!(check_instruction(
