@@ -21,6 +21,7 @@ pub struct LabelResolver {
 enum CheckpointType {
     Conditional,
     Branch,
+    DynamicJump,
 }
 
 impl LabelResolver {
@@ -99,10 +100,7 @@ impl LabelResolver {
                         | Opcode::SBFM
                         | Opcode::UBFM
                         | Opcode::BFM => Some((0, CheckpointType::Conditional)),
-                        Opcode::BLR | Opcode::BR => {
-                            // TODO: Dynamic address resolution currently not supported
-                            None
-                        }
+                        Opcode::BLR | Opcode::BR => Some((0, CheckpointType::DynamicJump)),
                         _ => None,
                     };
                     if let Some((imm, checkpoint_type)) = imm {
