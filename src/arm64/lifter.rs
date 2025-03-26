@@ -69,8 +69,7 @@ impl Lifter for AArch64Lifter {
         loop {
             match decoder.decode(&mut reader) {
                 Ok(inst) => {
-                    let block_name = helper::get_block_name(pc);
-                    let block = label_resolver.get_block_option_by_name(block_name.as_str());
+                    let block = label_resolver.get_block(pc);
                     if let Some(block) = block {
                         builder.jump(*block, vec![]);
                         builder.set_insert_block(*block);
@@ -164,15 +163,15 @@ impl Lifter for AArch64Lifter {
                             }
                             let offset = helper::get_pc_offset_as_int(inst.operands[0]);
                             let next_address = (pc as i64).wrapping_add(offset) as u64;
-                            let block = label_resolver.get_block_by_address(next_address);
+                            let block = label_resolver.get_block(next_address).unwrap();
                             builder.jump(*block, vec![]);
                         }
                         Opcode::Bcc(condition) => {
                             let offset = helper::get_pc_offset_as_int(inst.operands[0]);
                             let jump_address = (pc as i64).wrapping_add(offset) as u64;
-                            let jump_block = *label_resolver.get_block_by_address(jump_address);
+                            let jump_block = *label_resolver.get_block(jump_address).unwrap();
                             let next_address: u64 = pc + INSTRUCTION_SIZE;
-                            let next_block = *label_resolver.get_block_by_address(next_address);
+                            let next_block = *label_resolver.get_block(next_address).unwrap();
 
                             let operand = Operand::ConditionCode(condition);
                             let condition = Self::get_condition(&mut builder, operand)?;
@@ -190,7 +189,7 @@ impl Lifter for AArch64Lifter {
                             let negative_condition_block =
                                 builder.create_block("bfm_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
-                            let next_block = *label_resolver.get_block_by_address(next_address);
+                            let next_block = *label_resolver.get_block(next_address).unwrap();
 
                             let dst_reg = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_inst(inst);
@@ -280,7 +279,7 @@ impl Lifter for AArch64Lifter {
                             // Untested
                             let swap_block = builder.create_block("cas_swap", []);
                             let next_address = pc + INSTRUCTION_SIZE;
-                            let next_block = *label_resolver.get_block_by_address(next_address);
+                            let next_block = *label_resolver.get_block(next_address).unwrap();
 
                             let old = Self::get_value(&mut builder, inst.operands[0]);
                             let new = Self::get_value(&mut builder, inst.operands[1]);
@@ -296,7 +295,7 @@ impl Lifter for AArch64Lifter {
                         }
                         Opcode::CBNZ => {
                             let next_address = pc + INSTRUCTION_SIZE;
-                            let next_block = *label_resolver.get_block_by_address(next_address);
+                            let next_block = *label_resolver.get_block(next_address).unwrap();
 
                             let src = Self::get_value(&mut builder, inst.operands[0]);
                             let op_type = helper::get_type_by_inst(inst);
@@ -306,13 +305,13 @@ impl Lifter for AArch64Lifter {
 
                             let offset = helper::get_pc_offset_as_int(inst.operands[1]);
                             let jump_address = (pc as i64).wrapping_add(offset) as u64;
-                            let block = label_resolver.get_block_by_address(jump_address);
+                            let block = label_resolver.get_block(jump_address).unwrap();
 
                             builder.jumpif(condition, *block, Vec::new(), next_block, Vec::new());
                         }
                         Opcode::CBZ => {
                             let next_address = pc + INSTRUCTION_SIZE;
-                            let next_block = *label_resolver.get_block_by_address(next_address);
+                            let next_block = *label_resolver.get_block(next_address).unwrap();
 
                             let src = Self::get_value(&mut builder, inst.operands[0]);
                             let op_type = helper::get_type_by_inst(inst);
@@ -322,7 +321,7 @@ impl Lifter for AArch64Lifter {
 
                             let offset = helper::get_pc_offset_as_int(inst.operands[1]);
                             let jump_address = (pc as i64).wrapping_add(offset) as u64;
-                            let block = label_resolver.get_block_by_address(jump_address);
+                            let block = label_resolver.get_block(jump_address).unwrap();
 
                             builder.jumpif(condition, *block, Vec::new(), next_block, Vec::new());
                         }
@@ -332,7 +331,7 @@ impl Lifter for AArch64Lifter {
                             let negative_condition_block =
                                 builder.create_block("ccmp_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
-                            let next_block = *label_resolver.get_block_by_address(next_address);
+                            let next_block = *label_resolver.get_block(next_address).unwrap();
 
                             let condition = Self::get_condition(&mut builder, inst.operands[3])?;
                             let op_type = helper::get_type_by_inst(inst);
@@ -362,7 +361,7 @@ impl Lifter for AArch64Lifter {
                             let negative_condition_block =
                                 builder.create_block("ccmp_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
-                            let next_block = *label_resolver.get_block_by_address(next_address);
+                            let next_block = *label_resolver.get_block(next_address).unwrap();
 
                             let condition = Self::get_condition(&mut builder, inst.operands[3])?;
                             let op_type = helper::get_type_by_inst(inst);
@@ -437,7 +436,7 @@ impl Lifter for AArch64Lifter {
                             let negative_condition_block =
                                 builder.create_block("csel_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
-                            let next_block = *label_resolver.get_block_by_address(next_address);
+                            let next_block = *label_resolver.get_block(next_address).unwrap();
 
                             let dst_reg = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_inst(inst);
@@ -466,7 +465,7 @@ impl Lifter for AArch64Lifter {
                             let negative_condition_block =
                                 builder.create_block("csinc_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
-                            let next_block = *label_resolver.get_block_by_address(next_address);
+                            let next_block = *label_resolver.get_block(next_address).unwrap();
 
                             let dst_reg = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_inst(inst);
@@ -499,7 +498,7 @@ impl Lifter for AArch64Lifter {
                             let negative_condition_block =
                                 builder.create_block("csinv_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
-                            let next_block = *label_resolver.get_block_by_address(next_address);
+                            let next_block = *label_resolver.get_block(next_address).unwrap();
 
                             let dst_reg = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_inst(inst);
@@ -531,7 +530,7 @@ impl Lifter for AArch64Lifter {
                             let negative_condition_block =
                                 builder.create_block("csneg_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
-                            let next_block = *label_resolver.get_block_by_address(next_address);
+                            let next_block = *label_resolver.get_block(next_address).unwrap();
 
                             let dst_reg = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_inst(inst);
@@ -877,7 +876,7 @@ impl Lifter for AArch64Lifter {
                             let negative_condition_block =
                                 builder.create_block("sbfm_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
-                            let next_block = *label_resolver.get_block_by_address(next_address);
+                            let next_block = *label_resolver.get_block(next_address).unwrap();
 
                             let dst_reg = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_inst(inst);
@@ -1080,7 +1079,7 @@ impl Lifter for AArch64Lifter {
                         }
                         Opcode::TBNZ => {
                             let next_address = pc + INSTRUCTION_SIZE;
-                            let next_block = *label_resolver.get_block_by_address(next_address);
+                            let next_block = *label_resolver.get_block(next_address).unwrap();
 
                             let one = builder.iconst(1);
                             let zero = builder.iconst(0);
@@ -1092,14 +1091,14 @@ impl Lifter for AArch64Lifter {
                             let test_bit = builder.lshr(test_bit, one, op_type);
                             let val = builder.and(test_bit, src, op_type);
                             let jump_address = (pc as i64).wrapping_add(offset) as u64;
-                            let jump_block = *label_resolver.get_block_by_address(jump_address);
+                            let jump_block = *label_resolver.get_block(jump_address).unwrap();
 
                             let cmp = builder.icmp(tnj::types::cmp::CmpTy::Ne, val, zero, op_type);
                             builder.jumpif(cmp, jump_block, Vec::new(), next_block, Vec::new());
                         }
                         Opcode::TBZ => {
                             let next_address = pc + INSTRUCTION_SIZE;
-                            let next_block = *label_resolver.get_block_by_address(next_address);
+                            let next_block = *label_resolver.get_block(next_address).unwrap();
 
                             let one = builder.iconst(1);
                             let zero = builder.iconst(0);
@@ -1111,7 +1110,7 @@ impl Lifter for AArch64Lifter {
                             let test_bit = builder.lshr(test_bit, one, op_type);
                             let val = builder.and(test_bit, src, op_type);
                             let jump_address = (pc as i64).wrapping_add(offset) as u64;
-                            let jump_block = *label_resolver.get_block_by_address(jump_address);
+                            let jump_block = *label_resolver.get_block(jump_address).unwrap();
 
                             let cmp = builder.icmp(tnj::types::cmp::CmpTy::Eq, val, zero, op_type);
                             builder.jumpif(cmp, jump_block, Vec::new(), next_block, Vec::new());
@@ -1122,7 +1121,7 @@ impl Lifter for AArch64Lifter {
                             let negative_condition_block =
                                 builder.create_block("ubfm_negative_condition", []);
                             let next_address = pc + INSTRUCTION_SIZE;
-                            let next_block = *label_resolver.get_block_by_address(next_address);
+                            let next_block = *label_resolver.get_block(next_address).unwrap();
 
                             let dst_reg = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_inst(inst);

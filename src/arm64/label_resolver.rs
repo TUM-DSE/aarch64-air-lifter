@@ -14,7 +14,7 @@ use super::AArch64LifterError;
 /// Create basic blocks for the InstructionBuilder based off labels
 pub struct LabelResolver {
     checkpoints: UniqueHeap<Reverse<u64>>,
-    blocks: HashMap<String, BasicBlock>,
+    blocks: HashMap<u64, BasicBlock>,
 }
 
 #[derive(PartialEq, Eq, Debug)]
@@ -54,16 +54,9 @@ impl LabelResolver {
         Ok(())
     }
 
-    /// Get a block by block name
-    pub fn get_block_option_by_name(&self, name: &str) -> Option<&BasicBlock> {
-        self.blocks.get(name)
-    }
-
-    /// Get a block by block address
-    pub fn get_block_by_address(&self, address: u64) -> &BasicBlock {
-        let name = helper::get_block_name(address);
-        self.get_block_option_by_name(&name)
-            .expect("Block not found")
+    /// Get a block by address
+    pub fn get_block(&self, addr: u64) -> Option<&BasicBlock> {
+        self.blocks.get(&addr)
     }
 
     /// Store all addresses of branch-destinations or of instructions after branch-instructions
@@ -128,7 +121,7 @@ impl LabelResolver {
             };
             let name = helper::get_block_name(checkpoint);
             let b = builder.create_block(name.clone(), []);
-            self.blocks.insert(name, b);
+            self.blocks.insert(checkpoint, b);
         }
     }
 }
