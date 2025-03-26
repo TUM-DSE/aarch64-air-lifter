@@ -34,13 +34,13 @@ impl CheckInstructionArgs {
 
 impl Default for CheckInstructionArgs {
     fn default() -> Self {
-        Self::new(SimpleVariableMap::default(), true, false)
+        Self::new(SimpleVariableMap::default(), true, true)
     }
 }
 
-pub fn check_instruction(bytes: [u8; 4], directives: &str, args: CheckInstructionArgs) -> bool {
+pub fn check_instruction(bytes: &[u8], directives: &str, args: CheckInstructionArgs) -> bool {
     let lifter = AArch64Lifter;
-    let blob = lifter.lift(&bytes, &[]).unwrap();
+    let blob = lifter.lift(bytes, &[]).unwrap();
     let result = blob.display().to_string();
     if args.debug {
         let blocks_count = blob.blocks().len();

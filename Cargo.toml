@@ -6,8 +6,17 @@ edition = "2021"
 [dependencies]
 elf = "0.7.4"
 filecheck = "0.5.0"
+serde = { version = "1", features = ["derive"] }
+serde_yaml = "0.9"
 target-lexicon = "0.13.1"
 thiserror = "2.0.0"
 tnj = { git = "ssh://git@github.com/TUM-DSE/tnj.git", branch = "main" }
 yaxpeax-arch = "0.3.2"
 yaxpeax-arm = "0.3.0"
+
+[build-dependencies]
+prettier-please = { version = "0.3.0" }
+quote = "1.0.40"
+serde = { version = "1", features = ["derive"] }
+serde_yaml = "0.9"
+syn = { version = "2.0.100" }

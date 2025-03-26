@@ -1,0 +1,56 @@
+tests:
+- name: test_csinc_1
+  bytes: [0x20, 0x4, 0x82, 0x9a]
+  directives: |
+      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
+      nextln:   v37 = i1.read_reg "z"
+      nextln:   v38 = i1.icmp.eq v37, 0x1
+      nextln:   jumpif v38, csinc_positive_condition, csinc_negative_condition
+      check: block_4: // preds: csinc_positive_condition csinc_negative_condition
+      check: csinc_positive_condition: // preds: entry
+      nextln:   v39 = i64.read_reg "x1"
+      nextln:   i64.write_reg v39, "x0"
+      nextln:   jump block_4
+      check: csinc_negative_condition: // preds: entry
+      nextln:   v40 = i64.read_reg "x2"
+      nextln:   v41 = i64.add v40, 0x1
+      nextln:   i64.write_reg v41, "x0"
+      nextln:   jump block_4
+- name: test_csinc_2
+  bytes: [0x20, 0x4, 0x84, 0x1a]
+  directives: |
+      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
+      nextln:   v37 = i1.read_reg "z"
+      nextln:   v38 = i1.icmp.eq v37, 0x1
+      nextln:   jumpif v38, csinc_positive_condition, csinc_negative_condition
+      check: block_4: // preds: csinc_positive_condition csinc_negative_condition
+      check: csinc_positive_condition: // preds: entry
+      nextln:   v39 = i32.read_reg "x1"
+      nextln:   i32.write_reg v39, "x0"
+      nextln:   jump block_4
+      check: csinc_negative_condition: // preds: entry
+      nextln:   v40 = i32.read_reg "x4"
+      nextln:   v41 = i32.add v40, 0x1
+      nextln:   i32.write_reg v41, "x0"
+      nextln:   jump block_4
+- name: test_csinc_3
+  bytes: [0x62, 0xd4, 0x84, 0x9a]
+  directives: |
+      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
+      nextln:   v37 = i1.read_reg "z"
+      nextln:   v38 = i1.read_reg "n"
+      nextln:   v39 = i1.read_reg "v"
+      nextln:   v40 = i1.icmp.eq v37, 0x1
+      nextln:   v41 = i1.icmp.ne v38, v39
+      nextln:   v42 = i1.or v40, v41
+      nextln:   jumpif v42, csinc_positive_condition, csinc_negative_condition
+      check: block_4: // preds: csinc_positive_condition csinc_negative_condition
+      check: csinc_positive_condition: // preds: entry
+      nextln:   v43 = i64.read_reg "x3"
+      nextln:   i64.write_reg v43, "x2"
+      nextln:   jump block_4
+      check: csinc_negative_condition: // preds: entry
+      nextln:   v44 = i64.read_reg "x4"
+      nextln:   v45 = i64.add v44, 0x1
+      nextln:   i64.write_reg v45, "x2"
+      nextln:   jump block_4
