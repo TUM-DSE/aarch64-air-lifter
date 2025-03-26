@@ -2,6 +2,8 @@ use crate::common::lib::{check_instruction, CheckInstructionArgs};
 use aarch64_air_lifter::arm64::AArch64Lifter;
 use aarch64_air_lifter::Lifter;
 use serde::Deserialize;
+use std::collections::HashSet;
+use std::sync::{LazyLock, Mutex};
 use std::{env, fs};
 
 #[derive(Deserialize)]
@@ -16,6 +18,9 @@ struct TestSpec {
     directives: String,
 }
 
+static FIX_LOCK: LazyLock<Mutex<HashSet<String>>> =
+    LazyLock::new(|| Mutex::new(Default::default()));
+
 pub fn run_test_from_yaml(file: &str, test_name: &str) {
     let yaml_str = fs::read_to_string(file).expect("Cannot read YAML file");
     let mut test_file: TestFile = serde_yaml::from_str(&yaml_str).expect("Invalid YAML");
@@ -23,6 +28,13 @@ pub fn run_test_from_yaml(file: &str, test_name: &str) {
     let fix_tests = env::var("FIX_TESTS").is_ok();
 
     if fix_tests {
+        // we only want a single instance to update our tests.
+        let mut lock = FIX_LOCK.lock().unwrap();
+        if !lock.insert(file.to_string()) {
+            return;
+        }
+        drop(lock);
+
         println!("Updating directives for '{}'", file);
         for test in test_file.tests.iter_mut() {
             let lifter = AArch64Lifter;
