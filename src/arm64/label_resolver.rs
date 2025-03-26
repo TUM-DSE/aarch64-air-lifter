@@ -55,8 +55,8 @@ impl LabelResolver {
     }
 
     /// Get a block by address
-    pub fn get_block(&self, addr: u64) -> Option<&BasicBlock> {
-        self.blocks.get(&addr)
+    pub fn get_block(&self, addr: u64) -> Option<BasicBlock> {
+        self.blocks.get(&addr).copied()
     }
 
     /// Store all addresses of branch-destinations or of instructions after branch-instructions
