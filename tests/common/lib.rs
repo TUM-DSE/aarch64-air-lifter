@@ -34,7 +34,7 @@ impl CheckInstructionArgs {
 
 impl Default for CheckInstructionArgs {
     fn default() -> Self {
-        Self::new(SimpleVariableMap::default(), true, true)
+        Self::new(SimpleVariableMap::default(), true, false)
     }
 }
 
