@@ -2,29 +2,29 @@ tests:
 - name: test_and_1
   bytes: [0x20, 0xc, 0x22, 0x2a]
   directives: |
-      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
-      nextln:   v37 = i32.read_reg "x1"
-      nextln:   v38 = i32.read_reg "x2"
-      nextln:   v39 = i32.lshl v38, 0x3
-      nextln:   v40 = i32.bitwise_not v39
-      nextln:   v41 = i32.or v37, v40
-      nextln:   i32.write_reg v41, "x0"
+      check: entry: // entry block; no preds!
+      nextln:   v0 = i32.read_reg "x1"
+      nextln:   v1 = i32.read_reg "x2"
+      nextln:   v2 = i32.lshl v1, 0x3
+      nextln:   v3 = i32.bitwise_not v2
+      nextln:   v4 = i32.or v0, v3
+      nextln:   i32.write_reg v4, "x0"
 - name: test_and_2
   bytes: [0x41, 0x0, 0x21, 0xaa]
   directives: |
-      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
-      nextln:   v37 = i64.read_reg "x2"
-      nextln:   v38 = i64.read_reg "x1"
-      nextln:   v39 = i64.bitwise_not v38
-      nextln:   v40 = i64.or v37, v39
-      nextln:   i64.write_reg v40, "x1"
+      check: entry: // entry block; no preds!
+      nextln:   v0 = i64.read_reg "x2"
+      nextln:   v1 = i64.read_reg "x1"
+      nextln:   v2 = i64.bitwise_not v1
+      nextln:   v3 = i64.or v0, v2
+      nextln:   i64.write_reg v3, "x1"
 - name: test_orn_3
   bytes: [0x20, 0x10, 0x22, 0xaa]
   directives: |
-      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
-      nextln:   v37 = i64.read_reg "x1"
-      nextln:   v38 = i64.read_reg "x2"
-      nextln:   v39 = i64.lshl v38, 0x4
-      nextln:   v40 = i64.bitwise_not v39
-      nextln:   v41 = i64.or v37, v40
-      nextln:   i64.write_reg v41, "x0"
+      check: entry: // entry block; no preds!
+      nextln:   v0 = i64.read_reg "x1"
+      nextln:   v1 = i64.read_reg "x2"
+      nextln:   v2 = i64.lshl v1, 0x4
+      nextln:   v3 = i64.bitwise_not v2
+      nextln:   v4 = i64.or v0, v3
+      nextln:   i64.write_reg v4, "x0"

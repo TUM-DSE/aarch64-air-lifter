@@ -2,21 +2,21 @@ tests:
 - name: test_simd_scalar
   bytes: [0x41, 0x84, 0xe3, 0x5e]
   directives: |
-      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
-      nextln:   v37 = i64.opaque
-      nextln:   v38 = i64.opaque
-      nextln:   v39 = i64.add v37, v38
+      check: entry: // entry block; no preds!
+      nextln:   v0 = i64.opaque
+      nextln:   v1 = i64.opaque
+      nextln:   v2 = i64.add v0, v1
 - name: test_simd_vector
   bytes: [0x20, 0x84, 0xa2, 0x4e]
   directives: |
-      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
-      nextln:   v37 = i128.opaque
-      nextln:   v38 = i128.opaque
-      nextln:   v39 = i128.add v37, v38
+      check: entry: // entry block; no preds!
+      nextln:   v0 = i128.opaque
+      nextln:   v1 = i128.opaque
+      nextln:   v2 = i128.add v0, v1
 - name: test_simd_vector_2
   bytes: [0x20, 0x84, 0x22, 0xe]
   directives: |
-      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
-      nextln:   v37 = i64.opaque
-      nextln:   v38 = i64.opaque
-      nextln:   v39 = i64.add v37, v38
+      check: entry: // entry block; no preds!
+      nextln:   v0 = i64.opaque
+      nextln:   v1 = i64.opaque
+      nextln:   v2 = i64.add v0, v1

@@ -3,10 +3,10 @@ use crate::Lifter;
 use target_lexicon::{Aarch64Architecture, Architecture};
 use thiserror::Error;
 use tnj::air::instructions::builder::InstructionBuilder;
-use tnj::air::instructions::{Blob, Inst, Value};
+use tnj::air::instructions::{CodeRegion, Inst, Value};
 use tnj::arch::get_arch;
 use tnj::arch::reg::Reg;
-use tnj::types::{Type, BOOL, I1, I128, I16, I32, I64, I8};
+use tnj::types::{Type, BOOL, I128, I16, I32, I64, I8};
 use yaxpeax_arch::{Arch, Decoder, U8Reader};
 use yaxpeax_arm::armv8::a64::{
     ARMv8, DecodeError, Instruction, Opcode, Operand, ShiftStyle, SizeCode,
@@ -55,10 +55,10 @@ impl AArch64Lifter {
 impl Lifter for AArch64Lifter {
     type E = AArch64LifterError;
 
-    fn lift(&self, code: &[u8], _proofs: &[u8]) -> Result<Blob, Self::E> {
+    fn lift(&self, code: &[u8], _proofs: &[u8]) -> Result<CodeRegion, Self::E> {
         let arch = get_arch(Architecture::Aarch64(Aarch64Architecture::Aarch64)).unwrap();
-        let mut blob = Blob::new(arch);
-        let mut builder = blob.insert();
+        let mut code_region = CodeRegion::new(arch);
+        let mut builder = code_region.insert();
 
         let decoder = <ARMv8 as Arch>::Decoder::default();
         let mut reader = U8Reader::new(code);
@@ -272,7 +272,8 @@ impl Lifter for AArch64Lifter {
                             let address = Self::get_value(&mut builder, inst.operands[0]);
                             builder.dynamic_jump(address);
                             if inst.opcode == Opcode::BLR {
-                                builder.invalidate_regs();
+                                //builder.invalidate_regs();
+                                todo!("invalidate regs");
                             }
                         }
                         Opcode::CAS(_memory_ordering) => {
@@ -598,7 +599,8 @@ impl Lifter for AArch64Lifter {
                         }
                         Opcode::HVC => {
                             // We are ignoring hypervisor calls
-                            builder.invalidate_regs();
+                            //builder.invalidate_regs();
+                            todo!("invalidate regs");
                         }
                         Opcode::LDP | Opcode::LDXP => {
                             let dst_reg1 = Self::get_reg_by_index(&builder, inst, 0);
@@ -858,7 +860,7 @@ impl Lifter for AArch64Lifter {
                             let src1 = Self::get_value(&mut builder, inst.operands[1]);
                             let src2 = Self::get_value(&mut builder, inst.operands[2]);
                             let carry = Self::flag_value(&mut builder, Flag::C);
-                            let carry = builder.bitwise_not(carry, I1);
+                            let carry = builder.bitwise_not(carry, BOOL);
                             let dst_reg = Self::get_dst_reg(&builder, inst);
                             let op_type = helper::get_type_by_inst(inst);
                             let val = builder.sub(src1, src2, op_type);
@@ -1068,11 +1070,13 @@ impl Lifter for AArch64Lifter {
                         }
                         Opcode::SVC => {
                             // Ignoring supervisor calls
-                            builder.invalidate_regs();
+                            //builder.invalidate_regs();
+                            todo!("invalidate regs");
                         }
                         Opcode::SYS(_data) | Opcode::SYSL(_data) => {
                             // Ignoring system calls
-                            builder.invalidate_regs();
+                            //builder.invalidate_regs();
+                            todo!("invalidate regs");
                         }
                         Opcode::TBNZ => {
                             let next_address = pc + INSTRUCTION_SIZE;
@@ -1225,7 +1229,7 @@ impl Lifter for AArch64Lifter {
             pc += INSTRUCTION_SIZE;
         }
 
-        Ok(blob)
+        Ok(code_region)
     }
 }
 
@@ -1320,7 +1324,7 @@ impl AArch64Lifter {
             match sp_or_zr {
                 SpOrZrReg::Sp => builder.read_reg(
                     builder
-                        .get_blob()
+                        .get_code_region()
                         .get_arch()
                         .lookup_reg(&"sp".into())
                         .unwrap(),
@@ -1343,7 +1347,7 @@ impl AArch64Lifter {
                 if reg == 31 {
                     assert_eq!(sz, SizeCode::X, "sp must be 64 bits");
                     builder
-                        .get_blob()
+                        .get_code_region()
                         .get_arch()
                         .lookup_reg(&"sp".into())
                         .unwrap()
@@ -1370,7 +1374,7 @@ impl AArch64Lifter {
         builder
             .read_reg(
                 builder
-                    .get_blob()
+                    .get_code_region()
                     .get_arch()
                     .lookup_reg(&reg.into())
                     .unwrap(),
@@ -1392,7 +1396,7 @@ impl AArch64Lifter {
 
     fn get_reg_val_by_name(builder: &mut InstructionBuilder, name: &str) -> Reg {
         builder
-            .get_blob()
+            .get_code_region()
             .get_arch()
             .lookup_reg(&name.into())
             .unwrap()

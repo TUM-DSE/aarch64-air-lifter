@@ -2,40 +2,40 @@ tests:
 - name: test_tbz_1
   bytes: [0x80, 0x80, 0x40, 0xb6]
   directives: |
-      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
-      nextln:   v37 = i64.lshr 0x28, 0x1
-      nextln:   v38 = i64.and v37, "x0"
-      nextln:   v39 = i64.icmp.eq v38, 0x0
-      nextln:   jumpif v39, block_4112, block_4
+      check: entry: // entry block; no preds!
+      nextln:   v0 = i64.lshr 0x28, 0x1
+      nextln:   v1 = i64.and v0, "x0"
+      nextln:   v2 = i64.icmp.eq v1, 0x0
+      nextln:   jumpif v2, block_4112, block_4
       check: block_4: // preds: entry
       check: block_4112: // preds: entry
 - name: test_tbz_2
   bytes: [0xe1, 0xff, 0x67, 0x36]
   directives: |
-      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
-      nextln:   v37 = i32.lshr 0xc, 0x1
-      nextln:   v38 = i32.and v37, "x1"
-      nextln:   v39 = i32.icmp.eq v38, 0x0
-      nextln:   jumpif v39, block_18446744073709551612, block_4
+      check: entry: // entry block; no preds!
+      nextln:   v0 = i32.lshr 0xc, 0x1
+      nextln:   v1 = i32.and v0, "x1"
+      nextln:   v2 = i32.icmp.eq v1, 0x0
+      nextln:   jumpif v2, block_18446744073709551612, block_4
       check: block_4: // preds: entry
       check: block_18446744073709551612: // preds: entry
 - name: test_tbz_3
   bytes: [0xc1, 0xff, 0xf, 0x36]
   directives: |
-      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
-      nextln:   v37 = i32.lshr 0x1, 0x1
-      nextln:   v38 = i32.and v37, "x1"
-      nextln:   v39 = i32.icmp.eq v38, 0x0
-      nextln:   jumpif v39, block_18446744073709551608, block_4
+      check: entry: // entry block; no preds!
+      nextln:   v0 = i32.lshr 0x1, 0x1
+      nextln:   v1 = i32.and v0, "x1"
+      nextln:   v2 = i32.icmp.eq v1, 0x0
+      nextln:   jumpif v2, block_18446744073709551608, block_4
       check: block_4: // preds: entry
       check: block_18446744073709551608: // preds: entry
 - name: test_tbz_4
   bytes: [0xa2, 0xff, 0x7, 0x36]
   directives: |
-      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
-      nextln:   v37 = i32.lshr 0x0, 0x1
-      nextln:   v38 = i32.and v37, "x2"
-      nextln:   v39 = i32.icmp.eq v38, 0x0
-      nextln:   jumpif v39, block_18446744073709551604, block_4
+      check: entry: // entry block; no preds!
+      nextln:   v0 = i32.lshr 0x0, 0x1
+      nextln:   v1 = i32.and v0, "x2"
+      nextln:   v2 = i32.icmp.eq v1, 0x0
+      nextln:   jumpif v2, block_18446744073709551604, block_4
       check: block_4: // preds: entry
       check: block_18446744073709551604: // preds: entry

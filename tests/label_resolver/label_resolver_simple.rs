@@ -2,7 +2,7 @@ use std::vec;
 
 use aarch64_air_lifter::arm64::LabelResolver;
 use target_lexicon::{Aarch64Architecture, Architecture};
-use tnj::air::instructions::Blob;
+use tnj::air::instructions::CodeRegion;
 use tnj::arch::get_arch;
 use yaxpeax_arch::Arch;
 use yaxpeax_arm::armv8::a64::ARMv8;
@@ -21,8 +21,8 @@ fn test() {
     ];
 
     let arch = get_arch(Architecture::Aarch64(Aarch64Architecture::Aarch64)).unwrap();
-    let mut blob = Blob::new(arch);
-    let mut builder = blob.insert();
+    let mut code_region = CodeRegion::new(arch);
+    let mut builder = code_region.insert();
     let decoder = <ARMv8 as Arch>::Decoder::default();
 
     let _ = LabelResolver::new(&bytes, &mut builder, &decoder).unwrap();
@@ -35,7 +35,7 @@ fn test() {
     .collect();
 
     let mut actual = vec![];
-    for block in blob.blocks() {
+    for block in code_region.blocks() {
         actual.push(block.name());
     }
 

@@ -2,27 +2,27 @@ tests:
 - name: test_strh_1
   bytes: [0xe0, 0x1b, 0x0, 0x79]
   directives: |
-      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
-      nextln:   v37 = i32.read_reg "x0"
-      nextln:   v38 = i64.read_reg "sp"
-      nextln:   v39 = i64.add v38, 0xc
-      nextln:   i32.store v37, v39
+      check: entry: // entry block; no preds!
+      nextln:   v0 = i32.read_reg "x0"
+      nextln:   v1 = i64.read_reg "sp"
+      nextln:   v2 = i64.add v1, 0xc
+      nextln:   i32.store v0, v2
 - name: test_strh_2
   bytes: [0x20, 0x0, 0x0, 0x39]
   directives: |
-      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
-      nextln:   v37 = i32.read_reg "x0"
-      nextln:   v38 = i64.read_reg "x1"
-      nextln:   v39 = i64.add v38, 0x0
-      nextln:   i8.store v37, v39
+      check: entry: // entry block; no preds!
+      nextln:   v0 = i32.read_reg "x0"
+      nextln:   v1 = i64.read_reg "x1"
+      nextln:   v2 = i64.add v1, 0x0
+      nextln:   i8.store v0, v2
 - name: test_strh_3
   bytes: [0x21, 0xd8, 0x21, 0x38]
   directives: |
-      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
-      nextln:   v37 = i32.read_reg "x1"
-      nextln:   v38 = i64.read_reg "x1"
-      nextln:   v39 = i32.read_reg "x1"
-      nextln:   v40 = i32.trunc_i64 v39
-      nextln:   v41 = i64.sext_i32 v40
-      nextln:   v42 = i64.add v38, v41
-      nextln:   i8.store v37, v42
+      check: entry: // entry block; no preds!
+      nextln:   v0 = i32.read_reg "x1"
+      nextln:   v1 = i64.read_reg "x1"
+      nextln:   v2 = i32.read_reg "x1"
+      nextln:   v3 = i32.trunc_i64 v2
+      nextln:   v4 = i64.sext_i32 v3
+      nextln:   v5 = i64.add v1, v4
+      nextln:   i8.store v0, v5

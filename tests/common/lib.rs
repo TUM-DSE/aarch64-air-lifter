@@ -40,11 +40,14 @@ impl Default for CheckInstructionArgs {
 
 pub fn check_instruction(bytes: &[u8], directives: &str, args: CheckInstructionArgs) -> bool {
     let lifter = AArch64Lifter;
-    let blob = lifter.lift(bytes, &[]).unwrap();
-    let result = blob.display().to_string();
+    let code_region = lifter.lift(bytes, &[]).unwrap();
+    let result = code_region.display().to_string();
     if args.debug {
-        let blocks_count = blob.blocks().len();
-        let inst_count = blob.blocks().iter().fold(0, |acc, b| acc + b.insts().len());
+        let blocks_count = code_region.blocks().len();
+        let inst_count = code_region
+            .blocks()
+            .iter()
+            .fold(0, |acc, b| acc + b.inst_count());
         println!("Blocks: {}, Instructions: {}", blocks_count, inst_count);
     }
     if args.print_to_std {

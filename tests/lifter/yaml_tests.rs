@@ -16,6 +16,7 @@ struct TestSpec {
     name: String,
     bytes: Vec<u8>,
     directives: String,
+    skip: Option<bool>,
 }
 
 static FIX_LOCK: LazyLock<Mutex<HashSet<String>>> =
@@ -37,6 +38,9 @@ pub fn run_test_from_yaml(file: &str, test_name: &str) {
 
         println!("Updating directives for '{}'", file);
         for test in test_file.tests.iter_mut() {
+            if let Some(true) = test.skip {
+                continue;
+            }
             let lifter = AArch64Lifter;
             let blob = lifter.lift(&test.bytes, &[]).expect("Lifter failed");
             let result = blob.display().to_string();
@@ -76,6 +80,10 @@ pub fn run_test_from_yaml(file: &str, test_name: &str) {
             .find(|t| t.name == test_name)
             .unwrap_or_else(|| panic!("Test '{}' not found in '{}'", test_name, file));
 
+        if let Some(true) = test.skip {
+            return;
+        }
+
         assert!(
             check_instruction(
                 &test.bytes,
@@ -109,10 +117,15 @@ fn pretty_print_yaml(test_file: &TestFile) -> String {
                 lhs
             })
             .unwrap_or(String::new());
+        let skip = if let Some(skip) = test.skip {
+            format!("\n  skip: {skip}")
+        } else {
+            String::new()
+        };
         s.push_str(&format!(
             "\
 - name: {name}
-  bytes: [{bytes}]
+  bytes: [{bytes}]{skip}
   directives: |{directives}
 "
         ));

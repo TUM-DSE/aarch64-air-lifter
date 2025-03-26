@@ -3,7 +3,7 @@
 //! proofs.
 #![deny(missing_docs)]
 
-use tnj::air::instructions::Blob;
+use tnj::air::instructions::CodeRegion;
 
 pub mod arm64;
 
@@ -12,6 +12,6 @@ pub trait Lifter {
     /// Error type when lifting fails.
     type E;
 
-    /// Lift from a reader reading machine code and one reading proofs to a Blob.
-    fn lift(&self, code: &[u8], proofs: &[u8]) -> Result<Blob, Self::E>;
+    /// Lift from a reader reading machine code and one reading proofs to a CodeRegion.
+    fn lift(&self, code: &[u8], proofs: &[u8]) -> Result<CodeRegion, Self::E>;
 }

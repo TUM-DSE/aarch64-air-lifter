@@ -51,7 +51,7 @@ fn read_elf_file(path: impl AsRef<Path>) -> Result<(), Box<dyn std::error::Error
 
         let start = Instant::now();
         let panic = std::panic::catch_unwind(|| match lifter.lift(&bytes[offset..end], &[]) {
-            Ok(_blob) => Ok(()),
+            Ok(_code_region) => Ok(()),
             Err(e) => {
                 println!("Error lifting {:?}: {}", s, e);
                 Err(e)

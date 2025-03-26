@@ -2,50 +2,50 @@ tests:
 - name: test_subs_1
   bytes: [0x21, 0x0, 0x0, 0xeb]
   directives: |
-      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
-      nextln:   v37 = i64.read_reg "x1"
-      nextln:   v38 = i64.read_reg "x0"
-      nextln:   v39 = i64.sub v37, v38
-      nextln:   i64.write_reg v39, "x1"
-      nextln:   v40 = i64.bitwise_not v38
-      nextln:   v41 = i64.add v37, v40
-      nextln:   v42 = i64.add v41, 0x1
-      nextln:   v43 = i64.icmp.eq v42, 0x0
-      nextln:   i1.write_reg v43, "z"
-      nextln:   v44 = i64.icmp.slt v42, 0x0
-      nextln:   i1.write_reg v44, "n"
-      nextln:   v45 = i64.icmp.ugt v37, v42
-      nextln:   v46 = i64.icmp.ugt v40, v42
-      nextln:   v47 = i1.or v45, v46
-      nextln:   i1.write_reg v47, "c"
-      nextln:   v48 = i64.icmp.slt v37, 0x0
-      nextln:   v49 = i64.icmp.slt v40, 0x0
-      nextln:   v50 = i1.icmp.eq v48, v49
-      nextln:   v51 = i1.icmp.ne v48, v44
-      nextln:   v52 = i1.and v50, v51
-      nextln:   i1.write_reg v52, "v"
+      check: entry: // entry block; no preds!
+      nextln:   v0 = i64.read_reg "x1"
+      nextln:   v1 = i64.read_reg "x0"
+      nextln:   v2 = i64.sub v0, v1
+      nextln:   i64.write_reg v2, "x1"
+      nextln:   v3 = i64.bitwise_not v1
+      nextln:   v4 = i64.add v0, v3
+      nextln:   v5 = i64.add v4, 0x1
+      nextln:   v6 = i64.icmp.eq v5, 0x0
+      nextln:   bool.write_reg v6, "z"
+      nextln:   v7 = i64.icmp.slt v5, 0x0
+      nextln:   bool.write_reg v7, "n"
+      nextln:   v8 = i64.icmp.ugt v0, v5
+      nextln:   v9 = i64.icmp.ugt v3, v5
+      nextln:   v10 = bool.or v8, v9
+      nextln:   bool.write_reg v10, "c"
+      nextln:   v11 = i64.icmp.slt v0, 0x0
+      nextln:   v12 = i64.icmp.slt v3, 0x0
+      nextln:   v13 = bool.icmp.eq v11, v12
+      nextln:   v14 = bool.icmp.ne v11, v7
+      nextln:   v15 = bool.and v13, v14
+      nextln:   bool.write_reg v15, "v"
 - name: test_subs_2
   bytes: [0x21, 0x0, 0x0, 0x6b]
   directives: |
-      check: entry(v0: i64, v1: i64, v2: i64, v3: i64, v4: i64, v5: i64, v6: i64, v7: i64, v8: i64, v9: i64, v10: i64, v11: i64, v12: i64, v13: i64, v14: i64, v15: i64, v16: i64, v17: i64, v18: i64, v19: i64, v20: i64, v21: i64, v22: i64, v23: i64, v24: i64, v25: i64, v26: i64, v27: i64, v28: i64, v29: i64, v30: i64, v31: i64, v32: i64, v33: i1, v34: i1, v35: i1, v36: i1): // entry block
-      nextln:   v37 = i32.read_reg "x1"
-      nextln:   v38 = i32.read_reg "x0"
-      nextln:   v39 = i32.sub v37, v38
-      nextln:   i32.write_reg v39, "x1"
-      nextln:   v40 = i32.bitwise_not v38
-      nextln:   v41 = i32.add v37, v40
-      nextln:   v42 = i32.add v41, 0x1
-      nextln:   v43 = i32.icmp.eq v42, 0x0
-      nextln:   i1.write_reg v43, "z"
-      nextln:   v44 = i32.icmp.slt v42, 0x0
-      nextln:   i1.write_reg v44, "n"
-      nextln:   v45 = i32.icmp.ugt v37, v42
-      nextln:   v46 = i32.icmp.ugt v40, v42
-      nextln:   v47 = i1.or v45, v46
-      nextln:   i1.write_reg v47, "c"
-      nextln:   v48 = i32.icmp.slt v37, 0x0
-      nextln:   v49 = i32.icmp.slt v40, 0x0
-      nextln:   v50 = i1.icmp.eq v48, v49
-      nextln:   v51 = i1.icmp.ne v48, v44
-      nextln:   v52 = i1.and v50, v51
-      nextln:   i1.write_reg v52, "v"
+      check: entry: // entry block; no preds!
+      nextln:   v0 = i32.read_reg "x1"
+      nextln:   v1 = i32.read_reg "x0"
+      nextln:   v2 = i32.sub v0, v1
+      nextln:   i32.write_reg v2, "x1"
+      nextln:   v3 = i32.bitwise_not v1
+      nextln:   v4 = i32.add v0, v3
+      nextln:   v5 = i32.add v4, 0x1
+      nextln:   v6 = i32.icmp.eq v5, 0x0
+      nextln:   bool.write_reg v6, "z"
+      nextln:   v7 = i32.icmp.slt v5, 0x0
+      nextln:   bool.write_reg v7, "n"
+      nextln:   v8 = i32.icmp.ugt v0, v5
+      nextln:   v9 = i32.icmp.ugt v3, v5
+      nextln:   v10 = bool.or v8, v9
+      nextln:   bool.write_reg v10, "c"
+      nextln:   v11 = i32.icmp.slt v0, 0x0
+      nextln:   v12 = i32.icmp.slt v3, 0x0
+      nextln:   v13 = bool.icmp.eq v11, v12
+      nextln:   v14 = bool.icmp.ne v11, v7
+      nextln:   v15 = bool.and v13, v14
+      nextln:   bool.write_reg v15, "v"
