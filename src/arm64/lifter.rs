@@ -118,11 +118,9 @@ impl<'a> LifterState<'a> {
 
     fn mark_next_block_as_entry(&mut self, pc: u64) {
         let next_pc = pc + INSTRUCTION_SIZE;
-        let block = self
-            .label_resolver
-            .get_block(next_pc)
-            .expect("next block to exist");
-        self.builder.mark_entry_block(block);
+        if let Some(block) = self.label_resolver.get_block(next_pc) {
+            self.builder.mark_entry_block(block);
+        }
     }
 }
 
