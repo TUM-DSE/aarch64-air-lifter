@@ -100,36 +100,41 @@ fn pretty_print_yaml(test_file: &TestFile) -> String {
     let mut s = String::new();
 
     s.push_str("tests:\n");
-    test_file.tests.iter().for_each(|test| {
-        let name = &test.name;
-        let directives = test.directives.lines().fold(String::new(), |mut acc, rhs| {
-            acc.push_str("\n      ");
-            acc.push_str(rhs);
-            acc
-        });
-        let bytes = test
-            .bytes
-            .iter()
-            .map(|b| format!("0x{b:02x}"))
-            .reduce(|mut lhs, rhs| {
-                lhs.push_str(", ");
-                lhs.push_str(&rhs);
-                lhs
-            })
-            .unwrap_or(String::new());
-        let skip = if let Some(skip) = test.skip {
-            format!("\n  skip: {skip}")
-        } else {
-            String::new()
-        };
-        s.push_str(&format!(
-            "\
+    test_file.tests.iter().for_each(
+        |TestSpec {
+             name,
+             bytes,
+             directives,
+             skip,
+         }| {
+            let directives = directives.lines().fold(String::new(), |mut acc, rhs| {
+                acc.push_str("\n      ");
+                acc.push_str(rhs);
+                acc
+            });
+            let bytes = bytes
+                .iter()
+                .map(|b| format!("0x{b:02x}"))
+                .reduce(|mut lhs, rhs| {
+                    lhs.push_str(", ");
+                    lhs.push_str(&rhs);
+                    lhs
+                })
+                .unwrap_or(String::new());
+            let skip = if let Some(skip) = skip {
+                format!("\n  skip: {skip}")
+            } else {
+                String::new()
+            };
+            s.push_str(&format!(
+                "\
 - name: {name}
   bytes: [{bytes}]{skip}
   directives: |{directives}
 "
-        ));
-    });
+            ));
+        },
+    );
 
     s
 }
