@@ -50,7 +50,6 @@ pub mod strb;
 pub mod br;
 pub mod ccmp;
 pub mod smulh;
-pub mod invalidate_regs;
 pub mod csel;
 pub mod madd;
 pub mod bfm;
