@@ -5,12 +5,7 @@ use tnj::types::{Type, BOOL};
 
 impl LifterState<'_> {
     pub(crate) fn flag_value(&mut self, flag: Flag) -> Value {
-        let reg = match flag {
-            Flag::N => "n",
-            Flag::Z => "z",
-            Flag::C => "c",
-            Flag::V => "v",
-        };
+        let reg = get_flag_name(flag);
         self.builder
             .read_reg(
                 self.builder
@@ -24,12 +19,7 @@ impl LifterState<'_> {
     }
 
     pub(crate) fn write_flag(&mut self, value: Value, flag: Flag) {
-        let reg_name = match flag {
-            Flag::N => "n",
-            Flag::Z => "z",
-            Flag::C => "c",
-            Flag::V => "v",
-        };
+        let reg_name = get_flag_name(flag);
         let reg = self.get_reg_val_by_name(reg_name);
         self.write_reg(value, reg, BOOL);
     }
@@ -91,5 +81,14 @@ impl LifterState<'_> {
             .builder
             .and(values_have_same_sign, result_has_different_sign, BOOL);
         self.write_flag(v.into(), Flag::V);
+    }
+}
+
+fn get_flag_name(flag: Flag) -> &'static str {
+    match flag {
+        Flag::N => "n",
+        Flag::Z => "z",
+        Flag::C => "c",
+        Flag::V => "v",
     }
 }
