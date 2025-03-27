@@ -716,7 +716,8 @@ impl LifterState<'_> {
                 self.write_reg(val, dst_reg, op_type);
             }
             Opcode::RET | Opcode::RETAB | Opcode::RETAA => {
-                self.builder.ret();
+                let target = self.get_value(inst.operands[0]);
+                self.builder.dynamic_jump(target);
             }
             Opcode::REV | Opcode::REV64 => {
                 let dst_reg = self.get_dst_reg(inst);

@@ -3,9 +3,11 @@ tests:
   bytes: [0xc0, 0x03, 0x5f, 0xd6]
   directives: |
       check: entry: // entry block; no preds!
-      nextln:   ret
+      nextln:   v0 = i64.read_reg "x30"
+      nextln:   dynamic_jump v0
 - name: test_ret_2
   bytes: [0x20, 0x00, 0x5f, 0xd6]
   directives: |
       check: entry: // entry block; no preds!
-      nextln:   ret
+      nextln:   v0 = i64.read_reg "x1"
+      nextln:   dynamic_jump v0
