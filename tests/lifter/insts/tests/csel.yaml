@@ -32,7 +32,7 @@ tests:
       nextln:   i64.write_reg v3, "x0"
       nextln:   jump block_4
 - name: test_csel_3
-  bytes: [0x20, 0x0, 0x82, 0x1a]
+  bytes: [0x20, 0x00, 0x82, 0x1a]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = bool.read_reg "z"

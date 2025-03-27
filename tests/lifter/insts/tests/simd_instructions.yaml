@@ -14,7 +14,7 @@ tests:
       nextln:   v1 = i128.opaque
       nextln:   v2 = i128.add v0, v1
 - name: test_simd_vector_2
-  bytes: [0x20, 0x84, 0x22, 0xe]
+  bytes: [0x20, 0x84, 0x22, 0x0e]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.opaque

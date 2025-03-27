@@ -1,13 +1,13 @@
 tests:
 - name: test_eor_1
-  bytes: [0x20, 0x0, 0x7e, 0xd2]
+  bytes: [0x20, 0x00, 0x7e, 0xd2]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x1"
       nextln:   v1 = i64.xor v0, 0x4
       nextln:   i64.write_reg v0, "x0"
 - name: test_eor_2
-  bytes: [0x41, 0x0, 0x1d, 0x52]
+  bytes: [0x41, 0x00, 0x1d, 0x52]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.read_reg "x2"

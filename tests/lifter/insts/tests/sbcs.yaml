@@ -1,6 +1,6 @@
 tests:
 - name: test_sbcs_1
-  bytes: [0x41, 0x0, 0x3, 0x7a]
+  bytes: [0x41, 0x00, 0x03, 0x7a]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.read_reg "x2"
@@ -28,7 +28,7 @@ tests:
       nextln:   v18 = bool.and v16, v17
       nextln:   bool.write_reg v18, "v"
 - name: test_sbcs_2
-  bytes: [0x41, 0x0, 0x3, 0xfa]
+  bytes: [0x41, 0x00, 0x03, 0xfa]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x2"

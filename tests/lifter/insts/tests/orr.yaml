@@ -1,20 +1,20 @@
 tests:
 - name: test_orr_1
-  bytes: [0x20, 0x4, 0x0, 0x32]
+  bytes: [0x20, 0x04, 0x00, 0x32]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.read_reg "x1"
       nextln:   v1 = i32.or v0, 0x3
       nextln:   i32.write_reg v1, "x0"
 - name: test_orr_2
-  bytes: [0x41, 0x0, 0x40, 0xb2]
+  bytes: [0x41, 0x00, 0x40, 0xb2]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x2"
       nextln:   v1 = i64.or v0, 0x1
       nextln:   i64.write_reg v1, "x1"
 - name: test_orr_3
-  bytes: [0x20, 0x10, 0x2, 0xaa]
+  bytes: [0x20, 0x10, 0x02, 0xaa]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x1"

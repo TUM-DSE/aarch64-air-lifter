@@ -1,6 +1,6 @@
 tests:
 - name: test_ccmp_1
-  bytes: [0x3, 0x0, 0x41, 0xfa]
+  bytes: [0x03, 0x00, 0x41, 0xfa]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = bool.read_reg "z"
@@ -43,7 +43,7 @@ tests:
       nextln:   bool.write_reg v24, "v"
       nextln:   jump block_4
 - name: test_ccmp_2
-  bytes: [0x4, 0x60, 0x42, 0x7a]
+  bytes: [0x04, 0x60, 0x42, 0x7a]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = bool.read_reg "v"

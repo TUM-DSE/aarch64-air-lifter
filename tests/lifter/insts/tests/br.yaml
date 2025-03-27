@@ -1,6 +1,6 @@
 tests:
 - name: test_blr_1
-  bytes: [0x20, 0x0, 0x1f, 0xd6]
+  bytes: [0x20, 0x00, 0x1f, 0xd6]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x1"

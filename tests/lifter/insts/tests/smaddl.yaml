@@ -1,6 +1,6 @@
 tests:
 - name: test_smaddl_1
-  bytes: [0x20, 0x0, 0x22, 0x9b]
+  bytes: [0x20, 0x00, 0x22, 0x9b]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.read_reg "x1"

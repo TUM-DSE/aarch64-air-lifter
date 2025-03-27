@@ -1,6 +1,6 @@
 tests:
 - name: test_add_1
-  bytes: [0x21, 0x0, 0x0, 0xab]
+  bytes: [0x21, 0x00, 0x00, 0xab]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x1"
@@ -24,7 +24,7 @@ tests:
       nextln:   v14 = bool.and v12, v13
       nextln:   bool.write_reg v14, "v"
 - name: test_add_2
-  bytes: [0x21, 0x0, 0x0, 0x2b]
+  bytes: [0x21, 0x00, 0x00, 0x2b]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.read_reg "x1"

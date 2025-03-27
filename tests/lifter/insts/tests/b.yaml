@@ -1,6 +1,6 @@
 tests:
 - name: test_b_1
-  bytes: [0x0, 0x0, 0x0, 0x14]
+  bytes: [0x00, 0x00, 0x00, 0x14]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   jump block_0

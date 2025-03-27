@@ -1,6 +1,6 @@
 tests:
 - name: test_csneg_1
-  bytes: [0x20, 0x4, 0x82, 0xda]
+  bytes: [0x20, 0x04, 0x82, 0xda]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = bool.read_reg "z"
@@ -17,7 +17,7 @@ tests:
       nextln:   i64.write_reg v4, "x0"
       nextln:   jump block_4
 - name: test_csneg_2
-  bytes: [0x20, 0x4, 0x82, 0x5a]
+  bytes: [0x20, 0x04, 0x82, 0x5a]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = bool.read_reg "z"

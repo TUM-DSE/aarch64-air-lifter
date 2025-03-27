@@ -1,6 +1,6 @@
 tests:
 - name: test_rev16_1
-  bytes: [0x21, 0x4, 0xc0, 0xda]
+  bytes: [0x21, 0x04, 0xc0, 0xda]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x1"
@@ -22,7 +22,7 @@ tests:
       nextln:   v16 = i64.ror v12, 0x10
       nextln:   i64.write_reg v15, "x1"
 - name: test_rev16_2
-  bytes: [0x21, 0x4, 0xc0, 0x5a]
+  bytes: [0x21, 0x04, 0xc0, 0x5a]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.read_reg "x1"

@@ -110,7 +110,7 @@ fn pretty_print_yaml(test_file: &TestFile) -> String {
         let bytes = test
             .bytes
             .iter()
-            .map(|b| format!("{b:#02x}"))
+            .map(|b| format!("0x{b:02x}"))
             .reduce(|mut lhs, rhs| {
                 lhs.push_str(", ");
                 lhs.push_str(&rhs);

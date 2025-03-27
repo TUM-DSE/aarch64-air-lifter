@@ -1,6 +1,6 @@
 tests:
 - name: test_rev32_1
-  bytes: [0x21, 0x8, 0xc0, 0xda]
+  bytes: [0x21, 0x08, 0xc0, 0xda]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x1"

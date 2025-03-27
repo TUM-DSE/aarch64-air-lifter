@@ -1,6 +1,6 @@
 tests:
 - name: test_sdiv_1
-  bytes: [0x20, 0xc, 0xc2, 0x9a]
+  bytes: [0x20, 0x0c, 0xc2, 0x9a]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x1"
@@ -10,7 +10,7 @@ tests:
       nextln:   v3 = i64.idiv v0, v1
       nextln:   i64.write_reg v3, "x0"
 - name: test_sdiv_2
-  bytes: [0x20, 0xc, 0xc2, 0x1a]
+  bytes: [0x20, 0x0c, 0xc2, 0x1a]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.read_reg "x1"

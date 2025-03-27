@@ -1,11 +1,11 @@
 tests:
 - name: test_ret_1
-  bytes: [0xc0, 0x3, 0x5f, 0xd6]
+  bytes: [0xc0, 0x03, 0x5f, 0xd6]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   ret
 - name: test_ret_2
-  bytes: [0x20, 0x0, 0x5f, 0xd6]
+  bytes: [0x20, 0x00, 0x5f, 0xd6]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   ret

@@ -11,7 +11,7 @@ tests:
       nextln:   v4 = i64.load v3
       nextln:   i64.write_reg v4, "x1"
 - name: test_ldp_2
-  bytes: [0x81, 0x8, 0xc2, 0x28]
+  bytes: [0x81, 0x08, 0xc2, 0x28]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x4"

@@ -1,6 +1,6 @@
 tests:
 - name: test_strh_1
-  bytes: [0xe0, 0x1b, 0x0, 0x79]
+  bytes: [0xe0, 0x1b, 0x00, 0x79]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.read_reg "x0"
@@ -8,7 +8,7 @@ tests:
       nextln:   v2 = i64.add v1, 0xc
       nextln:   i32.store v0, v2
 - name: test_strh_2
-  bytes: [0x20, 0x0, 0x0, 0x39]
+  bytes: [0x20, 0x00, 0x00, 0x39]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.read_reg "x0"

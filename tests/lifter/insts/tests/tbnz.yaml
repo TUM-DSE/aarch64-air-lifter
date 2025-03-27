@@ -20,7 +20,7 @@ tests:
       check: block_4: // preds: entry
       check: block_18446744073709551612: // preds: entry
 - name: test_tbnz_3
-  bytes: [0xc1, 0xff, 0xf, 0x37]
+  bytes: [0xc1, 0xff, 0x0f, 0x37]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.lshr 0x1, 0x1
@@ -30,7 +30,7 @@ tests:
       check: block_4: // preds: entry
       check: block_18446744073709551608: // preds: entry
 - name: test_tbnz_4
-  bytes: [0xa2, 0xff, 0x7, 0x37]
+  bytes: [0xa2, 0xff, 0x07, 0x37]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.lshr 0x0, 0x1

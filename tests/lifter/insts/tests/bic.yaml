@@ -1,6 +1,6 @@
 tests:
 - name: test_bic_1
-  bytes: [0x41, 0x8, 0x23, 0xa]
+  bytes: [0x41, 0x08, 0x23, 0x0a]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.read_reg "x2"
@@ -10,7 +10,7 @@ tests:
       nextln:   v4 = i32.and v0, v3
       nextln:   i32.write_reg v4, "x1"
 - name: test_bic_2
-  bytes: [0x41, 0xc, 0x23, 0x8a]
+  bytes: [0x41, 0x0c, 0x23, 0x8a]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x2"
@@ -20,7 +20,7 @@ tests:
       nextln:   v4 = i64.and v0, v3
       nextln:   i64.write_reg v4, "x1"
 - name: test_bic_3
-  bytes: [0x41, 0x4, 0xa3, 0x8a]
+  bytes: [0x41, 0x04, 0xa3, 0x8a]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x2"

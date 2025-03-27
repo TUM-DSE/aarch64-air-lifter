@@ -11,7 +11,7 @@ tests:
       nextln:   v5 = i64.or v4, v2
       nextln:   i64.write_reg v5, "x0"
 - name: test_extr_2
-  bytes: [0x0, 0xc8, 0xc0, 0x93]
+  bytes: [0x00, 0xc8, 0xc0, 0x93]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x0"
@@ -22,7 +22,7 @@ tests:
       nextln:   v5 = i64.or v4, v2
       nextln:   i64.write_reg v5, "x0"
 - name: test_extr_3
-  bytes: [0x41, 0xc, 0x83, 0x13]
+  bytes: [0x41, 0x0c, 0x83, 0x13]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.read_reg "x2"

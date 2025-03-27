@@ -1,6 +1,6 @@
 tests:
 - name: test_cbz_1
-  bytes: [0x0, 0x0, 0x0, 0x34]
+  bytes: [0x00, 0x00, 0x00, 0x34]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   jump block_0
@@ -10,7 +10,7 @@ tests:
       nextln:   jumpif v1, block_0, block_4
       check: block_4: // preds: block_0
 - name: test_cbz_2
-  bytes: [0x20, 0x0, 0x0, 0xb4]
+  bytes: [0x20, 0x00, 0x00, 0xb4]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x0"

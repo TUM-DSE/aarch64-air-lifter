@@ -10,7 +10,7 @@ tests:
       nextln:   v4 = i64.xor v0, v3
       nextln:   i64.write_reg v4, "x1"
 - name: test_eon_2
-  bytes: [0x41, 0x4, 0xa3, 0xca]
+  bytes: [0x41, 0x04, 0xa3, 0xca]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x2"
@@ -20,7 +20,7 @@ tests:
       nextln:   v4 = i64.xor v0, v3
       nextln:   i64.write_reg v4, "x1"
 - name: test_eon_3
-  bytes: [0x41, 0x4, 0xa3, 0x4a]
+  bytes: [0x41, 0x04, 0xa3, 0x4a]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.read_reg "x2"

@@ -1,6 +1,6 @@
 tests:
 - name: test_ldarb_1
-  bytes: [0xe1, 0xff, 0xdf, 0x8]
+  bytes: [0xe1, 0xff, 0xdf, 0x08]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "sp"
@@ -9,7 +9,7 @@ tests:
       nextln:   v3 = i32.zext_i8 v2
       nextln:   i32.write_reg v3, "x1"
 - name: test_ldarb_2
-  bytes: [0x21, 0xfc, 0xdf, 0x8]
+  bytes: [0x21, 0xfc, 0xdf, 0x08]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x1"

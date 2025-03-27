@@ -1,6 +1,6 @@
 tests:
 - name: test_bl_1
-  bytes: [0x2, 0x0, 0x0, 0x94]
+  bytes: [0x02, 0x00, 0x00, 0x94]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "pc"
@@ -10,7 +10,7 @@ tests:
       check: block_4: // no preds!
       check: block_8: // preds: entry
 - name: test_bl_2
-  bytes: [0x1, 0x0, 0x0, 0x94]
+  bytes: [0x01, 0x00, 0x00, 0x94]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "pc"

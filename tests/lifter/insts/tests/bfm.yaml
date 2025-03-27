@@ -1,6 +1,6 @@
 tests:
 - name: test_bfm_1
-  bytes: [0x41, 0x78, 0xc, 0x33]
+  bytes: [0x41, 0x78, 0x0c, 0x33]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.read_reg "x2"
@@ -38,7 +38,7 @@ tests:
       nextln:   i32.write_reg v25, "x1"
       nextln:   jump block_4
 - name: test_bfm_2
-  bytes: [0x41, 0x4, 0x41, 0xb3]
+  bytes: [0x41, 0x04, 0x41, 0xb3]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x2"

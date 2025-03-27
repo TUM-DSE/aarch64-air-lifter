@@ -1,6 +1,6 @@
 tests:
 - name: test_umaddl_1
-  bytes: [0x21, 0x8, 0xa2, 0x9b]
+  bytes: [0x21, 0x08, 0xa2, 0x9b]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.read_reg "x1"
