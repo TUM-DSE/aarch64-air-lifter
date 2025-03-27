@@ -23,3 +23,10 @@ pub fn test_test_simd_vector_2() {
         "test_simd_vector_2",
     );
 }
+#[test]
+pub fn test_test_simd_mov_to_scalar() {
+    run_test_from_yaml(
+        "tests/lifter/insts/tests/simd_instructions.yaml",
+        "test_simd_mov_to_scalar",
+    );
+}

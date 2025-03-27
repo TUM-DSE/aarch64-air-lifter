@@ -85,4 +85,16 @@ impl LifterState<'_> {
                 .into(),
         }
     }
+
+    pub fn is_simd_register(operand: Operand) -> bool {
+        matches!(
+            operand,
+            Operand::SIMDRegister(..)
+                | Operand::SIMDRegisterElements(..)
+                | Operand::SIMDRegisterElementsLane(..)
+                | Operand::SIMDRegisterElementsMultipleLane(..)
+                | Operand::SIMDRegisterGroup(..)
+                | Operand::SIMDRegisterGroupLane(..)
+        )
+    }
 }

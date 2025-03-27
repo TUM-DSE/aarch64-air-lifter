@@ -29,27 +29,29 @@ impl LifterState<'_> {
         val.into()
     }
 
-    pub(crate) fn get_reg_by_index(&self, inst: Instruction, index: usize) -> Reg {
+    pub(crate) fn get_reg_by_index(&self, inst: Instruction, index: usize) -> Option<Reg> {
         let dst_reg = match inst.operands[index] {
-            Operand::Register(_, reg) => Reg(reg as u32),
+            Operand::Register(_, reg) => Some(Reg(reg as u32)),
             Operand::RegisterOrSP(sz, reg) => {
                 if reg == 31 {
                     assert_eq!(sz, SizeCode::X, "sp must be 64 bits");
-                    self.builder
-                        .get_code_region()
-                        .get_arch()
-                        .lookup_reg(&"sp".into())
-                        .unwrap()
+                    Some(
+                        self.builder
+                            .get_code_region()
+                            .get_arch()
+                            .lookup_reg(&"sp".into())
+                            .unwrap(),
+                    )
                 } else {
-                    Reg(reg as u32)
+                    Some(Reg(reg as u32))
                 }
             }
-            _ => Reg(31),
+            _ => None,
         };
         dst_reg
     }
 
-    pub(crate) fn get_dst_reg(&self, inst: Instruction) -> Reg {
+    pub(crate) fn get_dst_reg(&self, inst: Instruction) -> Option<Reg> {
         self.get_reg_by_index(inst, 0)
     }
 
@@ -67,8 +69,7 @@ impl LifterState<'_> {
     }
 
     pub(crate) fn write_reg(&mut self, val: impl Into<Value>, dst_reg: Reg, op_type: Type) {
-        if dst_reg.0 != 31 {
-            self.builder.write_reg(val, dst_reg, op_type);
-        }
+        assert_ne!(dst_reg.0, 31, "cannot write to register 31");
+        self.builder.write_reg(val, dst_reg, op_type);
     }
 }

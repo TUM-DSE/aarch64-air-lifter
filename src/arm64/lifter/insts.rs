@@ -10,12 +10,25 @@ impl LifterState<'_> {
         pc: u64,
         inst: Instruction,
     ) -> Result<(), AArch64LifterError> {
+        // we skip vector instructions
+        if !inst.operands.is_empty()
+            && inst
+                .operands
+                .iter()
+                .filter(|op| !matches!(op, Operand::Nothing))
+                .copied()
+                .all(Self::is_simd_register)
+        {
+            // skip instruction
+            return Ok(());
+        }
+
         match inst.opcode {
             Opcode::ADC | Opcode::ADCS => {
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
                 let carry = self.flag_value(Flag::C);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let val = self.builder.add(src1, carry, op_type);
                 let val = self.builder.add(val, src2, op_type);
@@ -28,7 +41,7 @@ impl LifterState<'_> {
             Opcode::ADD | Opcode::ADDS => {
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let val = self.builder.add(src1, src2, op_type);
                 self.write_reg(val, dst_reg, op_type);
@@ -39,14 +52,14 @@ impl LifterState<'_> {
                 }
             }
             Opcode::ADR => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let pc = self.read_pc_reg();
                 let offset = self.get_value(inst.operands[1]);
                 let val = self.builder.add(pc, offset, I64);
                 self.write_reg(val, dst_reg, I64);
             }
             Opcode::ADRP => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let offset = self.get_value(inst.operands[1]);
                 let reverse_mask = self.builder.iconst(0xFFF);
                 let mask = self.builder.bitwise_not(reverse_mask, I64);
@@ -58,7 +71,7 @@ impl LifterState<'_> {
             Opcode::AND | Opcode::ANDS => {
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let val = self.builder.and(src1, src2, op_type);
                 self.write_reg(val, dst_reg, op_type);
@@ -76,7 +89,7 @@ impl LifterState<'_> {
             Opcode::ASRV => {
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let shift_mask = match op_type {
                     I64 => self.builder.iconst(63),
@@ -119,7 +132,7 @@ impl LifterState<'_> {
                 let next_address = pc + INSTRUCTION_SIZE;
                 let next_block = self.label_resolver.get_block(next_address).unwrap();
 
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let src = self.get_value(inst.operands[1]);
                 let immr = self.get_value(inst.operands[2]);
@@ -181,7 +194,7 @@ impl LifterState<'_> {
             Opcode::BIC => {
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let neg_src2 = self.builder.bitwise_not(src2, op_type);
                 let val = self.builder.and(src1, neg_src2, op_type);
@@ -315,7 +328,7 @@ impl LifterState<'_> {
             }
             Opcode::CLS => {
                 let src = self.get_value(inst.operands[1]);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
 
                 let one = self.builder.iconst(1);
@@ -337,7 +350,7 @@ impl LifterState<'_> {
             }
             Opcode::CLZ => {
                 let src = self.get_value(inst.operands[1]);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let one = self.builder.iconst(1);
 
@@ -359,7 +372,7 @@ impl LifterState<'_> {
                 let next_address = pc + INSTRUCTION_SIZE;
                 let next_block = self.label_resolver.get_block(next_address).unwrap();
 
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let condition = self.get_condition(inst.operands[3])?;
                 self.builder.jumpif(
@@ -388,7 +401,7 @@ impl LifterState<'_> {
                 let next_address = pc + INSTRUCTION_SIZE;
                 let next_block = self.label_resolver.get_block(next_address).unwrap();
 
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let condition = self.get_condition(inst.operands[3])?;
                 self.builder.jumpif(
@@ -421,7 +434,7 @@ impl LifterState<'_> {
                 let next_address = pc + INSTRUCTION_SIZE;
                 let next_block = self.label_resolver.get_block(next_address).unwrap();
 
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let condition = self.get_condition(inst.operands[3])?;
                 self.builder.jumpif(
@@ -453,7 +466,7 @@ impl LifterState<'_> {
                 let next_address = pc + INSTRUCTION_SIZE;
                 let next_block = self.label_resolver.get_block(next_address).unwrap();
 
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let condition = self.get_condition(inst.operands[3])?;
                 self.builder.jumpif(
@@ -481,7 +494,7 @@ impl LifterState<'_> {
             Opcode::EON => {
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
 
                 let src2 = self.builder.bitwise_not(src2, op_type);
@@ -489,7 +502,7 @@ impl LifterState<'_> {
                 self.write_reg(val, dst_reg, op_type);
             }
             Opcode::EOR => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
@@ -498,7 +511,7 @@ impl LifterState<'_> {
             }
             Opcode::EXTR => {
                 // 4 Operands
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
@@ -522,8 +535,8 @@ impl LifterState<'_> {
                 self.mark_next_block_as_entry(pc);
             }
             Opcode::LDP | Opcode::LDXP => {
-                let dst_reg1 = self.get_reg_by_index(inst, 0);
-                let dst_reg2 = self.get_reg_by_index(inst, 1);
+                let dst_reg1 = self.get_reg_by_index(inst, 0).unwrap();
+                let dst_reg2 = self.get_reg_by_index(inst, 1).unwrap();
                 let address = self.get_value(inst.operands[2]);
                 let op_type = helper::get_type_by_inst(inst);
 
@@ -538,8 +551,8 @@ impl LifterState<'_> {
                 self.write_reg(val2, dst_reg2, op_type);
             }
             Opcode::LDPSW => {
-                let dst_reg1 = self.get_reg_by_index(inst, 0);
-                let dst_reg2 = self.get_reg_by_index(inst, 1);
+                let dst_reg1 = self.get_reg_by_index(inst, 0).unwrap();
+                let dst_reg2 = self.get_reg_by_index(inst, 1).unwrap();
                 let address = self.get_value(inst.operands[2]);
 
                 let val1 = self.builder.load(address, I32);
@@ -557,7 +570,7 @@ impl LifterState<'_> {
             | Opcode::LDXR
             | Opcode::LDAXR
             | Opcode::LDTR => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let address = self.get_value(inst.operands[1]);
                 let val = self.builder.load(address, op_type);
@@ -569,7 +582,7 @@ impl LifterState<'_> {
             | Opcode::LDXRB
             | Opcode::LDAXRB
             | Opcode::LDTRB => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let address = self.get_value(inst.operands[1]);
                 let val = self.builder.load(address, I8);
                 let val = self.builder.zext_i8(val, I32);
@@ -581,14 +594,14 @@ impl LifterState<'_> {
             | Opcode::LDXRH
             | Opcode::LDAXRH
             | Opcode::LDTRH => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let address = self.get_value(inst.operands[1]);
                 let val = self.builder.load(address, I16);
                 let val = self.builder.zext_i16(val, I32);
                 self.write_reg(val, dst_reg, I32);
             }
             Opcode::LDRSB | Opcode::LDTRSB | Opcode::LDURSB => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let address = self.get_value(inst.operands[1]);
                 let val = self.builder.load(address, I8);
@@ -596,7 +609,7 @@ impl LifterState<'_> {
                 self.write_reg(val, dst_reg, op_type);
             }
             Opcode::LDRSH | Opcode::LDTRSH | Opcode::LDURSH => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let address = self.get_value(inst.operands[1]);
                 let val = self.builder.load(address, I16);
@@ -604,7 +617,7 @@ impl LifterState<'_> {
                 self.write_reg(val, dst_reg, op_type);
             }
             Opcode::LDRSW | Opcode::LDTRSW | Opcode::LDURSW => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let address = self.get_value(inst.operands[1]);
                 let val = self.builder.load(address, I32);
                 let val = self.builder.sext_i32(val, I64);
@@ -613,7 +626,7 @@ impl LifterState<'_> {
             Opcode::LSLV => {
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let shift_mask = match op_type {
                     I64 => self.builder.iconst(63),
@@ -624,7 +637,7 @@ impl LifterState<'_> {
                 self.write_reg(val, dst_reg, op_type);
             }
             Opcode::LSRV => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
@@ -637,7 +650,7 @@ impl LifterState<'_> {
                 self.write_reg(val, dst_reg, op_type);
             }
             Opcode::MADD => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let mul_src1 = self.get_value(inst.operands[1]);
                 let mul_src2 = self.get_value(inst.operands[2]);
@@ -647,12 +660,12 @@ impl LifterState<'_> {
                 self.write_reg(val, dst_reg, op_type);
             }
             Opcode::MOVK => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let src = self.get_value(inst.operands[1]);
                 self.write_reg(src, dst_reg, I16);
             }
             Opcode::MOVN => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let zero = self.builder.iconst(0);
                 self.write_reg(zero, dst_reg, op_type);
@@ -662,7 +675,7 @@ impl LifterState<'_> {
                 self.write_reg(src, dst_reg, I16);
             }
             Opcode::MOVZ => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let zero = self.builder.iconst(0);
                 self.write_reg(zero, dst_reg, op_type);
@@ -671,7 +684,7 @@ impl LifterState<'_> {
                 self.write_reg(src, dst_reg, I16);
             }
             Opcode::MSUB => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let mul_src1 = self.get_value(inst.operands[1]);
                 let mul_src2 = self.get_value(inst.operands[2]);
@@ -683,13 +696,13 @@ impl LifterState<'_> {
             Opcode::NEG => {
                 let zero = self.builder.iconst(0);
                 let src = self.get_value(inst.operands[1]);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let val = self.builder.sub(zero, src, op_type);
                 self.write_reg(val, dst_reg, op_type);
             }
             Opcode::ORN => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
@@ -700,7 +713,7 @@ impl LifterState<'_> {
             Opcode::ORR => {
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let val = self.builder.or(src1, src2, op_type);
                 self.write_reg(val, dst_reg, op_type);
@@ -709,7 +722,7 @@ impl LifterState<'_> {
                 // We are ignoring prefetch hints
             }
             Opcode::RBIT => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let src = self.get_value(inst.operands[1]);
                 let val = self.builder.reverse_bits(src, op_type);
@@ -720,14 +733,14 @@ impl LifterState<'_> {
                 self.builder.dynamic_jump(target);
             }
             Opcode::REV | Opcode::REV64 => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let src = self.get_value(inst.operands[1]);
                 let val = self.builder.reverse_bytes(src, op_type);
                 self.write_reg(val, dst_reg, op_type);
             }
             Opcode::REV16 => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let mut src = self.get_value(inst.operands[1]);
                 let mut res = self.builder.iconst(0);
@@ -747,7 +760,7 @@ impl LifterState<'_> {
                 self.write_reg(res, dst_reg, op_type);
             }
             Opcode::REV32 => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let mut src = self.get_value(inst.operands[1]);
                 let mut res = self.builder.iconst(0);
                 let thirtytwo = self.builder.iconst(32);
@@ -764,7 +777,7 @@ impl LifterState<'_> {
                 self.write_reg(res, dst_reg, I64);
             }
             Opcode::RORV => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
@@ -781,7 +794,7 @@ impl LifterState<'_> {
                 let src2 = self.get_value(inst.operands[2]);
                 let carry = self.flag_value(Flag::C);
                 let carry = self.builder.bitwise_not(carry, BOOL);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let val = self.builder.sub(src1, src2, op_type);
                 let val = self.builder.sub(val, carry, op_type);
@@ -799,7 +812,7 @@ impl LifterState<'_> {
                 let next_address = pc + INSTRUCTION_SIZE;
                 let next_block = self.label_resolver.get_block(next_address).unwrap();
 
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let src = self.get_value(inst.operands[1]);
                 let immr = self.get_value(inst.operands[2]);
@@ -846,7 +859,7 @@ impl LifterState<'_> {
             Opcode::SDIV => {
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let zero = self.builder.iconst(0);
                 let trap = self.builder.icmp(CmpTy::Eq, src2, zero, op_type);
@@ -855,7 +868,7 @@ impl LifterState<'_> {
                 self.write_reg(val, dst_reg, op_type);
             }
             Opcode::SMADDL => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
                 let src3 = self.get_value(inst.operands[3]);
@@ -867,7 +880,7 @@ impl LifterState<'_> {
                 // Ignoring secure monitor calls
             }
             Opcode::SMSUBL => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
                 let src3 = self.get_value(inst.operands[3]);
@@ -876,7 +889,7 @@ impl LifterState<'_> {
                 self.write_reg(val, dst_reg, I64);
             }
             Opcode::SMULH => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
                 let val = self.builder.imul(src1, src2, I64);
@@ -911,7 +924,7 @@ impl LifterState<'_> {
                 };
                 let address = self.builder.add(address, address_offset, I64);
                 self.builder.store(src2, address, op_type);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let opaque = self.builder.opaque(op_type);
                 self.builder.write_reg(opaque, dst_reg, op_type);
             }
@@ -927,7 +940,7 @@ impl LifterState<'_> {
                 let address = self.get_value(inst.operands[2]);
                 self.builder.store(value, address, op_type);
                 let opaque = self.builder.opaque(op_type);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 self.write_reg(opaque, dst_reg, op_type);
             }
             Opcode::STRB | Opcode::STLRB | Opcode::STURB | Opcode::STLURB | Opcode::STTRB => {
@@ -939,7 +952,7 @@ impl LifterState<'_> {
                 let value = self.get_value(inst.operands[1]);
                 let address = self.get_value(inst.operands[2]);
                 self.builder.store(value, address, I8);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let opaque = self.builder.opaque(I8);
                 self.write_reg(opaque, dst_reg, I8);
             }
@@ -952,14 +965,14 @@ impl LifterState<'_> {
                 let value = self.get_value(inst.operands[1]);
                 let address = self.get_value(inst.operands[2]);
                 self.builder.store(value, address, I32);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let opaque = self.builder.opaque(I32);
                 self.write_reg(opaque, dst_reg, I32);
             }
             Opcode::SUB | Opcode::SUBS => {
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let val = self.builder.sub(src1, src2, op_type);
                 self.write_reg(val, dst_reg, op_type);
@@ -983,7 +996,7 @@ impl LifterState<'_> {
 
                 let one = self.builder.iconst(1);
                 let zero = self.builder.iconst(0);
-                let src = self.get_reg_by_index(inst, 0);
+                let src = self.get_reg_by_index(inst, 0).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let test_bit = self.get_value(inst.operands[1]);
                 let offset = helper::get_pc_offset_as_int(inst.operands[2]);
@@ -1003,7 +1016,7 @@ impl LifterState<'_> {
 
                 let one = self.builder.iconst(1);
                 let zero = self.builder.iconst(0);
-                let src = self.get_reg_by_index(inst, 0);
+                let src = self.get_reg_by_index(inst, 0).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let test_bit = self.get_value(inst.operands[1]);
                 let offset = helper::get_pc_offset_as_int(inst.operands[2]);
@@ -1025,7 +1038,7 @@ impl LifterState<'_> {
                 let next_address = pc + INSTRUCTION_SIZE;
                 let next_block = self.label_resolver.get_block(next_address).unwrap();
 
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let src = self.get_value(inst.operands[1]);
                 let immr = self.get_value(inst.operands[2]);
@@ -1075,7 +1088,7 @@ impl LifterState<'_> {
             Opcode::UDIV => {
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
                 let zero = self.builder.iconst(0);
                 let trap = self.builder.icmp(CmpTy::Eq, src2, zero, op_type);
@@ -1084,7 +1097,7 @@ impl LifterState<'_> {
                 self.write_reg(val, dst_reg, op_type);
             }
             Opcode::UMADDL => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
                 let src3 = self.get_value(inst.operands[3]);
@@ -1093,7 +1106,7 @@ impl LifterState<'_> {
                 self.write_reg(val, dst_reg, I64);
             }
             Opcode::UMSUBL => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
                 let src3 = self.get_value(inst.operands[3]);
@@ -1102,7 +1115,7 @@ impl LifterState<'_> {
                 self.write_reg(val, dst_reg, I64);
             }
             Opcode::UMULH => {
-                let dst_reg = self.get_dst_reg(inst);
+                let dst_reg = self.get_dst_reg(inst).unwrap();
                 let src1 = self.get_value(inst.operands[1]);
                 let src2 = self.get_value(inst.operands[2]);
                 let val = self.builder.umul(src1, src2, I64);
@@ -1113,7 +1126,7 @@ impl LifterState<'_> {
             _ => {
                 let is_general_purpose = helper::is_operand_general_purpose(inst.operands[0]);
                 if is_general_purpose {
-                    let dst_reg = self.get_dst_reg(inst);
+                    let dst_reg = self.get_dst_reg(inst).unwrap();
                     let op_type = helper::get_type_by_inst(inst);
                     let val = self.builder.opaque(op_type);
                     self.write_reg(val, dst_reg, op_type);

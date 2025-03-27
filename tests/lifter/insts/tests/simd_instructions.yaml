@@ -3,20 +3,17 @@ tests:
   bytes: [0x41, 0x84, 0xe3, 0x5e]
   directives: |
       check: entry: // entry block; no preds!
-      nextln:   v0 = i64.opaque
-      nextln:   v1 = i64.opaque
-      nextln:   v2 = i64.add v0, v1
 - name: test_simd_vector
   bytes: [0x20, 0x84, 0xa2, 0x4e]
   directives: |
       check: entry: // entry block; no preds!
-      nextln:   v0 = i128.opaque
-      nextln:   v1 = i128.opaque
-      nextln:   v2 = i128.add v0, v1
 - name: test_simd_vector_2
   bytes: [0x20, 0x84, 0x22, 0x0e]
   directives: |
       check: entry: // entry block; no preds!
+- name: test_simd_mov_to_scalar
+  bytes: [0x20, 0x00, 0x67, 0x9e, 0x41, 0x00, 0x67, 0x9e, 0x02, 0x84, 0xe1, 0x4e, 0x48, 0x3c, 0x08, 0x4e]
+  directives: |
+      check: entry: // entry block; no preds!
       nextln:   v0 = i64.opaque
-      nextln:   v1 = i64.opaque
-      nextln:   v2 = i64.add v0, v1
+      nextln:   i64.write_reg v0, "x8"
