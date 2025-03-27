@@ -26,18 +26,13 @@ enum CheckpointType {
 
 impl LabelResolver {
     /// Create a new LabelResolver
-    pub fn new(
-        code: &[u8],
-        builder: &mut InstructionBuilder,
-        decoder: &InstDecoder,
-    ) -> Result<Self, AArch64LifterError> {
+    pub fn new(code: &[u8], decoder: &InstDecoder) -> Result<Self, AArch64LifterError> {
         let mut resolver = Self {
             checkpoints: UniqueHeap::new(),
             blocks: HashMap::new(),
         };
 
         resolver.get_checkpoints(code, decoder)?;
-        resolver.create_blocks(builder);
 
         Ok(resolver)
     }
@@ -113,7 +108,7 @@ impl LabelResolver {
     }
 
     /// Create basic blocks based checkpoints
-    fn create_blocks(&mut self, builder: &mut InstructionBuilder) {
+    pub fn create_blocks(&mut self, builder: &mut InstructionBuilder) {
         while !self.checkpoints.is_empty() {
             let checkpoint = match self.checkpoints.pop() {
                 Some(c) => c.0,

@@ -25,7 +25,8 @@ fn test() {
     let mut builder = code_region.insert();
     let decoder = <ARMv8 as Arch>::Decoder::default();
 
-    let _ = LabelResolver::new(&bytes, &mut builder, &decoder).unwrap();
+    let mut resolver = LabelResolver::new(&bytes, &decoder).unwrap();
+    resolver.create_blocks(&mut builder);
 
     let expected: Vec<String> = vec![
         "entry", "block_0", "block_8", "block_12", "block_16", "block_24", "block_28",
