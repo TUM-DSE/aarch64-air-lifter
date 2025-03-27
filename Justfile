@@ -13,6 +13,9 @@ lint:
     cargo sort --workspace --check
     cargo clippy --tests --benches --workspace -- -D warnings
 
+fix:
+    cargo clippy --tests --benches --workspace --fix --allow-staged
+
 test:
     just ensure_installed nextest
     cargo nextest run --workspace
