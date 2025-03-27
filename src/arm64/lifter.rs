@@ -6,6 +6,7 @@ use tnj::air::instructions::builder::InstructionBuilder;
 use tnj::air::instructions::{CodeRegion, Inst, Value};
 use tnj::arch::get_arch;
 use tnj::arch::reg::Reg;
+use tnj::types::cmp::CmpTy;
 use tnj::types::{Type, BOOL, I128, I16, I32, I64, I8};
 use yaxpeax_arch::{Arch, Decoder, U8Reader};
 use yaxpeax_arm::armv8::a64::{
@@ -159,19 +160,9 @@ impl<'a> LifterState<'a> {
                                 let zero = self.builder.iconst(0);
                                 self.write_flag(zero, Flag::C);
                                 self.write_flag(zero, Flag::V);
-                                let is_zero = self.builder.icmp(
-                                    tnj::types::cmp::CmpTy::Eq,
-                                    val,
-                                    zero,
-                                    op_type,
-                                );
+                                let is_zero = self.builder.icmp(CmpTy::Eq, val, zero, op_type);
                                 self.write_flag(is_zero.into(), Flag::Z);
-                                let is_negative = self.builder.icmp(
-                                    tnj::types::cmp::CmpTy::Slt,
-                                    val,
-                                    zero,
-                                    op_type,
-                                );
+                                let is_negative = self.builder.icmp(CmpTy::Slt, val, zero, op_type);
                                 self.write_flag(is_negative.into(), Flag::N);
                             }
                         }
@@ -232,9 +223,7 @@ impl<'a> LifterState<'a> {
                             let src = self.get_value(inst.operands[1]);
                             let immr = self.get_value(inst.operands[2]);
                             let imms = self.get_value(inst.operands[3]);
-                            let cmp =
-                                self.builder
-                                    .icmp(tnj::types::cmp::CmpTy::Uge, imms, immr, I64);
+                            let cmp = self.builder.icmp(CmpTy::Uge, imms, immr, I64);
                             self.builder.jumpif(
                                 cmp,
                                 positive_condition_block,
@@ -324,9 +313,7 @@ impl<'a> LifterState<'a> {
                             let addr = self.get_value(inst.operands[2]);
                             let op_type = helper::get_type_by_inst(inst);
                             let val = self.builder.load(addr, op_type);
-                            let cmp =
-                                self.builder
-                                    .icmp(tnj::types::cmp::CmpTy::Eq, val, old, op_type);
+                            let cmp = self.builder.icmp(CmpTy::Eq, val, old, op_type);
                             self.builder.jumpif(
                                 cmp,
                                 swap_block,
@@ -346,9 +333,7 @@ impl<'a> LifterState<'a> {
                             let src = self.get_value(inst.operands[0]);
                             let op_type = helper::get_type_by_inst(inst);
                             let zero = self.builder.iconst(0);
-                            let condition =
-                                self.builder
-                                    .icmp(tnj::types::cmp::CmpTy::Ne, src, zero, op_type);
+                            let condition = self.builder.icmp(CmpTy::Ne, src, zero, op_type);
 
                             let offset = helper::get_pc_offset_as_int(inst.operands[1]);
                             let jump_address = (pc as i64).wrapping_add(offset) as u64;
@@ -369,9 +354,7 @@ impl<'a> LifterState<'a> {
                             let src = self.get_value(inst.operands[0]);
                             let op_type = helper::get_type_by_inst(inst);
                             let zero = self.builder.iconst(0);
-                            let condition =
-                                self.builder
-                                    .icmp(tnj::types::cmp::CmpTy::Eq, src, zero, op_type);
+                            let condition = self.builder.icmp(CmpTy::Eq, src, zero, op_type);
 
                             let offset = helper::get_pc_offset_as_int(inst.operands[1]);
                             let jump_address = (pc as i64).wrapping_add(offset) as u64;
@@ -936,9 +919,7 @@ impl<'a> LifterState<'a> {
                             let src = self.get_value(inst.operands[1]);
                             let immr = self.get_value(inst.operands[2]);
                             let imms = self.get_value(inst.operands[3]);
-                            let cmp =
-                                self.builder
-                                    .icmp(tnj::types::cmp::CmpTy::Uge, imms, immr, I64);
+                            let cmp = self.builder.icmp(CmpTy::Uge, imms, immr, I64);
                             self.builder.jumpif(
                                 cmp,
                                 positive_condition_block,
@@ -984,9 +965,7 @@ impl<'a> LifterState<'a> {
                             let dst_reg = self.get_dst_reg(inst);
                             let op_type = helper::get_type_by_inst(inst);
                             let zero = self.builder.iconst(0);
-                            let trap =
-                                self.builder
-                                    .icmp(tnj::types::cmp::CmpTy::Eq, src2, zero, op_type);
+                            let trap = self.builder.icmp(CmpTy::Eq, src2, zero, op_type);
                             self.builder.trapif(trap);
                             let val = self.builder.idiv(src1, src2, op_type);
                             self.write_reg(val, dst_reg, op_type);
@@ -1142,9 +1121,7 @@ impl<'a> LifterState<'a> {
                             let jump_address = (pc as i64).wrapping_add(offset) as u64;
                             let jump_block = self.label_resolver.get_block(jump_address).unwrap();
 
-                            let cmp =
-                                self.builder
-                                    .icmp(tnj::types::cmp::CmpTy::Ne, val, zero, op_type);
+                            let cmp = self.builder.icmp(CmpTy::Ne, val, zero, op_type);
                             self.builder.jumpif(
                                 cmp,
                                 jump_block,
@@ -1169,9 +1146,7 @@ impl<'a> LifterState<'a> {
                             let jump_address = (pc as i64).wrapping_add(offset) as u64;
                             let jump_block = self.label_resolver.get_block(jump_address).unwrap();
 
-                            let cmp =
-                                self.builder
-                                    .icmp(tnj::types::cmp::CmpTy::Eq, val, zero, op_type);
+                            let cmp = self.builder.icmp(CmpTy::Eq, val, zero, op_type);
                             self.builder.jumpif(
                                 cmp,
                                 jump_block,
@@ -1193,9 +1168,7 @@ impl<'a> LifterState<'a> {
                             let src = self.get_value(inst.operands[1]);
                             let immr = self.get_value(inst.operands[2]);
                             let imms = self.get_value(inst.operands[3]);
-                            let cmp =
-                                self.builder
-                                    .icmp(tnj::types::cmp::CmpTy::Ult, immr, imms, I64);
+                            let cmp = self.builder.icmp(CmpTy::Ult, immr, imms, I64);
                             self.builder.jumpif(
                                 cmp,
                                 positive_condition_block,
@@ -1244,9 +1217,7 @@ impl<'a> LifterState<'a> {
                             let dst_reg = self.get_dst_reg(inst);
                             let op_type = helper::get_type_by_inst(inst);
                             let zero = self.builder.iconst(0);
-                            let trap =
-                                self.builder
-                                    .icmp(tnj::types::cmp::CmpTy::Eq, src2, zero, op_type);
+                            let trap = self.builder.icmp(CmpTy::Eq, src2, zero, op_type);
                             self.builder.trapif(trap);
                             let val = self.builder.udiv(src1, src2, op_type);
                             self.write_reg(val, dst_reg, op_type);
@@ -1479,51 +1450,50 @@ impl<'a> LifterState<'a> {
                     0 => {
                         // EQ
                         let z = self.flag_value(Flag::Z);
-                        self.builder.icmp(tnj::types::cmp::CmpTy::Eq, z, one, BOOL)
+                        self.builder.icmp(CmpTy::Eq, z, one, BOOL)
                     }
                     1 => {
                         // NE
                         let z = self.flag_value(Flag::Z);
-                        self.builder.icmp(tnj::types::cmp::CmpTy::Ne, z, one, BOOL)
+                        self.builder.icmp(CmpTy::Ne, z, one, BOOL)
                     }
                     2 => {
                         // CS
                         let c = self.flag_value(Flag::C);
-                        self.builder.icmp(tnj::types::cmp::CmpTy::Eq, c, one, BOOL)
+                        self.builder.icmp(CmpTy::Eq, c, one, BOOL)
                     }
                     3 => {
                         // CC
                         let c = self.flag_value(Flag::C);
-                        self.builder.icmp(tnj::types::cmp::CmpTy::Ne, c, one, BOOL)
+                        self.builder.icmp(CmpTy::Ne, c, one, BOOL)
                     }
                     4 => {
                         // MI
                         let n = self.flag_value(Flag::N);
-                        self.builder.icmp(tnj::types::cmp::CmpTy::Eq, n, one, BOOL)
+                        self.builder.icmp(CmpTy::Eq, n, one, BOOL)
                     }
                     5 => {
                         // PL
                         let n = self.flag_value(Flag::N);
-                        self.builder.icmp(tnj::types::cmp::CmpTy::Ne, n, one, BOOL)
+                        self.builder.icmp(CmpTy::Ne, n, one, BOOL)
                     }
                     6 => {
                         // VS
                         let v = self.flag_value(Flag::V);
-                        self.builder.icmp(tnj::types::cmp::CmpTy::Eq, v, one, BOOL)
+                        self.builder.icmp(CmpTy::Eq, v, one, BOOL)
                     }
                     7 => {
                         // VC
                         let v = self.flag_value(Flag::V);
-                        self.builder.icmp(tnj::types::cmp::CmpTy::Ne, v, one, BOOL)
+                        self.builder.icmp(CmpTy::Ne, v, one, BOOL)
                     }
                     8 => {
                         // HI
                         let z = self.flag_value(Flag::Z);
                         let c = self.flag_value(Flag::C);
 
-                        let c_is_true = self.builder.icmp(tnj::types::cmp::CmpTy::Eq, c, one, BOOL);
-                        let z_is_false =
-                            self.builder.icmp(tnj::types::cmp::CmpTy::Ne, z, one, BOOL);
+                        let c_is_true = self.builder.icmp(CmpTy::Eq, c, one, BOOL);
+                        let z_is_false = self.builder.icmp(CmpTy::Ne, z, one, BOOL);
                         self.builder.and(c_is_true, z_is_false, BOOL)
                     }
                     9 => {
@@ -1531,10 +1501,9 @@ impl<'a> LifterState<'a> {
                         let z = self.flag_value(Flag::Z);
                         let c = self.flag_value(Flag::C);
 
-                        let c_is_false: Inst =
-                            self.builder.icmp(tnj::types::cmp::CmpTy::Ne, c, one, BOOL);
+                        let c_is_false: Inst = self.builder.icmp(CmpTy::Ne, c, one, BOOL);
 
-                        let z_is_true = self.builder.icmp(tnj::types::cmp::CmpTy::Eq, z, one, BOOL);
+                        let z_is_true = self.builder.icmp(CmpTy::Eq, z, one, BOOL);
                         self.builder.or(c_is_false, z_is_true, BOOL)
                     }
                     10 => {
@@ -1542,14 +1511,14 @@ impl<'a> LifterState<'a> {
                         let n = self.flag_value(Flag::N);
                         let v = self.flag_value(Flag::V);
 
-                        self.builder.icmp(tnj::types::cmp::CmpTy::Eq, n, v, BOOL)
+                        self.builder.icmp(CmpTy::Eq, n, v, BOOL)
                     }
                     11 => {
                         // LT
                         let n = self.flag_value(Flag::N);
                         let v = self.flag_value(Flag::V);
 
-                        self.builder.icmp(tnj::types::cmp::CmpTy::Ne, n, v, BOOL)
+                        self.builder.icmp(CmpTy::Ne, n, v, BOOL)
                     }
                     12 => {
                         // GT
@@ -1557,9 +1526,8 @@ impl<'a> LifterState<'a> {
                         let n = self.flag_value(Flag::N);
                         let v = self.flag_value(Flag::V);
 
-                        let z_is_false =
-                            self.builder.icmp(tnj::types::cmp::CmpTy::Ne, z, one, BOOL);
-                        let n_eq_v = self.builder.icmp(tnj::types::cmp::CmpTy::Eq, n, v, BOOL);
+                        let z_is_false = self.builder.icmp(CmpTy::Ne, z, one, BOOL);
+                        let n_eq_v = self.builder.icmp(CmpTy::Eq, n, v, BOOL);
                         self.builder.and(z_is_false, n_eq_v, BOOL)
                     }
                     13 => {
@@ -1568,8 +1536,8 @@ impl<'a> LifterState<'a> {
                         let n = self.flag_value(Flag::N);
                         let v = self.flag_value(Flag::V);
 
-                        let z_is_true = self.builder.icmp(tnj::types::cmp::CmpTy::Eq, z, one, BOOL);
-                        let n_neq_v = self.builder.icmp(tnj::types::cmp::CmpTy::Ne, n, v, BOOL);
+                        let z_is_true = self.builder.icmp(CmpTy::Eq, z, one, BOOL);
+                        let n_neq_v = self.builder.icmp(CmpTy::Ne, n, v, BOOL);
                         self.builder.or(z_is_true, n_neq_v, BOOL)
                     }
                     14 => {
@@ -1578,8 +1546,7 @@ impl<'a> LifterState<'a> {
                     }
                     15 => {
                         // NV
-                        self.builder
-                            .icmp(tnj::types::cmp::CmpTy::Ne, one, one, BOOL)
+                        self.builder.icmp(CmpTy::Ne, one, one, BOOL)
                     }
                     _ => {
                         return Err(AArch64LifterError::CustomError(
@@ -1600,30 +1567,22 @@ impl<'a> LifterState<'a> {
         // set n flag
         let n_mask = self.builder.iconst(8);
         let n = self.builder.and(n_mask, flag_val, op_type);
-        let n_is_set = self
-            .builder
-            .icmp(tnj::types::cmp::CmpTy::Ne, zero, n, op_type);
+        let n_is_set = self.builder.icmp(CmpTy::Ne, zero, n, op_type);
         self.write_flag(n_is_set.into(), Flag::N);
         // set z flag
         let z_mask = self.builder.iconst(4);
         let z = self.builder.and(z_mask, flag_val, op_type);
-        let z_is_set = self
-            .builder
-            .icmp(tnj::types::cmp::CmpTy::Ne, zero, z, op_type);
+        let z_is_set = self.builder.icmp(CmpTy::Ne, zero, z, op_type);
         self.write_flag(z_is_set.into(), Flag::Z);
         // set c flag
         let c_mask = self.builder.iconst(2);
         let c = self.builder.and(c_mask, flag_val, op_type);
-        let c_is_set = self
-            .builder
-            .icmp(tnj::types::cmp::CmpTy::Ne, zero, c, op_type);
+        let c_is_set = self.builder.icmp(CmpTy::Ne, zero, c, op_type);
         self.write_flag(c_is_set.into(), Flag::C);
         // set v flag
         let v_mask = self.builder.iconst(1);
         let v = self.builder.and(v_mask, flag_val, op_type);
-        let v_is_set = self
-            .builder
-            .icmp(tnj::types::cmp::CmpTy::Ne, zero, v, op_type);
+        let v_is_set = self.builder.icmp(CmpTy::Ne, zero, v, op_type);
         self.write_flag(v_is_set.into(), Flag::V);
     }
 
@@ -1633,40 +1592,23 @@ impl<'a> LifterState<'a> {
         let sum = self.builder.add(sum, carry, op_type);
 
         // z is set if equal if both values are equal
-        let z = self
-            .builder
-            .icmp(tnj::types::cmp::CmpTy::Eq, sum, zero, op_type);
+        let z = self.builder.icmp(CmpTy::Eq, sum, zero, op_type);
         self.write_flag(z.into(), Flag::Z);
         // n is set if the sum is negative
-        let n = self
-            .builder
-            .icmp(tnj::types::cmp::CmpTy::Slt, sum, zero, op_type);
+        let n = self.builder.icmp(CmpTy::Slt, sum, zero, op_type);
         self.write_flag(n.into(), Flag::N);
         // if either operand is greater than the result in an unsigned comparison, the carry is set
-        let val1_is_ugt_sum = self
-            .builder
-            .icmp(tnj::types::cmp::CmpTy::Ugt, val1, sum, op_type);
-        let val2_is_ugt_sum = self
-            .builder
-            .icmp(tnj::types::cmp::CmpTy::Ugt, val2, sum, op_type);
+        let val1_is_ugt_sum = self.builder.icmp(CmpTy::Ugt, val1, sum, op_type);
+        let val2_is_ugt_sum = self.builder.icmp(CmpTy::Ugt, val2, sum, op_type);
         let c = self.builder.or(val1_is_ugt_sum, val2_is_ugt_sum, BOOL);
         self.write_flag(c.into(), Flag::C);
         // v is set if both operands have the same sign and the result has a different sign
-        let val1_is_negative = self
-            .builder
-            .icmp(tnj::types::cmp::CmpTy::Slt, val1, zero, op_type);
-        let val2_is_negative = self
-            .builder
-            .icmp(tnj::types::cmp::CmpTy::Slt, val2, zero, op_type);
-        let values_have_same_sign = self.builder.icmp(
-            tnj::types::cmp::CmpTy::Eq,
-            val1_is_negative,
-            val2_is_negative,
-            BOOL,
-        );
-        let result_has_different_sign =
+        let val1_is_negative = self.builder.icmp(CmpTy::Slt, val1, zero, op_type);
+        let val2_is_negative = self.builder.icmp(CmpTy::Slt, val2, zero, op_type);
+        let values_have_same_sign =
             self.builder
-                .icmp(tnj::types::cmp::CmpTy::Ne, val1_is_negative, n, BOOL);
+                .icmp(CmpTy::Eq, val1_is_negative, val2_is_negative, BOOL);
+        let result_has_different_sign = self.builder.icmp(CmpTy::Ne, val1_is_negative, n, BOOL);
         let v = self
             .builder
             .and(values_have_same_sign, result_has_different_sign, BOOL);
