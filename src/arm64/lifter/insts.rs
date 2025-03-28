@@ -23,7 +23,16 @@ impl LifterState<'_> {
             return Ok(());
         }
 
-        let _inst_group = self.builder.create_inst_group_if_not_empty();
+        if let Some(constraints) = self
+            .proof
+            .constraints
+            .get(&(u32::try_from(pc).expect("can only handle pc < 2^32 for now")))
+        {
+            let bb = self.builder.current_block();
+            let inst_group = self.builder.create_inst_group_if_not_empty();
+            self.builder
+                .set_constraint(bb, inst_group, constraints.clone());
+        }
 
         match inst.opcode {
             Opcode::ADC | Opcode::ADCS => {

@@ -32,12 +32,12 @@ dependencies = [
 [[package]]
 name = "air-macros"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#b84378cb9dbed5bf6a0a132fff09cf52ce6b177c"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#5765894903b15f5d1479a1cec0a2372066b6f089"
 
 [[package]]
 name = "air-meta"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#b84378cb9dbed5bf6a0a132fff09cf52ce6b177c"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#5765894903b15f5d1479a1cec0a2372066b6f089"
 dependencies = [
  "air-types",
  "convert_case",
@@ -49,7 +49,7 @@ dependencies = [
 [[package]]
 name = "air-sym"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#b84378cb9dbed5bf6a0a132fff09cf52ce6b177c"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#5765894903b15f5d1479a1cec0a2372066b6f089"
 dependencies = [
  "air-macros",
  "air-types",
@@ -61,7 +61,7 @@ dependencies = [
 [[package]]
 name = "air-types"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#b84378cb9dbed5bf6a0a132fff09cf52ce6b177c"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#5765894903b15f5d1479a1cec0a2372066b6f089"
 dependencies = [
  "num",
 ]
@@ -405,9 +405,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.21.1"
+version = "1.21.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d75b0bedcc4fe52caa0e03d9f1151a323e4aa5e2d78ba3580400cd3c9e2bc4bc"
+checksum = "c2806eaa3524762875e21c3dcd057bc4b7bfa01ce4da8d46be1cd43649e1cc6b"
 
 [[package]]
 name = "portable-atomic"
@@ -610,7 +610,7 @@ dependencies = [
 [[package]]
 name = "tnj"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#b84378cb9dbed5bf6a0a132fff09cf52ce6b177c"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#5765894903b15f5d1479a1cec0a2372066b6f089"
 dependencies = [
  "air-macros",
  "air-meta",
@@ -628,7 +628,7 @@ dependencies = [
 [[package]]
 name = "tnj-air"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#b84378cb9dbed5bf6a0a132fff09cf52ce6b177c"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#5765894903b15f5d1479a1cec0a2372066b6f089"
 dependencies = [
  "air-macros",
  "air-meta",
@@ -649,7 +649,7 @@ dependencies = [
 [[package]]
 name = "tnj-arch"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#b84378cb9dbed5bf6a0a132fff09cf52ce6b177c"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#5765894903b15f5d1479a1cec0a2372066b6f089"
 dependencies = [
  "air-macros",
  "air-types",
@@ -660,12 +660,12 @@ dependencies = [
 [[package]]
 name = "tnj-fmt"
 version = "0.1.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#b84378cb9dbed5bf6a0a132fff09cf52ce6b177c"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#5765894903b15f5d1479a1cec0a2372066b6f089"
 
 [[package]]
 name = "tnj-pcc"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#b84378cb9dbed5bf6a0a132fff09cf52ce6b177c"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#5765894903b15f5d1479a1cec0a2372066b6f089"
 dependencies = [
  "air-sym",
  "air-types",
@@ -680,7 +680,7 @@ dependencies = [
 [[package]]
 name = "tnj-policy"
 version = "0.3.0"
-source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#b84378cb9dbed5bf6a0a132fff09cf52ce6b177c"
+source = "git+ssh://git@github.com/TUM-DSE/tnj.git?branch=main#5765894903b15f5d1479a1cec0a2372066b6f089"
 dependencies = [
  "air-sym",
  "air-types",

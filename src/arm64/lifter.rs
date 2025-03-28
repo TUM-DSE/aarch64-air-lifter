@@ -1,10 +1,13 @@
 use crate::arm64::LabelResolver;
 use crate::Lifter;
+use std::io::Cursor;
 use target_lexicon::{Aarch64Architecture, Architecture};
 use thiserror::Error;
 use tnj::air::instructions::builder::InstructionBuilder;
 use tnj::air::instructions::CodeRegion;
 use tnj::arch::get_arch;
+use tnj::pcc;
+use tnj::pcc::Proof;
 use yaxpeax_arch::{Arch, Decoder, U8Reader};
 use yaxpeax_arm::armv8::a64::{ARMv8, DecodeError, InstDecoder};
 
@@ -55,11 +58,19 @@ impl AArch64Lifter {
 impl Lifter for AArch64Lifter {
     type E = AArch64LifterError;
 
-    fn lift(&self, code: &[u8], _proofs: &[u8]) -> Result<CodeRegion, Self::E> {
+    fn lift(&self, code: &[u8], proofs: &[u8]) -> Result<CodeRegion, Self::E> {
         let arch = get_arch(Architecture::Aarch64(Aarch64Architecture::Aarch64)).unwrap();
         let mut code_region = CodeRegion::new(arch);
 
-        let state = LifterState::new(&mut code_region, code)?;
+        let proof = if !proofs.is_empty() {
+            let (proof, exprs) = pcc::read::read(&mut Cursor::new(&proofs))?;
+            *code_region.exprs_mut() = exprs;
+            proof
+        } else {
+            Default::default()
+        };
+
+        let state = LifterState::new(&mut code_region, code, proof)?;
 
         state.lift()?;
 
@@ -73,10 +84,15 @@ struct LifterState<'a> {
     label_resolver: LabelResolver,
     decoder: InstDecoder,
     reader: U8Reader<'a>,
+    proof: Proof,
 }
 
 impl<'a> LifterState<'a> {
-    fn new(code_region: &'a mut CodeRegion, code: &'a [u8]) -> Result<Self, AArch64LifterError> {
+    fn new(
+        code_region: &'a mut CodeRegion,
+        code: &'a [u8],
+        proof: Proof,
+    ) -> Result<Self, AArch64LifterError> {
         let builder = code_region.insert();
         let decoder = <ARMv8 as Arch>::Decoder::default();
         let reader = U8Reader::new(code);
@@ -87,6 +103,7 @@ impl<'a> LifterState<'a> {
             label_resolver,
             decoder,
             reader,
+            proof,
         })
     }
 
@@ -140,6 +157,10 @@ pub enum AArch64LifterError {
     /// Custom error with message
     #[error("{0}")]
     CustomError(String),
+
+    /// Proof decode error
+    #[error("Error decoding pcc proofs: {0}")]
+    Pcc(#[from] pcc::read::Error),
 }
 
 /// Error type for disassembling from machine code to AIR
