@@ -23,6 +23,8 @@ impl LifterState<'_> {
             return Ok(());
         }
 
+        let _inst_group = self.builder.create_inst_group_if_not_empty();
+
         match inst.opcode {
             Opcode::ADC | Opcode::ADCS => {
                 let src1 = self.get_value(inst.operands[1]);

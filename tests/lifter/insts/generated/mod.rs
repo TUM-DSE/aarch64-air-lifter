@@ -14,6 +14,7 @@ pub mod cbnz;
 pub mod clz;
 pub mod smsubl;
 pub mod ldpsw;
+pub mod consecutive;
 pub mod rorv;
 pub mod bcc;
 pub mod ldp;
