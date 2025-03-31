@@ -47,6 +47,7 @@ pub mod rbit;
 pub mod eor;
 pub mod ldarb;
 pub mod sbc;
+pub mod proofs;
 pub mod strb;
 pub mod br;
 pub mod ccmp;

@@ -16,6 +16,7 @@ struct TestSpec {
     name: String,
     bytes: Vec<u8>,
     directives: String,
+    proofs: Option<Vec<u8>>,
     skip: Option<bool>,
 }
 
@@ -42,7 +43,15 @@ pub fn run_test_from_yaml(file: &str, test_name: &str) {
                 continue;
             }
             let lifter = AArch64Lifter;
-            let blob = lifter.lift(&test.bytes, &[]).expect("Lifter failed");
+            let blob = lifter
+                .lift(
+                    &test.bytes,
+                    test.proofs
+                        .as_ref()
+                        .map(|bytes| &bytes[..])
+                        .unwrap_or_default(),
+                )
+                .expect("Lifter failed");
             let result = blob.display().to_string();
 
             // Reconstruct directives with 'check' and 'nextln'
@@ -87,6 +96,7 @@ pub fn run_test_from_yaml(file: &str, test_name: &str) {
         assert!(
             check_instruction(
                 &test.bytes,
+                test.proofs.as_ref().map(|bytes| &bytes[..]),
                 &test.directives,
                 CheckInstructionArgs::default()
             ),
@@ -105,6 +115,7 @@ fn pretty_print_yaml(test_file: &TestFile) -> String {
              name,
              bytes,
              directives,
+             proofs,
              skip,
          }| {
             let directives = directives.lines().fold(String::new(), |mut acc, rhs| {
@@ -112,15 +123,21 @@ fn pretty_print_yaml(test_file: &TestFile) -> String {
                 acc.push_str(rhs);
                 acc
             });
-            let bytes = bytes
-                .iter()
-                .map(|b| format!("0x{b:02x}"))
-                .reduce(|mut lhs, rhs| {
-                    lhs.push_str(", ");
-                    lhs.push_str(&rhs);
-                    lhs
-                })
-                .unwrap_or(String::new());
+            let proofs = if let Some(proofs) = proofs {
+                let bytes = proofs
+                    .chunks(12)
+                    .map(format_bytes)
+                    .reduce(|mut lhs, rhs| {
+                        lhs.push_str(",\n           ");
+                        lhs.push_str(&rhs);
+                        lhs
+                    })
+                    .unwrap_or_default();
+                format!("\n  proofs: [{bytes}]")
+            } else {
+                String::new()
+            };
+            let bytes = format_bytes(bytes);
             let skip = if let Some(skip) = skip {
                 format!("\n  skip: {skip}")
             } else {
@@ -129,7 +146,7 @@ fn pretty_print_yaml(test_file: &TestFile) -> String {
             s.push_str(&format!(
                 "\
 - name: {name}
-  bytes: [{bytes}]{skip}
+  bytes: [{bytes}]{skip}{proofs}
   directives: |{directives}
 "
             ));
@@ -137,4 +154,16 @@ fn pretty_print_yaml(test_file: &TestFile) -> String {
     );
 
     s
+}
+
+fn format_bytes<'a>(chunk: impl IntoIterator<Item = &'a u8>) -> String {
+    chunk
+        .into_iter()
+        .map(|b| format!("0x{b:02x}"))
+        .reduce(|mut lhs, rhs| {
+            lhs.push_str(", ");
+            lhs.push_str(&rhs);
+            lhs
+        })
+        .unwrap_or_default()
 }
