@@ -41,8 +41,8 @@ impl LifterState<'_> {
                 let carry = self.flag_value(Flag::C);
                 let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
-                let val = self.builder.add(src1, carry, op_type);
-                let val = self.builder.add(val, src2, op_type);
+                let val = self.builder.wrapping_add(src1, carry, op_type);
+                let val = self.builder.wrapping_add(val, src2, op_type);
                 self.write_reg(val, dst_reg, op_type);
 
                 if inst.opcode == Opcode::ADCS {
@@ -54,7 +54,7 @@ impl LifterState<'_> {
                 let src2 = self.get_value(inst.operands[2]);
                 let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
-                let val = self.builder.add(src1, src2, op_type);
+                let val = self.builder.wrapping_add(src1, src2, op_type);
                 self.write_reg(val, dst_reg, op_type);
 
                 if inst.opcode == Opcode::ADDS {
@@ -66,7 +66,7 @@ impl LifterState<'_> {
                 let dst_reg = self.get_dst_reg(inst).unwrap();
                 let pc = self.read_pc_reg();
                 let offset = self.get_value(inst.operands[1]);
-                let val = self.builder.add(pc, offset, I64);
+                let val = self.builder.wrapping_add(pc, offset, I64);
                 self.write_reg(val, dst_reg, I64);
             }
             Opcode::ADRP => {
@@ -76,7 +76,7 @@ impl LifterState<'_> {
                 let mask = self.builder.bitwise_not(reverse_mask, I64);
                 let pc = self.read_pc_reg();
                 let masked_pc = self.builder.and(pc, mask, I64);
-                let addr = self.builder.add(masked_pc, offset, I64);
+                let addr = self.builder.wrapping_add(masked_pc, offset, I64);
                 self.write_reg(addr, dst_reg, I64);
             }
             Opcode::AND | Opcode::ANDS => {
@@ -114,7 +114,7 @@ impl LifterState<'_> {
                 if inst.opcode == Opcode::BL {
                     let instruction_size = self.builder.iconst(4);
                     let pc_reg = self.read_pc_reg();
-                    let return_address = self.builder.add(pc_reg, instruction_size, I64);
+                    let return_address = self.builder.wrapping_add(pc_reg, instruction_size, I64);
                     let x30 = self.get_reg_val_by_name("x30");
                     self.write_reg(return_address, x30, I64);
                 }
@@ -161,16 +161,16 @@ impl LifterState<'_> {
                 self.builder.set_insert_block(positive_condition_block);
                 // get src bitfield
                 let one = self.builder.iconst(1);
-                let src_bitfield_size = self.builder.add(one, imms, op_type);
-                let src_bitfield_size = self.builder.sub(src_bitfield_size, immr, op_type);
+                let src_bitfield_size = self.builder.wrapping_add(one, imms, op_type);
+                let src_bitfield_size = self.builder.wrapping_sub(src_bitfield_size, immr, op_type);
                 let src_mask = self.builder.lshl(one, src_bitfield_size, op_type);
-                let src_mask = self.builder.sub(src_mask, one, op_type);
+                let src_mask = self.builder.wrapping_sub(src_mask, one, op_type);
                 let src_mask = self.builder.lshl(src_mask, immr, op_type);
                 let src_bitfield = self.builder.and(src, src_mask, op_type);
                 let src_bitfield = self.builder.lshr(src_bitfield, immr, op_type);
                 // clear dst bits that are replaced by the src bitfield
                 let dst_mask = self.builder.lshl(one, src_bitfield_size, op_type);
-                let dst_mask = self.builder.sub(dst_mask, one, op_type);
+                let dst_mask = self.builder.wrapping_sub(dst_mask, one, op_type);
                 let dst_mask = self.builder.bitwise_not(dst_mask, op_type);
                 let dst_bitfield = self.builder.and(src, dst_mask, op_type);
                 // merge and write bitfield
@@ -181,19 +181,19 @@ impl LifterState<'_> {
                 // this copies a bitfield of (<imms>+1) bits from the least significant bits of the source register to bit position (regsize-<immr>) of the destination register
                 self.builder.set_insert_block(negative_condition_block);
                 // get bitfield containing src bits
-                let src_bitfield_size = self.builder.add(one, imms, op_type);
+                let src_bitfield_size = self.builder.wrapping_add(one, imms, op_type);
                 let src_mask = self.builder.lshl(one, src_bitfield_size, op_type);
-                let src_mask = self.builder.sub(src_mask, one, op_type);
+                let src_mask = self.builder.wrapping_sub(src_mask, one, op_type);
                 let src_bitfield = self.builder.and(src, src_mask, op_type);
                 let reg_size = match op_type {
                     I64 => self.builder.iconst(64),
                     _ => self.builder.iconst(32),
                 };
-                let starting_position = self.builder.sub(reg_size, immr, op_type);
+                let starting_position = self.builder.wrapping_sub(reg_size, immr, op_type);
                 let src_bitfield = self.builder.lshl(src_bitfield, starting_position, op_type);
                 // clear dst bits that are replaced by the src bitfield
                 let dst_mask = self.builder.lshl(one, src_bitfield_size, op_type);
-                let dst_mask = self.builder.sub(dst_mask, one, op_type);
+                let dst_mask = self.builder.wrapping_sub(dst_mask, one, op_type);
                 let dst_mask = self.builder.lshl(dst_mask, starting_position, op_type);
                 let dst_mask = self.builder.bitwise_not(dst_mask, op_type);
                 let dst_bitfield = self.builder.and(src, dst_mask, op_type);
@@ -215,7 +215,7 @@ impl LifterState<'_> {
                 if inst.opcode == Opcode::BLR {
                     let pc = self.read_pc_reg();
                     let four = self.builder.iconst(4);
-                    let ret_address = self.builder.add(pc, four, I64);
+                    let ret_address = self.builder.wrapping_add(pc, four, I64);
                     let x30 = self.get_reg_val_by_name("x30");
                     self.write_reg(ret_address, x30, I64);
                 }
@@ -354,8 +354,8 @@ impl LifterState<'_> {
                     _ => self.builder.iconst(32),
                 };
                 let highest_set_bit = self.builder.highest_set_bit(val, op_type);
-                let val = self.builder.sub(n, highest_set_bit, op_type);
-                let val = self.builder.sub(val, one, op_type);
+                let val = self.builder.wrapping_sub(n, highest_set_bit, op_type);
+                let val = self.builder.wrapping_sub(val, one, op_type);
 
                 self.write_reg(val, dst_reg, op_type);
             }
@@ -370,8 +370,8 @@ impl LifterState<'_> {
                     _ => self.builder.iconst(32),
                 };
                 let highest_set_bit = self.builder.highest_set_bit(src, op_type);
-                let val = self.builder.sub(n, highest_set_bit, op_type);
-                let val = self.builder.sub(val, one, op_type);
+                let val = self.builder.wrapping_sub(n, highest_set_bit, op_type);
+                let val = self.builder.wrapping_sub(val, one, op_type);
 
                 self.write_reg(val, dst_reg, op_type);
             }
@@ -433,7 +433,7 @@ impl LifterState<'_> {
                 self.builder.set_insert_block(negative_condition_block);
                 let one = self.builder.iconst(1);
                 let src2 = self.get_value(inst.operands[2]);
-                let val = self.builder.add(src2, one, op_type);
+                let val = self.builder.wrapping_add(src2, one, op_type);
                 self.write_reg(val, dst_reg, op_type);
                 self.builder.jump(next_block, Vec::new());
             }
@@ -498,7 +498,7 @@ impl LifterState<'_> {
                 self.builder.set_insert_block(negative_condition_block);
                 let src2 = self.get_value(inst.operands[2]);
                 let zero = self.builder.iconst(0);
-                let val = self.builder.sub(zero, src2, op_type);
+                let val = self.builder.wrapping_sub(zero, src2, op_type);
                 self.write_reg(val, dst_reg, op_type);
                 self.builder.jump(next_block, Vec::new());
             }
@@ -533,7 +533,7 @@ impl LifterState<'_> {
                     _ => self.builder.iconst(32),
                 };
                 let src2 = self.builder.lshr(src2, shift_val, op_type);
-                let shift_val = self.builder.sub(datasize, shift_val, op_type);
+                let shift_val = self.builder.wrapping_sub(datasize, shift_val, op_type);
                 let src1 = self.builder.lshl(src1, shift_val, op_type);
                 let val = self.builder.or(src1, src2, op_type);
                 self.write_reg(val, dst_reg, op_type);
@@ -557,7 +557,7 @@ impl LifterState<'_> {
                     I64 => self.builder.iconst(8),
                     _ => self.builder.iconst(4),
                 };
-                let address = self.builder.add(address, address_offset, I64);
+                let address = self.builder.wrapping_add(address, address_offset, I64);
                 let val2 = self.builder.load(address, op_type);
                 self.write_reg(val2, dst_reg2, op_type);
             }
@@ -570,7 +570,7 @@ impl LifterState<'_> {
                 let val1 = self.builder.sext_i32(val1, I64);
                 self.write_reg(val1, dst_reg1, I64);
                 let address_offset = self.builder.iconst(4);
-                let address = self.builder.add(address, address_offset, I64);
+                let address = self.builder.wrapping_add(address, address_offset, I64);
                 let val2 = self.builder.load(address, I32);
                 let val2 = self.builder.sext_i32(val2, I64);
                 self.write_reg(val2, dst_reg2, I64);
@@ -667,7 +667,7 @@ impl LifterState<'_> {
                 let mul_src2 = self.get_value(inst.operands[2]);
                 let add_src = self.get_value(inst.operands[3]);
                 let val = self.builder.imul(mul_src1, mul_src2, op_type);
-                let val = self.builder.add(val, add_src, op_type);
+                let val = self.builder.wrapping_add(val, add_src, op_type);
                 self.write_reg(val, dst_reg, op_type);
             }
             Opcode::MOVK => {
@@ -701,7 +701,7 @@ impl LifterState<'_> {
                 let mul_src2 = self.get_value(inst.operands[2]);
                 let sub_src = self.get_value(inst.operands[3]);
                 let val = self.builder.imul(mul_src1, mul_src2, op_type);
-                let val = self.builder.sub(sub_src, val, op_type);
+                let val = self.builder.wrapping_sub(sub_src, val, op_type);
                 self.write_reg(val, dst_reg, op_type);
             }
             Opcode::NEG => {
@@ -709,7 +709,7 @@ impl LifterState<'_> {
                 let src = self.get_value(inst.operands[1]);
                 let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
-                let val = self.builder.sub(zero, src, op_type);
+                let val = self.builder.wrapping_sub(zero, src, op_type);
                 self.write_reg(val, dst_reg, op_type);
             }
             Opcode::ORN => {
@@ -807,8 +807,8 @@ impl LifterState<'_> {
                 let carry = self.builder.bitwise_not(carry, BOOL);
                 let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
-                let val = self.builder.sub(src1, src2, op_type);
-                let val = self.builder.sub(val, carry, op_type);
+                let val = self.builder.wrapping_sub(src1, src2, op_type);
+                let val = self.builder.wrapping_sub(val, carry, op_type);
                 self.write_reg(val, dst_reg, op_type);
                 if inst.opcode == Opcode::SBCS {
                     let carry = self.flag_value(Flag::C);
@@ -846,12 +846,14 @@ impl LifterState<'_> {
                 self.builder.set_insert_block(positive_condition_block);
                 // get src bitfield
                 let one = self.builder.iconst(1);
-                let src_bitfield_size = self.builder.add(one, imms, op_type);
-                let src_bitfield_size = self.builder.sub(src_bitfield_size, immr, op_type);
-                let shift_val = self.builder.add(imms, one, op_type);
-                let shift_val = self.builder.sub(reg_size, shift_val, op_type);
+                let src_bitfield_size = self.builder.wrapping_add(one, imms, op_type);
+                let src_bitfield_size = self.builder.wrapping_sub(src_bitfield_size, immr, op_type);
+                let shift_val = self.builder.wrapping_add(imms, one, op_type);
+                let shift_val = self.builder.wrapping_sub(reg_size, shift_val, op_type);
                 let val = self.builder.lshl(src, shift_val, op_type);
-                let shift_val = self.builder.sub(reg_size, src_bitfield_size, op_type);
+                let shift_val = self
+                    .builder
+                    .wrapping_sub(reg_size, src_bitfield_size, op_type);
                 let val = self.builder.ashr(val, shift_val, op_type);
 
                 self.write_reg(val, dst_reg, op_type);
@@ -859,10 +861,10 @@ impl LifterState<'_> {
 
                 // this copies a bitfield of (<imms>+1) bits from the least significant bits of the source register to bit position (regsize-<immr>) of the destination register
                 self.builder.set_insert_block(negative_condition_block);
-                let shift_val = self.builder.add(imms, one, op_type);
-                let shift_val = self.builder.sub(reg_size, shift_val, op_type);
+                let shift_val = self.builder.wrapping_add(imms, one, op_type);
+                let shift_val = self.builder.wrapping_sub(reg_size, shift_val, op_type);
                 let val = self.builder.lshl(src, shift_val, op_type);
-                let shift_val = self.builder.sub(reg_size, immr, op_type);
+                let shift_val = self.builder.wrapping_sub(reg_size, immr, op_type);
                 let val = self.builder.ashr(val, shift_val, op_type);
                 self.write_reg(val, dst_reg, op_type);
                 self.builder.jump(next_block, Vec::new());
@@ -884,7 +886,7 @@ impl LifterState<'_> {
                 let src2 = self.get_value(inst.operands[2]);
                 let src3 = self.get_value(inst.operands[3]);
                 let val = self.builder.imul(src1, src2, I32);
-                let val = self.builder.add(val, src3, I64);
+                let val = self.builder.wrapping_add(val, src3, I64);
                 self.write_reg(val, dst_reg, I64);
             }
             Opcode::SMC => {
@@ -896,7 +898,7 @@ impl LifterState<'_> {
                 let src2 = self.get_value(inst.operands[2]);
                 let src3 = self.get_value(inst.operands[3]);
                 let val = self.builder.imul(src1, src2, I32);
-                let val = self.builder.sub(src3, val, I64);
+                let val = self.builder.wrapping_sub(src3, val, I64);
                 self.write_reg(val, dst_reg, I64);
             }
             Opcode::SMULH => {
@@ -919,7 +921,7 @@ impl LifterState<'_> {
                     I64 => self.builder.iconst(8),
                     _ => self.builder.iconst(4),
                 };
-                let address = self.builder.add(address, address_offset, I64);
+                let address = self.builder.wrapping_add(address, address_offset, I64);
                 self.builder.store(src2, address, op_type);
             }
             Opcode::STXP | Opcode::STLXP => {
@@ -933,7 +935,7 @@ impl LifterState<'_> {
                     I64 => self.builder.iconst(8),
                     _ => self.builder.iconst(4),
                 };
-                let address = self.builder.add(address, address_offset, I64);
+                let address = self.builder.wrapping_add(address, address_offset, I64);
                 self.builder.store(src2, address, op_type);
                 let dst_reg = self.get_dst_reg(inst).unwrap();
                 let opaque = self.builder.opaque(op_type);
@@ -985,7 +987,7 @@ impl LifterState<'_> {
                 let src2 = self.get_value(inst.operands[2]);
                 let dst_reg = self.get_dst_reg(inst).unwrap();
                 let op_type = helper::get_type_by_inst(inst);
-                let val = self.builder.sub(src1, src2, op_type);
+                let val = self.builder.wrapping_sub(src1, src2, op_type);
                 self.write_reg(val, dst_reg, op_type);
                 if inst.opcode == Opcode::SUBS {
                     let one = self.builder.iconst(1);
@@ -1072,12 +1074,14 @@ impl LifterState<'_> {
                 self.builder.set_insert_block(positive_condition_block);
                 // get src bitfield
                 let one = self.builder.iconst(1);
-                let src_bitfield_size = self.builder.add(one, imms, op_type);
-                let src_bitfield_size = self.builder.sub(src_bitfield_size, immr, op_type);
-                let shift_val = self.builder.add(imms, one, op_type);
-                let shift_val = self.builder.sub(reg_size, shift_val, op_type);
+                let src_bitfield_size = self.builder.wrapping_add(one, imms, op_type);
+                let src_bitfield_size = self.builder.wrapping_sub(src_bitfield_size, immr, op_type);
+                let shift_val = self.builder.wrapping_add(imms, one, op_type);
+                let shift_val = self.builder.wrapping_sub(reg_size, shift_val, op_type);
                 let val = self.builder.lshl(src, shift_val, op_type);
-                let shift_val = self.builder.sub(reg_size, src_bitfield_size, op_type);
+                let shift_val = self
+                    .builder
+                    .wrapping_sub(reg_size, src_bitfield_size, op_type);
                 let val = self.builder.lshr(val, shift_val, op_type);
 
                 self.write_reg(val, dst_reg, op_type);
@@ -1085,10 +1089,10 @@ impl LifterState<'_> {
 
                 // this copies a bitfield of (<imms>+1) bits from the least significant bits of the source register to bit position (regsize-<immr>) of the destination register
                 self.builder.set_insert_block(negative_condition_block);
-                let shift_val = self.builder.add(imms, one, op_type);
-                let shift_val = self.builder.sub(reg_size, shift_val, op_type);
+                let shift_val = self.builder.wrapping_add(imms, one, op_type);
+                let shift_val = self.builder.wrapping_sub(reg_size, shift_val, op_type);
                 let val = self.builder.lshl(src, shift_val, op_type);
-                let shift_val = self.builder.sub(reg_size, immr, op_type);
+                let shift_val = self.builder.wrapping_sub(reg_size, immr, op_type);
                 let val = self.builder.lshr(val, shift_val, op_type);
                 self.write_reg(val, dst_reg, op_type);
                 self.builder.jump(next_block, Vec::new());
@@ -1113,7 +1117,7 @@ impl LifterState<'_> {
                 let src2 = self.get_value(inst.operands[2]);
                 let src3 = self.get_value(inst.operands[3]);
                 let val = self.builder.umul(src1, src2, I32);
-                let val = self.builder.add(val, src3, I64);
+                let val = self.builder.wrapping_add(val, src3, I64);
                 self.write_reg(val, dst_reg, I64);
             }
             Opcode::UMSUBL => {
@@ -1122,7 +1126,7 @@ impl LifterState<'_> {
                 let src2 = self.get_value(inst.operands[2]);
                 let src3 = self.get_value(inst.operands[3]);
                 let val = self.builder.umul(src1, src2, I32);
-                let val = self.builder.sub(src3, val, I64);
+                let val = self.builder.wrapping_sub(src3, val, I64);
                 self.write_reg(val, dst_reg, I64);
             }
             Opcode::UMULH => {

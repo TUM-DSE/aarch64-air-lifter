@@ -10,8 +10,8 @@ tests:
       nextln:   v4 = i64.and v3, v0
       nextln:   v5 = i64.xor v1, v4
       nextln:   v6 = i64.highest_set_bit v5
-      nextln:   v7 = i64.sub 0x40, v6
-      nextln:   v8 = i64.sub v7, 0x1
+      nextln:   v7 = i64.wrapping_sub 0x40, v6
+      nextln:   v8 = i64.wrapping_sub v7, 0x1
       nextln:   i64.write_reg v8, "x1"
 - name: cls_2
   bytes: [0x41, 0x14, 0xc0, 0x5a]
@@ -24,6 +24,6 @@ tests:
       nextln:   v4 = i32.and v3, v0
       nextln:   v5 = i32.xor v1, v4
       nextln:   v6 = i32.highest_set_bit v5
-      nextln:   v7 = i32.sub 0x20, v6
-      nextln:   v8 = i32.sub v7, 0x1
+      nextln:   v7 = i32.wrapping_sub 0x20, v6
+      nextln:   v8 = i32.wrapping_sub v7, 0x1
       nextln:   i32.write_reg v8, "x1"

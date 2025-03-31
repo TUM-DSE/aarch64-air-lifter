@@ -6,7 +6,7 @@ tests:
       nextln:   v0 = i64.bitwise_not 0xfff
       nextln:   v1 = i64.read_reg "pc"
       nextln:   v2 = i64.and v1, v0
-      nextln:   v3 = i64.add v2, 0x0
+      nextln:   v3 = i64.wrapping_add v2, 0x0
       nextln:   i64.write_reg v3, "x0"
 - name: adrp_2
   bytes: [0x00, 0x00, 0x00, 0xb0]
@@ -15,5 +15,5 @@ tests:
       nextln:   v0 = i64.bitwise_not 0xfff
       nextln:   v1 = i64.read_reg "pc"
       nextln:   v2 = i64.and v1, v0
-      nextln:   v3 = i64.add v2, 0x1000
+      nextln:   v3 = i64.wrapping_add v2, 0x1000
       nextln:   i64.write_reg v3, "x0"

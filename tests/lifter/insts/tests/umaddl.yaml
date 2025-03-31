@@ -7,5 +7,5 @@ tests:
       nextln:   v1 = i32.read_reg "x2"
       nextln:   v2 = i64.read_reg "x2"
       nextln:   v3 = i32.umul v0, v1
-      nextln:   v4 = i64.add v3, v2
+      nextln:   v4 = i64.wrapping_add v3, v2
       nextln:   i64.write_reg v4, "x1"

@@ -8,7 +8,7 @@ tests:
       nextln:   v2 = i32.load v1
       nextln:   v3 = i64.sext_i32 v2
       nextln:   i64.write_reg v3, "x1"
-      nextln:   v4 = i64.add v1, 0x4
+      nextln:   v4 = i64.wrapping_add v1, 0x4
       nextln:   v5 = i32.load v4
       nextln:   v6 = i64.sext_i32 v5
       nextln:   i64.write_reg v6, "x2"

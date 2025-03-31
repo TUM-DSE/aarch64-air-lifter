@@ -8,20 +8,20 @@ tests:
       nextln:   jumpif v1, sbfm_positive_condition, sbfm_negative_condition
       check: block_4: // preds: sbfm_positive_condition sbfm_negative_condition
       check: sbfm_positive_condition: // preds: entry
-      nextln:   v2 = i64.add 0x1, 0x16
-      nextln:   v3 = i64.sub v2, 0xc
-      nextln:   v4 = i64.add 0x16, 0x1
-      nextln:   v5 = i64.sub 0x40, v4
+      nextln:   v2 = i64.wrapping_add 0x1, 0x16
+      nextln:   v3 = i64.wrapping_sub v2, 0xc
+      nextln:   v4 = i64.wrapping_add 0x16, 0x1
+      nextln:   v5 = i64.wrapping_sub 0x40, v4
       nextln:   v6 = i64.lshl v0, v5
-      nextln:   v7 = i64.sub 0x40, v3
+      nextln:   v7 = i64.wrapping_sub 0x40, v3
       nextln:   v8 = i64.ashr v6, v7
       nextln:   i64.write_reg v8, "x1"
       nextln:   jump block_4
       check: sbfm_negative_condition: // preds: entry
-      nextln:   v9 = i64.add 0x16, 0x1
-      nextln:   v10 = i64.sub 0x40, v9
+      nextln:   v9 = i64.wrapping_add 0x16, 0x1
+      nextln:   v10 = i64.wrapping_sub 0x40, v9
       nextln:   v11 = i64.lshl v0, v10
-      nextln:   v12 = i64.sub 0x40, 0xc
+      nextln:   v12 = i64.wrapping_sub 0x40, 0xc
       nextln:   v13 = i64.ashr v11, v12
       nextln:   i64.write_reg v13, "x1"
       nextln:   jump block_4
@@ -34,20 +34,20 @@ tests:
       nextln:   jumpif v1, sbfm_positive_condition, sbfm_negative_condition
       check: block_4: // preds: sbfm_positive_condition sbfm_negative_condition
       check: sbfm_positive_condition: // preds: entry
-      nextln:   v2 = i64.add 0x1, 0x16
-      nextln:   v3 = i64.sub v2, 0xc
-      nextln:   v4 = i64.add 0x16, 0x1
-      nextln:   v5 = i64.sub 0x40, v4
+      nextln:   v2 = i64.wrapping_add 0x1, 0x16
+      nextln:   v3 = i64.wrapping_sub v2, 0xc
+      nextln:   v4 = i64.wrapping_add 0x16, 0x1
+      nextln:   v5 = i64.wrapping_sub 0x40, v4
       nextln:   v6 = i64.lshl v0, v5
-      nextln:   v7 = i64.sub 0x40, v3
+      nextln:   v7 = i64.wrapping_sub 0x40, v3
       nextln:   v8 = i64.ashr v6, v7
       nextln:   i64.write_reg v8, "x1"
       nextln:   jump block_4
       check: sbfm_negative_condition: // preds: entry
-      nextln:   v9 = i64.add 0x16, 0x1
-      nextln:   v10 = i64.sub 0x40, v9
+      nextln:   v9 = i64.wrapping_add 0x16, 0x1
+      nextln:   v10 = i64.wrapping_sub 0x40, v9
       nextln:   v11 = i64.lshl v0, v10
-      nextln:   v12 = i64.sub 0x40, 0xc
+      nextln:   v12 = i64.wrapping_sub 0x40, 0xc
       nextln:   v13 = i64.ashr v11, v12
       nextln:   i64.write_reg v13, "x1"
       nextln:   jump block_4
