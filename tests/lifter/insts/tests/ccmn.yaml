@@ -1,5 +1,5 @@
 tests:
-- name: test_ccmn_1
+- name: ccmn_1
   bytes: [0x03, 0x00, 0x41, 0xba]
   directives: |
       check: entry: // entry block; no preds!
@@ -41,7 +41,7 @@ tests:
       nextln:   v23 = i64.icmp.ne 0x0, v22
       nextln:   bool.write_reg v23, "v"
       nextln:   jump block_4
-- name: test_ccmn_2
+- name: ccmn_2
   bytes: [0xc0, 0xe0, 0x46, 0xba]
   directives: |
       check: entry: // entry block; no preds!
@@ -82,7 +82,7 @@ tests:
       nextln:   v22 = i64.icmp.ne 0x0, v21
       nextln:   bool.write_reg v22, "v"
       nextln:   jump block_4
-- name: test_ccmn_3
+- name: ccmn_3
   bytes: [0x04, 0x60, 0x42, 0x3a]
   directives: |
       check: entry: // entry block; no preds!

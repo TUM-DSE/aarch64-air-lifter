@@ -1,5 +1,5 @@
 tests:
-- name: test_tbnz_1
+- name: tbnz_1
   bytes: [0x80, 0x80, 0x40, 0xb7]
   directives: |
       check: entry: // entry block; no preds!
@@ -9,7 +9,7 @@ tests:
       nextln:   jumpif v2, block_4112, block_4
       check: block_4: // preds: entry
       check: block_4112: // preds: entry
-- name: test_tbnz_2
+- name: tbnz_2
   bytes: [0xe1, 0xff, 0x67, 0x37]
   directives: |
       check: entry: // entry block; no preds!
@@ -19,7 +19,7 @@ tests:
       nextln:   jumpif v2, block_18446744073709551612, block_4
       check: block_4: // preds: entry
       check: block_18446744073709551612: // preds: entry
-- name: test_tbnz_3
+- name: tbnz_3
   bytes: [0xc1, 0xff, 0x0f, 0x37]
   directives: |
       check: entry: // entry block; no preds!
@@ -29,7 +29,7 @@ tests:
       nextln:   jumpif v2, block_18446744073709551608, block_4
       check: block_4: // preds: entry
       check: block_18446744073709551608: // preds: entry
-- name: test_tbnz_4
+- name: tbnz_4
   bytes: [0xa2, 0xff, 0x07, 0x37]
   directives: |
       check: entry: // entry block; no preds!

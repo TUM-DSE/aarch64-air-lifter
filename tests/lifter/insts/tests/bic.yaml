@@ -1,5 +1,5 @@
 tests:
-- name: test_bic_1
+- name: bic_1
   bytes: [0x41, 0x08, 0x23, 0x0a]
   directives: |
       check: entry: // entry block; no preds!
@@ -9,7 +9,7 @@ tests:
       nextln:   v3 = i32.bitwise_not v2
       nextln:   v4 = i32.and v0, v3
       nextln:   i32.write_reg v4, "x1"
-- name: test_bic_2
+- name: bic_2
   bytes: [0x41, 0x0c, 0x23, 0x8a]
   directives: |
       check: entry: // entry block; no preds!
@@ -19,7 +19,7 @@ tests:
       nextln:   v3 = i64.bitwise_not v2
       nextln:   v4 = i64.and v0, v3
       nextln:   i64.write_reg v4, "x1"
-- name: test_bic_3
+- name: bic_3
   bytes: [0x41, 0x04, 0xa3, 0x8a]
   directives: |
       check: entry: // entry block; no preds!

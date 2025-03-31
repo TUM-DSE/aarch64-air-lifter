@@ -1,5 +1,5 @@
 tests:
-- name: test_ldur_1
+- name: ldur_1
   bytes: [0xe1, 0x73, 0x41, 0xb8]
   directives: |
       check: entry: // entry block; no preds!
@@ -7,7 +7,7 @@ tests:
       nextln:   v1 = i64.add v0, 0x17
       nextln:   v2 = i32.load v1
       nextln:   i32.write_reg v2, "x1"
-- name: test_ldur_2
+- name: ldur_2
   bytes: [0xe1, 0x73, 0x41, 0xf8]
   directives: |
       check: entry: // entry block; no preds!
@@ -15,7 +15,7 @@ tests:
       nextln:   v1 = i64.add v0, 0x17
       nextln:   v2 = i64.load v1
       nextln:   i64.write_reg v2, "x1"
-- name: test_ldur_3
+- name: ldur_3
   bytes: [0x41, 0x40, 0x40, 0xf8]
   directives: |
       check: entry: // entry block; no preds!

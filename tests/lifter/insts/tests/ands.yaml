@@ -1,5 +1,5 @@
 tests:
-- name: test_ands_1
+- name: ands_1
   bytes: [0x21, 0x00, 0x02, 0xea]
   directives: |
       check: entry: // entry block; no preds!

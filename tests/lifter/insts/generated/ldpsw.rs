@@ -3,6 +3,6 @@
 use crate::lifter::yaml_tests::run_test_from_yaml;
 
 #[test]
-pub fn test_test_ldpsw_1() {
-    run_test_from_yaml("tests/lifter/insts/tests/ldpsw.yaml", "test_ldpsw_1");
+pub fn test_ldpsw_1() {
+    run_test_from_yaml("tests/lifter/insts/tests/ldpsw.yaml", "ldpsw_1");
 }

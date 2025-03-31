@@ -1,5 +1,5 @@
 tests:
-- name: test_smaddl_1
+- name: smaddl_1
   bytes: [0x20, 0x00, 0x22, 0x9b]
   directives: |
       check: entry: // entry block; no preds!

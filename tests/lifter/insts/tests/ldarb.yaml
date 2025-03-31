@@ -1,5 +1,5 @@
 tests:
-- name: test_ldarb_1
+- name: ldarb_1
   bytes: [0xe1, 0xff, 0xdf, 0x08]
   directives: |
       check: entry: // entry block; no preds!
@@ -8,7 +8,7 @@ tests:
       nextln:   v2 = i8.load v1
       nextln:   v3 = i32.zext_i8 v2
       nextln:   i32.write_reg v3, "x1"
-- name: test_ldarb_2
+- name: ldarb_2
   bytes: [0x21, 0xfc, 0xdf, 0x08]
   directives: |
       check: entry: // entry block; no preds!

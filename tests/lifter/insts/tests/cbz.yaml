@@ -1,5 +1,5 @@
 tests:
-- name: test_cbz_1
+- name: cbz_1
   bytes: [0x00, 0x00, 0x00, 0x34]
   directives: |
       check: entry: // entry block; no preds!
@@ -9,7 +9,7 @@ tests:
       nextln:   v1 = i32.icmp.eq v0, 0x0
       nextln:   jumpif v1, block_0, block_4
       check: block_4: // preds: block_0
-- name: test_cbz_2
+- name: cbz_2
   bytes: [0x20, 0x00, 0x00, 0xb4]
   directives: |
       check: entry: // entry block; no preds!
@@ -17,7 +17,7 @@ tests:
       nextln:   v1 = i64.icmp.eq v0, 0x0
       nextln:   jumpif v1, block_4, block_4
       check: block_4: // preds: entry entry
-- name: test_cbz_3
+- name: cbz_3
   bytes: [0xc1, 0xff, 0xff, 0xb4]
   directives: |
       check: entry: // entry block; no preds!

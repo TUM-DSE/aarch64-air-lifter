@@ -1,5 +1,5 @@
 tests:
-- name: test_ldrsw_1
+- name: ldrsw_1
   bytes: [0x21, 0xc4, 0x80, 0xb8]
   directives: |
       check: entry: // entry block; no preds!

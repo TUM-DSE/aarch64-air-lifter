@@ -1,5 +1,5 @@
 tests:
-- name: test_ubfm_1
+- name: ubfm_1
   bytes: [0x41, 0x2c, 0x4c, 0xd3]
   directives: |
       check: entry: // entry block; no preds!
@@ -25,7 +25,7 @@ tests:
       nextln:   v13 = i64.lshr v11, v12
       nextln:   i64.write_reg v13, "x1"
       nextln:   jump block_4
-- name: test_ubfm_2
+- name: ubfm_2
   bytes: [0x41, 0x2c, 0x4c, 0xd3]
   directives: |
       check: entry: // entry block; no preds!

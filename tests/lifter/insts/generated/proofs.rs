@@ -3,6 +3,6 @@
 use crate::lifter::yaml_tests::run_test_from_yaml;
 
 #[test]
-pub fn test_test_proofs_1() {
-    run_test_from_yaml("tests/lifter/insts/tests/proofs.yaml", "test_proofs_1");
+pub fn test_proofs_1() {
+    run_test_from_yaml("tests/lifter/insts/tests/proofs.yaml", "proofs_1");
 }

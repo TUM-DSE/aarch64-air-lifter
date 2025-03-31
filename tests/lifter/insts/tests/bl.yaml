@@ -1,5 +1,5 @@
 tests:
-- name: test_bl_1
+- name: bl_1
   bytes: [0x02, 0x00, 0x00, 0x94]
   directives: |
       check: entry: // entry block; no preds!
@@ -9,7 +9,7 @@ tests:
       nextln:   jump block_8
       check: block_4: // no preds!
       check: block_8: // preds: entry
-- name: test_bl_2
+- name: bl_2
   bytes: [0x01, 0x00, 0x00, 0x94]
   directives: |
       check: entry: // entry block; no preds!
@@ -18,7 +18,7 @@ tests:
       nextln:   i64.write_reg v1, "x30"
       nextln:   jump block_4
       check: block_4: // preds: entry
-- name: test_bl_3
+- name: bl_3
   bytes: [0xfe, 0xff, 0xff, 0x97]
   directives: |
       check: entry: // entry block; no preds!

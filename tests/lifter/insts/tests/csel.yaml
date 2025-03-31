@@ -1,5 +1,5 @@
 tests:
-- name: test_csel_1
+- name: csel_1
   bytes: [0x20, 0x40, 0x82, 0x9a]
   directives: |
       check: entry: // entry block; no preds!
@@ -15,7 +15,7 @@ tests:
       nextln:   v3 = i64.read_reg "x2"
       nextln:   i64.write_reg v3, "x0"
       nextln:   jump block_4
-- name: test_csel_2
+- name: csel_2
   bytes: [0x20, 0x20, 0x82, 0x9a]
   directives: |
       check: entry: // entry block; no preds!
@@ -31,7 +31,7 @@ tests:
       nextln:   v3 = i64.read_reg "x2"
       nextln:   i64.write_reg v3, "x0"
       nextln:   jump block_4
-- name: test_csel_3
+- name: csel_3
   bytes: [0x20, 0x00, 0x82, 0x1a]
   directives: |
       check: entry: // entry block; no preds!

@@ -1,5 +1,5 @@
 tests:
-- name: test_ccmp_1
+- name: ccmp_1
   bytes: [0x03, 0x00, 0x41, 0xfa]
   directives: |
       check: entry: // entry block; no preds!
@@ -42,7 +42,7 @@ tests:
       nextln:   v24 = i64.icmp.ne 0x0, v23
       nextln:   bool.write_reg v24, "v"
       nextln:   jump block_4
-- name: test_ccmp_2
+- name: ccmp_2
   bytes: [0x04, 0x60, 0x42, 0x7a]
   directives: |
       check: entry: // entry block; no preds!
@@ -85,7 +85,7 @@ tests:
       nextln:   v24 = i32.icmp.ne 0x0, v23
       nextln:   bool.write_reg v24, "v"
       nextln:   jump block_4
-- name: test_ccmp_3
+- name: ccmp_3
   bytes: [0xc0, 0xe0, 0x46, 0xfa]
   directives: |
       check: entry: // entry block; no preds!

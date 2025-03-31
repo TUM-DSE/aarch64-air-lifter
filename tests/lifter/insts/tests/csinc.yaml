@@ -1,5 +1,5 @@
 tests:
-- name: test_csinc_1
+- name: csinc_1
   bytes: [0x20, 0x04, 0x82, 0x9a]
   directives: |
       check: entry: // entry block; no preds!
@@ -16,7 +16,7 @@ tests:
       nextln:   v4 = i64.add v3, 0x1
       nextln:   i64.write_reg v4, "x0"
       nextln:   jump block_4
-- name: test_csinc_2
+- name: csinc_2
   bytes: [0x20, 0x04, 0x84, 0x1a]
   directives: |
       check: entry: // entry block; no preds!
@@ -33,7 +33,7 @@ tests:
       nextln:   v4 = i32.add v3, 0x1
       nextln:   i32.write_reg v4, "x0"
       nextln:   jump block_4
-- name: test_csinc_3
+- name: csinc_3
   bytes: [0x62, 0xd4, 0x84, 0x9a]
   directives: |
       check: entry: // entry block; no preds!

@@ -1,5 +1,5 @@
 tests:
-- name: test_bcc_1
+- name: bcc_1
   bytes: [0x00, 0x00, 0x00, 0x54]
   directives: |
       check: entry: // entry block; no preds!
@@ -9,7 +9,7 @@ tests:
       nextln:   v1 = bool.icmp.eq v0, 0x1
       nextln:   jumpif v1, block_0, block_4
       check: block_4: // preds: block_0
-- name: test_bcc_2
+- name: bcc_2
   bytes: [0x07, 0x00, 0x00, 0x54]
   directives: |
       check: entry: // entry block; no preds!

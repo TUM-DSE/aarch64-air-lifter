@@ -3,10 +3,10 @@
 use crate::lifter::yaml_tests::run_test_from_yaml;
 
 #[test]
-pub fn test_test_movn_1() {
-    run_test_from_yaml("tests/lifter/insts/tests/movn.yaml", "test_movn_1");
+pub fn test_movn_1() {
+    run_test_from_yaml("tests/lifter/insts/tests/movn.yaml", "movn_1");
 }
 #[test]
-pub fn test_test_movn_2() {
-    run_test_from_yaml("tests/lifter/insts/tests/movn.yaml", "test_movn_2");
+pub fn test_movn_2() {
+    run_test_from_yaml("tests/lifter/insts/tests/movn.yaml", "movn_2");
 }

@@ -1,5 +1,5 @@
 tests:
-- name: test_str_1
+- name: str_1
   bytes: [0x00, 0x24, 0x00, 0xf8]
   directives: |
       check: entry: // entry block; no preds!
@@ -7,7 +7,7 @@ tests:
       nextln:   v1 = i64.read_reg "x0"
       nextln:   v2 = i64.add v1, 0x2
       nextln:   i64.store v0, v2
-- name: test_str_2
+- name: str_2
   bytes: [0x00, 0x14, 0x00, 0xb8]
   directives: |
       check: entry: // entry block; no preds!
@@ -15,7 +15,7 @@ tests:
       nextln:   v1 = i64.read_reg "x0"
       nextln:   v2 = i64.add v1, 0x1
       nextln:   i32.store v0, v2
-- name: test_str_3
+- name: str_3
   bytes: [0x41, 0x68, 0x22, 0xf8]
   directives: |
       check: entry: // entry block; no preds!
@@ -25,7 +25,7 @@ tests:
       nextln:   v3 = i64.lshl v2, 0x0
       nextln:   v4 = i64.add v1, v3
       nextln:   i64.store v0, v4
-- name: test_str_4
+- name: str_4
   bytes: [0x21, 0x78, 0x23, 0xb8]
   directives: |
       check: entry: // entry block; no preds!

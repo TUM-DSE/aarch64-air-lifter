@@ -1,5 +1,5 @@
 tests:
-- name: test_ldp_1
+- name: ldp_1
   bytes: [0x40, 0x84, 0xc0, 0xa8]
   directives: |
       check: entry: // entry block; no preds!
@@ -10,7 +10,7 @@ tests:
       nextln:   v3 = i64.add v1, 0x8
       nextln:   v4 = i64.load v3
       nextln:   i64.write_reg v4, "x1"
-- name: test_ldp_2
+- name: ldp_2
   bytes: [0x81, 0x08, 0xc2, 0x28]
   directives: |
       check: entry: // entry block; no preds!

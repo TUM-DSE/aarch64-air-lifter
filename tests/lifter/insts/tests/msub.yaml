@@ -1,5 +1,5 @@
 tests:
-- name: test_msub_1
+- name: msub_1
   bytes: [0x20, 0x8c, 0x02, 0x9b]
   directives: |
       check: entry: // entry block; no preds!
@@ -9,7 +9,7 @@ tests:
       nextln:   v3 = i64.imul v0, v1
       nextln:   v4 = i64.sub v2, v3
       nextln:   i64.write_reg v4, "x0"
-- name: test_msub_2
+- name: msub_2
   bytes: [0x20, 0x8c, 0x02, 0x1b]
   directives: |
       check: entry: // entry block; no preds!

@@ -1,5 +1,5 @@
 tests:
-- name: test_subs_1
+- name: subs_1
   bytes: [0x21, 0x00, 0x00, 0xeb]
   directives: |
       check: entry: // entry block; no preds!
@@ -24,7 +24,7 @@ tests:
       nextln:   v14 = bool.icmp.ne v11, v7
       nextln:   v15 = bool.and v13, v14
       nextln:   bool.write_reg v15, "v"
-- name: test_subs_2
+- name: subs_2
   bytes: [0x21, 0x00, 0x00, 0x6b]
   directives: |
       check: entry: // entry block; no preds!

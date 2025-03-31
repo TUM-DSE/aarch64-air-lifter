@@ -1,5 +1,5 @@
 tests:
-- name: test_smulh_1
+- name: smulh_1
   bytes: [0x41, 0x7c, 0x43, 0x9b]
   directives: |
       check: entry: // entry block; no preds!

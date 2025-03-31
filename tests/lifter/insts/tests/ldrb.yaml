@@ -1,5 +1,5 @@
 tests:
-- name: test_ldrb_1
+- name: ldrb_1
   bytes: [0xe0, 0xdb, 0x62, 0x38]
   directives: |
       check: entry: // entry block; no preds!
@@ -11,7 +11,7 @@ tests:
       nextln:   v5 = i8.load v4
       nextln:   v6 = i32.zext_i8 v5
       nextln:   i32.write_reg v6, "x0"
-- name: test_ldrb_2
+- name: ldrb_2
   bytes: [0x20, 0xd8, 0x62, 0x38]
   directives: |
       check: entry: // entry block; no preds!
@@ -23,7 +23,7 @@ tests:
       nextln:   v5 = i8.load v4
       nextln:   v6 = i32.zext_i8 v5
       nextln:   i32.write_reg v6, "x0"
-- name: test_ldrb_3
+- name: ldrb_3
   bytes: [0x20, 0x58, 0x62, 0x38]
   directives: |
       check: entry: // entry block; no preds!

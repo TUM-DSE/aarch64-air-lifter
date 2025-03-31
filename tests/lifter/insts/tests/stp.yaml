@@ -1,5 +1,5 @@
 tests:
-- name: test_stp_1
+- name: stp_1
   bytes: [0x41, 0x08, 0x00, 0xa9]
   directives: |
       check: entry: // entry block; no preds!
@@ -10,7 +10,7 @@ tests:
       nextln:   i64.store v0, v3
       nextln:   v4 = i64.add v3, 0x8
       nextln:   i64.store v1, v4
-- name: test_stp_2
+- name: stp_2
   bytes: [0x41, 0x08, 0x00, 0x29]
   directives: |
       check: entry: // entry block; no preds!
@@ -21,7 +21,7 @@ tests:
       nextln:   i32.store v0, v3
       nextln:   v4 = i64.add v3, 0x4
       nextln:   i32.store v1, v4
-- name: test_stp_3
+- name: stp_3
   bytes: [0xe0, 0x07, 0x00, 0xa9]
   directives: |
       check: entry: // entry block; no preds!

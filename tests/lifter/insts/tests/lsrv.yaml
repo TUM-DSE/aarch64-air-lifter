@@ -1,5 +1,5 @@
 tests:
-- name: test_lsrv_1
+- name: lsrv_1
   bytes: [0x20, 0x24, 0xc2, 0x1a]
   directives: |
       check: entry: // entry block; no preds!
@@ -8,7 +8,7 @@ tests:
       nextln:   v2 = i32.and v1, 0x1f
       nextln:   v3 = i32.lshr v0, v2
       nextln:   i32.write_reg v3, "x0"
-- name: test_lsrv_2
+- name: lsrv_2
   bytes: [0x20, 0x24, 0xc2, 0x9a]
   directives: |
       check: entry: // entry block; no preds!

@@ -1,5 +1,5 @@
 tests:
-- name: test_eon_1
+- name: eon_1
   bytes: [0x41, 0x30, 0x63, 0xca]
   directives: |
       check: entry: // entry block; no preds!
@@ -9,7 +9,7 @@ tests:
       nextln:   v3 = i64.bitwise_not v2
       nextln:   v4 = i64.xor v0, v3
       nextln:   i64.write_reg v4, "x1"
-- name: test_eon_2
+- name: eon_2
   bytes: [0x41, 0x04, 0xa3, 0xca]
   directives: |
       check: entry: // entry block; no preds!
@@ -19,7 +19,7 @@ tests:
       nextln:   v3 = i64.bitwise_not v2
       nextln:   v4 = i64.xor v0, v3
       nextln:   i64.write_reg v4, "x1"
-- name: test_eon_3
+- name: eon_3
   bytes: [0x41, 0x04, 0xa3, 0x4a]
   directives: |
       check: entry: // entry block; no preds!

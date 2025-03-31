@@ -3,10 +3,10 @@
 use crate::lifter::yaml_tests::run_test_from_yaml;
 
 #[test]
-pub fn test_test_asrv_1() {
-    run_test_from_yaml("tests/lifter/insts/tests/asrv.yaml", "test_asrv_1");
+pub fn test_asrv_1() {
+    run_test_from_yaml("tests/lifter/insts/tests/asrv.yaml", "asrv_1");
 }
 #[test]
-pub fn test_test_asrv_2() {
-    run_test_from_yaml("tests/lifter/insts/tests/asrv.yaml", "test_asrv_2");
+pub fn test_asrv_2() {
+    run_test_from_yaml("tests/lifter/insts/tests/asrv.yaml", "asrv_2");
 }

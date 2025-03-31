@@ -1,5 +1,5 @@
 tests:
-- name: test_sbcs_1
+- name: sbcs_1
   bytes: [0x41, 0x00, 0x03, 0x7a]
   directives: |
       check: entry: // entry block; no preds!
@@ -27,7 +27,7 @@ tests:
       nextln:   v17 = bool.icmp.ne v14, v10
       nextln:   v18 = bool.and v16, v17
       nextln:   bool.write_reg v18, "v"
-- name: test_sbcs_2
+- name: sbcs_2
   bytes: [0x41, 0x00, 0x03, 0xfa]
   directives: |
       check: entry: // entry block; no preds!

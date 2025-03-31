@@ -1,5 +1,5 @@
 tests:
-- name: test_adrp_1
+- name: adrp_1
   bytes: [0x00, 0x00, 0x00, 0x90]
   directives: |
       check: entry: // entry block; no preds!
@@ -8,7 +8,7 @@ tests:
       nextln:   v2 = i64.and v1, v0
       nextln:   v3 = i64.add v2, 0x0
       nextln:   i64.write_reg v3, "x0"
-- name: test_adrp_2
+- name: adrp_2
   bytes: [0x00, 0x00, 0x00, 0xb0]
   directives: |
       check: entry: // entry block; no preds!

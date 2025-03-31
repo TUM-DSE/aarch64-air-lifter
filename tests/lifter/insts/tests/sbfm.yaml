@@ -1,5 +1,5 @@
 tests:
-- name: test_sbfm_1
+- name: sbfm_1
   bytes: [0x41, 0x58, 0x4c, 0x93]
   directives: |
       check: entry: // entry block; no preds!
@@ -25,7 +25,7 @@ tests:
       nextln:   v13 = i64.ashr v11, v12
       nextln:   i64.write_reg v13, "x1"
       nextln:   jump block_4
-- name: test_sbfm_2
+- name: sbfm_2
   bytes: [0x41, 0x58, 0x4c, 0x93]
   directives: |
       check: entry: // entry block; no preds!

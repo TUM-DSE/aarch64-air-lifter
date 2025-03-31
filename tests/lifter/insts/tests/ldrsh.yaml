@@ -1,5 +1,5 @@
 tests:
-- name: test_ldrsh_1
+- name: ldrsh_1
   bytes: [0x21, 0xc4, 0xc0, 0x78]
   directives: |
       check: entry: // entry block; no preds!
@@ -8,7 +8,7 @@ tests:
       nextln:   v2 = i16.load v1
       nextln:   v3 = i32.sext_i16 v2
       nextln:   i32.write_reg v3, "x1"
-- name: test_ldrsh_2
+- name: ldrsh_2
   bytes: [0x21, 0xc4, 0x80, 0x78]
   directives: |
       check: entry: // entry block; no preds!
