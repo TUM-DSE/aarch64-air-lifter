@@ -3,9 +3,11 @@ tests:
   bytes: [0x20, 0x80, 0x22, 0x9b]
   directives: |
       check: entry: // entry block; no preds!
-      nextln:   v0 = i32.read_reg "x1"
-      nextln:   v1 = i32.read_reg "x2"
-      nextln:   v2 = i64.read_reg "x0"
-      nextln:   v3 = i32.imul v0, v1
-      nextln:   v4 = i64.wrapping_sub v2, v3
-      nextln:   i64.write_reg v4, "x0"
+      nextln:   v0 = i64.read_reg "x1"
+      nextln:   v1 = i32.trunc_i64 v0
+      nextln:   v2 = i64.read_reg "x2"
+      nextln:   v3 = i32.trunc_i64 v2
+      nextln:   v4 = i64.read_reg "x0"
+      nextln:   v5 = i32.imul v1, v3
+      nextln:   v6 = i64.wrapping_sub v4, v5
+      nextln:   i64.write_reg v6, "x0"

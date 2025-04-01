@@ -8,8 +8,20 @@ impl LifterState<'_> {
     /// Returns the value of a register as a 64-bit value.
     pub(crate) fn get_value(&mut self, operand: Operand) -> Value {
         match operand {
-            Operand::Register(sz, reg) => self.reg_val(sz, reg, SpOrZrReg::Zr),
-            Operand::RegisterOrSP(sz, reg) => self.reg_val(sz, reg, SpOrZrReg::Sp),
+            Operand::Register(sz, reg) | Operand::RegisterOrSP(sz, reg) => {
+                let val = self.reg_val(
+                    reg,
+                    match operand {
+                        Operand::Register(..) => SpOrZrReg::Zr,
+                        Operand::RegisterOrSP(..) => SpOrZrReg::Sp,
+                        _ => unreachable!(),
+                    },
+                );
+                match sz {
+                    SizeCode::X => val,
+                    SizeCode::W => self.builder.trunc_i64(val, I32).into(),
+                }
+            }
             Operand::Immediate(n) => self.builder.iconst(n),
             Operand::Imm64(n) => self.builder.iconst(n),
             Operand::Imm16(n) => self.builder.iconst(n),
@@ -22,7 +34,7 @@ impl LifterState<'_> {
             }
             Operand::RegShift(style, s, sz, reg) => {
                 // 64 bit value, zero extended
-                let reg_val = self.reg_val(sz, reg, SpOrZrReg::Zr);
+                let reg_val = self.reg_val(reg, SpOrZrReg::Zr);
                 let op_type = helper::get_type_by_sizecode(sz);
                 let shift_val = self.builder.iconst(s as u64);
                 match style {
@@ -55,8 +67,8 @@ impl LifterState<'_> {
                 }
             }
             Operand::RegRegOffset(rn, rd, sz, style, s) => {
-                let rn = self.reg_val(SizeCode::X, rn, SpOrZrReg::Sp);
-                let rd = self.reg_val(sz, rd, SpOrZrReg::Zr);
+                let rn = self.reg_val(rn, SpOrZrReg::Sp);
+                let rd = self.reg_val(rd, SpOrZrReg::Zr);
                 let s = self.builder.iconst(if s == 1 { 2 } else { 0 });
                 let op_type = helper::get_type_by_sizecode(sz);
                 let offset_val = match style {
@@ -72,12 +84,12 @@ impl LifterState<'_> {
                 self.builder.wrapping_add(rn, offset_val, I64).into()
             }
             Operand::RegPreIndex(rn, offset, _write_back) => {
-                let rn = self.reg_val(SizeCode::X, rn, SpOrZrReg::Sp);
+                let rn = self.reg_val(rn, SpOrZrReg::Sp);
                 let offset = self.builder.iconst(offset as u64);
                 self.builder.wrapping_add(rn, offset, I64).into()
             }
             Operand::RegPostIndex(rn, offset) => {
-                let val = self.reg_val(SizeCode::X, rn, SpOrZrReg::Sp);
+                let val = self.reg_val(rn, SpOrZrReg::Sp);
                 let offset = self.builder.iconst(offset as u64);
                 self.builder.wrapping_add(val, offset, I64).into()
             }

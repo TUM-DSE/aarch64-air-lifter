@@ -11,16 +11,18 @@ tests:
   bytes: [0x21, 0x00, 0x00, 0x4b]
   directives: |
       check: entry: // entry block; no preds!
-      nextln:   v0 = i32.read_reg "x1"
-      nextln:   v1 = i32.read_reg "x0"
-      nextln:   v2 = i32.wrapping_sub v0, v1
-      nextln:   i32.write_reg v2, "x1"
+      nextln:   v0 = i64.read_reg "x1"
+      nextln:   v1 = i32.trunc_i64 v0
+      nextln:   v2 = i64.read_reg "x0"
+      nextln:   v3 = i32.wrapping_sub v1, v2
+      nextln:   i32.write_reg v3, "x1"
 - name: sub_3
   bytes: [0x02, 0xc0, 0x21, 0x4b]
   directives: |
       check: entry: // entry block; no preds!
-      nextln:   v0 = i32.read_reg "x0"
-      nextln:   v1 = i32.read_reg "x1"
-      nextln:   v2 = i32.trunc_i64 v1
-      nextln:   v3 = i32.wrapping_sub v0, v2
-      nextln:   i32.write_reg v3, "x2"
+      nextln:   v0 = i64.read_reg "x0"
+      nextln:   v1 = i32.trunc_i64 v0
+      nextln:   v2 = i64.read_reg "x1"
+      nextln:   v3 = i32.trunc_i64 v2
+      nextln:   v4 = i32.wrapping_sub v1, v3
+      nextln:   i32.write_reg v4, "x2"

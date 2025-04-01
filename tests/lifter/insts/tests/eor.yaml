@@ -10,6 +10,7 @@ tests:
   bytes: [0x41, 0x00, 0x1d, 0x52]
   directives: |
       check: entry: // entry block; no preds!
-      nextln:   v0 = i32.read_reg "x2"
-      nextln:   v1 = i32.xor v0, 0x8
-      nextln:   i32.write_reg v0, "x1"
+      nextln:   v0 = i64.read_reg "x2"
+      nextln:   v1 = i32.trunc_i64 v0
+      nextln:   v2 = i32.xor v1, 0x8
+      nextln:   i32.write_reg v1, "x1"

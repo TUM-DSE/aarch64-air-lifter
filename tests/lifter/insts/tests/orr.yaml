@@ -3,9 +3,10 @@ tests:
   bytes: [0x20, 0x04, 0x00, 0x32]
   directives: |
       check: entry: // entry block; no preds!
-      nextln:   v0 = i32.read_reg "x1"
-      nextln:   v1 = i32.or v0, 0x3
-      nextln:   i32.write_reg v1, "x0"
+      nextln:   v0 = i64.read_reg "x1"
+      nextln:   v1 = i32.trunc_i64 v0
+      nextln:   v2 = i32.or v1, 0x3
+      nextln:   i32.write_reg v2, "x0"
 - name: orr_2
   bytes: [0x41, 0x00, 0x40, 0xb2]
   directives: |

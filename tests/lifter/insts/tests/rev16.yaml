@@ -25,13 +25,14 @@ tests:
   bytes: [0x21, 0x04, 0xc0, 0x5a]
   directives: |
       check: entry: // entry block; no preds!
-      nextln:   v0 = i32.read_reg "x1"
-      nextln:   v1 = i16.reverse_bytes v0
-      nextln:   v2 = i16.or 0x0, v1
-      nextln:   v3 = i32.ror v2, 0x10
-      nextln:   v4 = i32.ror v0, 0x10
-      nextln:   v5 = i16.reverse_bytes v4
-      nextln:   v6 = i16.or v3, v5
-      nextln:   v7 = i32.ror v6, 0x10
-      nextln:   v8 = i32.ror v4, 0x10
-      nextln:   i32.write_reg v7, "x1"
+      nextln:   v0 = i64.read_reg "x1"
+      nextln:   v1 = i32.trunc_i64 v0
+      nextln:   v2 = i16.reverse_bytes v1
+      nextln:   v3 = i16.or 0x0, v2
+      nextln:   v4 = i32.ror v3, 0x10
+      nextln:   v5 = i32.ror v1, 0x10
+      nextln:   v6 = i16.reverse_bytes v5
+      nextln:   v7 = i16.or v4, v6
+      nextln:   v8 = i32.ror v7, 0x10
+      nextln:   v9 = i32.ror v5, 0x10
+      nextln:   i32.write_reg v8, "x1"

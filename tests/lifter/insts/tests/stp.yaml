@@ -14,13 +14,15 @@ tests:
   bytes: [0x41, 0x08, 0x00, 0x29]
   directives: |
       check: entry: // entry block; no preds!
-      nextln:   v0 = i32.read_reg "x1"
-      nextln:   v1 = i32.read_reg "x2"
+      nextln:   v0 = i64.read_reg "x1"
+      nextln:   v1 = i32.trunc_i64 v0
       nextln:   v2 = i64.read_reg "x2"
-      nextln:   v3 = i64.wrapping_add v2, 0x0
-      nextln:   i32.store v0, v3
-      nextln:   v4 = i64.wrapping_add v3, 0x4
-      nextln:   i32.store v1, v4
+      nextln:   v3 = i32.trunc_i64 v2
+      nextln:   v4 = i64.read_reg "x2"
+      nextln:   v5 = i64.wrapping_add v4, 0x0
+      nextln:   i32.store v1, v5
+      nextln:   v6 = i64.wrapping_add v5, 0x4
+      nextln:   i32.store v3, v6
 - name: stp_3
   bytes: [0xe0, 0x07, 0x00, 0xa9]
   directives: |

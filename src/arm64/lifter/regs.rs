@@ -1,4 +1,3 @@
-use crate::arm64::helper;
 use crate::arm64::lifter::{LifterState, SpOrZrReg};
 use tnj::air::instructions::Value;
 use tnj::arch::reg::Reg;
@@ -6,27 +5,26 @@ use tnj::types::{Type, I64};
 use yaxpeax_arm::armv8::a64::{Instruction, Operand, SizeCode};
 
 impl LifterState<'_> {
-    /// reads a register value
-    pub(crate) fn reg_val(&mut self, sz: SizeCode, reg: u16, sp_or_zr: SpOrZrReg) -> Value {
-        let op_type = helper::get_type_by_sizecode(sz);
-        let val = if reg == 31 {
+    /// reads a 64-bit register value
+    pub(crate) fn reg_val(&mut self, reg: u16, sp_or_zr: SpOrZrReg) -> Value {
+        if reg == 31 {
             match sp_or_zr {
-                SpOrZrReg::Sp => self.builder.read_reg(
-                    self.builder
-                        .get_code_region()
-                        .get_arch()
-                        .lookup_reg(&"sp".into())
-                        .unwrap(),
-                    I64,
-                ),
-                SpOrZrReg::Zr => {
-                    return self.builder.opaque(op_type).into();
-                }
+                SpOrZrReg::Sp => self
+                    .builder
+                    .read_reg(
+                        self.builder
+                            .get_code_region()
+                            .get_arch()
+                            .lookup_reg(&"sp".into())
+                            .unwrap(),
+                        I64,
+                    )
+                    .into(),
+                SpOrZrReg::Zr => self.builder.iconst(0),
             }
         } else {
-            self.builder.read_reg(Reg(reg as u32), op_type)
-        };
-        val.into()
+            self.builder.read_reg(Reg(reg as u32), I64).into()
+        }
     }
 
     pub(crate) fn get_reg_by_index(&self, inst: Instruction, index: usize) -> Option<Reg> {
@@ -57,7 +55,7 @@ impl LifterState<'_> {
 
     pub(crate) fn read_pc_reg(&mut self) -> Value {
         let reg = self.get_reg_val_by_name("pc");
-        self.reg_val(SizeCode::X, reg.0 as u16, SpOrZrReg::Sp)
+        self.reg_val(reg.0 as u16, SpOrZrReg::Sp)
     }
 
     pub(crate) fn get_reg_val_by_name(&mut self, name: &str) -> Reg {
