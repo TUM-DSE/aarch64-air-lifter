@@ -6,7 +6,7 @@ tests:
       nextln:   v0 = i64.read_reg "x2"
       nextln:   v1 = i64.unsigned_from_bits 0x16
       nextln:   v2 = i64.unsigned_from_bits 0xc
-      nextln:   v3 = int.icmp.ge v1, v2
+      nextln:   v3 = bool.icmp.int.ge v1, v2
       nextln:   jumpif v3, sbfm_positive_condition, sbfm_negative_condition
       check: block_4: // preds: sbfm_positive_condition sbfm_negative_condition
       check: sbfm_positive_condition: // preds: entry
@@ -17,7 +17,7 @@ tests:
       nextln:   v8 = i64.lshl v0, v7
       nextln:   v9 = i64.wrapping_sub 0x40, v5
       nextln:   v10 = i64.ashr v8, v9
-      nextln:   i64.write_reg v10, "x1"
+      nextln:   write_reg.i64 v10, "x1"
       nextln:   jump block_4
       check: sbfm_negative_condition: // preds: entry
       nextln:   v11 = i64.wrapping_add 0x16, 0x1
@@ -25,7 +25,7 @@ tests:
       nextln:   v13 = i64.lshl v0, v12
       nextln:   v14 = i64.wrapping_sub 0x40, 0xc
       nextln:   v15 = i64.ashr v13, v14
-      nextln:   i64.write_reg v15, "x1"
+      nextln:   write_reg.i64 v15, "x1"
       nextln:   jump block_4
 - name: sbfm_2
   bytes: [0x41, 0x58, 0x4c, 0x93]
@@ -34,7 +34,7 @@ tests:
       nextln:   v0 = i64.read_reg "x2"
       nextln:   v1 = i64.unsigned_from_bits 0x16
       nextln:   v2 = i64.unsigned_from_bits 0xc
-      nextln:   v3 = int.icmp.ge v1, v2
+      nextln:   v3 = bool.icmp.int.ge v1, v2
       nextln:   jumpif v3, sbfm_positive_condition, sbfm_negative_condition
       check: block_4: // preds: sbfm_positive_condition sbfm_negative_condition
       check: sbfm_positive_condition: // preds: entry
@@ -45,7 +45,7 @@ tests:
       nextln:   v8 = i64.lshl v0, v7
       nextln:   v9 = i64.wrapping_sub 0x40, v5
       nextln:   v10 = i64.ashr v8, v9
-      nextln:   i64.write_reg v10, "x1"
+      nextln:   write_reg.i64 v10, "x1"
       nextln:   jump block_4
       check: sbfm_negative_condition: // preds: entry
       nextln:   v11 = i64.wrapping_add 0x16, 0x1
@@ -53,5 +53,5 @@ tests:
       nextln:   v13 = i64.lshl v0, v12
       nextln:   v14 = i64.wrapping_sub 0x40, 0xc
       nextln:   v15 = i64.ashr v13, v14
-      nextln:   i64.write_reg v15, "x1"
+      nextln:   write_reg.i64 v15, "x1"
       nextln:   jump block_4

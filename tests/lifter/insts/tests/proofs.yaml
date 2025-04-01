@@ -11,5 +11,5 @@ tests:
       nextln:   v0 = i64.read_reg "x2"
       nextln:   v1 = i64.wrapping_add v0, 0x4
       nextln:   v2 = i64.load v1
-      nextln:   i64.write_reg v2, "x0"
+      nextln:   write_reg.i64 v2, "x0"
       nextln:   post { "x0" == 42; }

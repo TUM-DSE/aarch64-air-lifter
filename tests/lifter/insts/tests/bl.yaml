@@ -5,7 +5,7 @@ tests:
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "pc"
       nextln:   v1 = i64.wrapping_add v0, 0x4
-      nextln:   i64.write_reg v1, "x30"
+      nextln:   write_reg.i64 v1, "x30"
       nextln:   jump block_8
       check: block_4: // no preds!
       check: block_8: // preds: entry
@@ -15,7 +15,7 @@ tests:
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "pc"
       nextln:   v1 = i64.wrapping_add v0, 0x4
-      nextln:   i64.write_reg v1, "x30"
+      nextln:   write_reg.i64 v1, "x30"
       nextln:   jump block_4
       check: block_4: // preds: entry
 - name: bl_3
@@ -24,7 +24,7 @@ tests:
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "pc"
       nextln:   v1 = i64.wrapping_add v0, 0x4
-      nextln:   i64.write_reg v1, "x30"
+      nextln:   write_reg.i64 v1, "x30"
       nextln:   jump block_18446744073709551608
       check: block_4: // no preds!
       check: block_18446744073709551608: // preds: entry

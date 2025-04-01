@@ -7,4 +7,4 @@ tests:
       nextln:   v1 = i64.read_reg "x3"
       nextln:   v2 = i64.umul v0, v1
       nextln:   v3 = i128.ashr v2, 0x40
-      nextln:   i64.write_reg v3, "x1"
+      nextln:   write_reg.i64 v3, "x1"

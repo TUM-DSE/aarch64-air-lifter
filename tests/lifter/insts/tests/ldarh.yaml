@@ -6,8 +6,8 @@ tests:
       nextln:   v0 = i64.read_reg "sp"
       nextln:   v1 = i64.wrapping_add v0, 0x0
       nextln:   v2 = i16.load v1
-      nextln:   v3 = i32.zext_i16 v2
-      nextln:   i32.write_reg v3, "x1"
+      nextln:   v3 = i32.zext.i16 v2
+      nextln:   write_reg.i32 v3, "x1"
 - name: ldarh_2
   bytes: [0x21, 0xfc, 0xdf, 0x48]
   directives: |
@@ -15,5 +15,5 @@ tests:
       nextln:   v0 = i64.read_reg "x1"
       nextln:   v1 = i64.wrapping_add v0, 0x0
       nextln:   v2 = i16.load v1
-      nextln:   v3 = i32.zext_i16 v2
-      nextln:   i32.write_reg v3, "x1"
+      nextln:   v3 = i32.zext.i16 v2
+      nextln:   write_reg.i32 v3, "x1"

@@ -11,4 +11,4 @@ tests:
       nextln:   v5 = i32.reverse_bytes v4
       nextln:   v6 = i32.or v3, v5
       nextln:   v7 = i64.ror v6, 0x20
-      nextln:   i64.write_reg v7, "x1"
+      nextln:   write_reg.i64 v7, "x1"

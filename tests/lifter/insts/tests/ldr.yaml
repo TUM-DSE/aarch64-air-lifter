@@ -6,7 +6,7 @@ tests:
       nextln:   v0 = i64.read_reg "x2"
       nextln:   v1 = i64.wrapping_add v0, 0x4
       nextln:   v2 = i64.load v1
-      nextln:   i64.write_reg v2, "x0"
+      nextln:   write_reg.i64 v2, "x0"
 - name: ldr_2
   bytes: [0x41, 0xc4, 0x40, 0xb8]
   directives: |
@@ -14,10 +14,10 @@ tests:
       nextln:   v0 = i64.read_reg "x2"
       nextln:   v1 = i64.wrapping_add v0, 0xc
       nextln:   v2 = i32.load v1
-      nextln:   i32.write_reg v2, "x1"
+      nextln:   write_reg.i32 v2, "x1"
 - name: ldr_3
   bytes: [0xa2, 0xff, 0xff, 0x58]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.load 0xfffffffffffffff4
-      nextln:   i64.write_reg v0, "x2"
+      nextln:   write_reg.i64 v0, "x2"

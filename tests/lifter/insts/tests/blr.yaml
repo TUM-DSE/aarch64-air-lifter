@@ -6,7 +6,7 @@ tests:
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "pc"
       nextln:   v1 = i64.wrapping_add v0, 0x4
-      nextln:   i64.write_reg v1, "x30"
+      nextln:   write_reg.i64 v1, "x30"
       nextln:   v2 = i64.read_reg "x1"
       nextln:   dynamic_jump v2
       check: block_4: // entry block; no preds!

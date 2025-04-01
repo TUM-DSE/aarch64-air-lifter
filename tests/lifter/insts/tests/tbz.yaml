@@ -5,7 +5,7 @@ tests:
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.lshr 0x28, 0x1
       nextln:   v1 = i64.and v0, "x0"
-      nextln:   v2 = i64.icmp.eq v1, 0x0
+      nextln:   v2 = bool.icmp.i64.eq v1, 0x0
       nextln:   jumpif v2, block_4112, block_4
       check: block_4: // preds: entry
       check: block_4112: // preds: entry
@@ -15,7 +15,7 @@ tests:
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.lshr 0xc, 0x1
       nextln:   v1 = i32.and v0, "x1"
-      nextln:   v2 = i32.icmp.eq v1, 0x0
+      nextln:   v2 = bool.icmp.i32.eq v1, 0x0
       nextln:   jumpif v2, block_18446744073709551612, block_4
       check: block_4: // preds: entry
       check: block_18446744073709551612: // preds: entry
@@ -25,7 +25,7 @@ tests:
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.lshr 0x1, 0x1
       nextln:   v1 = i32.and v0, "x1"
-      nextln:   v2 = i32.icmp.eq v1, 0x0
+      nextln:   v2 = bool.icmp.i32.eq v1, 0x0
       nextln:   jumpif v2, block_18446744073709551608, block_4
       check: block_4: // preds: entry
       check: block_18446744073709551608: // preds: entry
@@ -35,7 +35,7 @@ tests:
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.lshr 0x0, 0x1
       nextln:   v1 = i32.and v0, "x2"
-      nextln:   v2 = i32.icmp.eq v1, 0x0
+      nextln:   v2 = bool.icmp.i32.eq v1, 0x0
       nextln:   jumpif v2, block_18446744073709551604, block_4
       check: block_4: // preds: entry
       check: block_18446744073709551604: // preds: entry

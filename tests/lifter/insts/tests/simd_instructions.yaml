@@ -16,4 +16,4 @@ tests:
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.opaque
-      nextln:   i64.write_reg v0, "x8"
+      nextln:   write_reg.i64 v0, "x8"

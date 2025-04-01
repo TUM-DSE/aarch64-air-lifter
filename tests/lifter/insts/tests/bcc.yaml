@@ -6,7 +6,7 @@ tests:
       nextln:   jump block_0
       check: block_0: // preds: entry block_0
       nextln:   v0 = bool.read_reg "z"
-      nextln:   v1 = bool.icmp.eq v0, 0x1
+      nextln:   v1 = bool.icmp.bool.eq v0, 0x1
       nextln:   jumpif v1, block_0, block_4
       check: block_4: // preds: block_0
 - name: bcc_2
@@ -16,6 +16,6 @@ tests:
       nextln:   jump block_0
       check: block_0: // preds: entry block_0
       nextln:   v0 = bool.read_reg "v"
-      nextln:   v1 = bool.icmp.ne v0, 0x1
+      nextln:   v1 = bool.icmp.bool.ne v0, 0x1
       nextln:   jumpif v1, block_0, block_4
       check: block_4: // preds: block_0

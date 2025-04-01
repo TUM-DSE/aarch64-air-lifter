@@ -4,36 +4,36 @@ tests:
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = bool.read_reg "z"
-      nextln:   v1 = bool.icmp.eq v0, 0x1
+      nextln:   v1 = bool.icmp.bool.eq v0, 0x1
       nextln:   jumpif v1, csneg_positive_condition, csneg_negative_condition
       check: block_4: // preds: csneg_positive_condition csneg_negative_condition
       check: csneg_positive_condition: // preds: entry
       nextln:   v2 = i64.read_reg "x1"
-      nextln:   i64.write_reg v2, "x0"
+      nextln:   write_reg.i64 v2, "x0"
       nextln:   jump block_4
       check: csneg_negative_condition: // preds: entry
       nextln:   v3 = i64.read_reg "x2"
       nextln:   v4 = i64.wrapping_sub 0x0, v3
-      nextln:   i64.write_reg v4, "x0"
+      nextln:   write_reg.i64 v4, "x0"
       nextln:   jump block_4
 - name: csneg_2
   bytes: [0x20, 0x04, 0x82, 0x5a]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = bool.read_reg "z"
-      nextln:   v1 = bool.icmp.eq v0, 0x1
+      nextln:   v1 = bool.icmp.bool.eq v0, 0x1
       nextln:   jumpif v1, csneg_positive_condition, csneg_negative_condition
       check: block_4: // preds: csneg_positive_condition csneg_negative_condition
       check: csneg_positive_condition: // preds: entry
       nextln:   v2 = i64.read_reg "x1"
-      nextln:   v3 = i32.trunc_i64 v2
-      nextln:   i32.write_reg v3, "x0"
+      nextln:   v3 = i32.trunc.i64 v2
+      nextln:   write_reg.i32 v3, "x0"
       nextln:   jump block_4
       check: csneg_negative_condition: // preds: entry
       nextln:   v4 = i64.read_reg "x2"
-      nextln:   v5 = i32.trunc_i64 v4
+      nextln:   v5 = i32.trunc.i64 v4
       nextln:   v6 = i32.wrapping_sub 0x0, v5
-      nextln:   i32.write_reg v6, "x0"
+      nextln:   write_reg.i32 v6, "x0"
       nextln:   jump block_4
 - name: csneg_3
   bytes: [0x62, 0xd4, 0x84, 0xda]
@@ -42,17 +42,17 @@ tests:
       nextln:   v0 = bool.read_reg "z"
       nextln:   v1 = bool.read_reg "n"
       nextln:   v2 = bool.read_reg "v"
-      nextln:   v3 = bool.icmp.eq v0, 0x1
-      nextln:   v4 = bool.icmp.ne v1, v2
+      nextln:   v3 = bool.icmp.bool.eq v0, 0x1
+      nextln:   v4 = bool.icmp.bool.ne v1, v2
       nextln:   v5 = bool.or v3, v4
       nextln:   jumpif v5, csneg_positive_condition, csneg_negative_condition
       check: block_4: // preds: csneg_positive_condition csneg_negative_condition
       check: csneg_positive_condition: // preds: entry
       nextln:   v6 = i64.read_reg "x3"
-      nextln:   i64.write_reg v6, "x2"
+      nextln:   write_reg.i64 v6, "x2"
       nextln:   jump block_4
       check: csneg_negative_condition: // preds: entry
       nextln:   v7 = i64.read_reg "x4"
       nextln:   v8 = i64.wrapping_sub 0x0, v7
-      nextln:   i64.write_reg v8, "x2"
+      nextln:   write_reg.i64 v8, "x2"
       nextln:   jump block_4

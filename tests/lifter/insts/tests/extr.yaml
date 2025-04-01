@@ -9,7 +9,7 @@ tests:
       nextln:   v3 = i64.wrapping_sub 0x40, 0xc
       nextln:   v4 = i64.lshl v0, v3
       nextln:   v5 = i64.or v4, v2
-      nextln:   i64.write_reg v5, "x0"
+      nextln:   write_reg.i64 v5, "x0"
 - name: extr_2
   bytes: [0x00, 0xc8, 0xc0, 0x93]
   directives: |
@@ -20,17 +20,17 @@ tests:
       nextln:   v3 = i64.wrapping_sub 0x40, 0x32
       nextln:   v4 = i64.lshl v0, v3
       nextln:   v5 = i64.or v4, v2
-      nextln:   i64.write_reg v5, "x0"
+      nextln:   write_reg.i64 v5, "x0"
 - name: extr_3
   bytes: [0x41, 0x0c, 0x83, 0x13]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x2"
-      nextln:   v1 = i32.trunc_i64 v0
+      nextln:   v1 = i32.trunc.i64 v0
       nextln:   v2 = i64.read_reg "x3"
-      nextln:   v3 = i32.trunc_i64 v2
+      nextln:   v3 = i32.trunc.i64 v2
       nextln:   v4 = i32.lshr v3, 0x3
       nextln:   v5 = i32.wrapping_sub 0x20, 0x3
       nextln:   v6 = i32.lshl v1, v5
       nextln:   v7 = i32.or v6, v4
-      nextln:   i32.write_reg v7, "x1"
+      nextln:   write_reg.i32 v7, "x1"

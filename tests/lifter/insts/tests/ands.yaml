@@ -6,12 +6,12 @@ tests:
       nextln:   v0 = i64.read_reg "x1"
       nextln:   v1 = i64.read_reg "x2"
       nextln:   v2 = i64.and v0, v1
-      nextln:   i64.write_reg v2, "x1"
-      nextln:   bool.write_reg 0x0, "c"
-      nextln:   bool.write_reg 0x0, "v"
-      nextln:   v3 = i64.icmp.eq v2, 0x0
-      nextln:   bool.write_reg v3, "z"
+      nextln:   write_reg.i64 v2, "x1"
+      nextln:   write_reg.bool 0x0, "c"
+      nextln:   write_reg.bool 0x0, "v"
+      nextln:   v3 = bool.icmp.i64.eq v2, 0x0
+      nextln:   write_reg.bool v3, "z"
       nextln:   v4 = i64.signed_from_bits v2
       nextln:   v5 = i64.signed_from_bits 0x0
-      nextln:   v6 = int.icmp.lt v4, v5
-      nextln:   bool.write_reg v6, "n"
+      nextln:   v6 = bool.icmp.int.lt v4, v5
+      nextln:   write_reg.bool v6, "n"

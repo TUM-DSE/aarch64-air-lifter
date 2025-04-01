@@ -6,23 +6,23 @@ tests:
       nextln:   v0 = i64.read_reg "x1"
       nextln:   v1 = i64.read_reg "x0"
       nextln:   v2 = i64.wrapping_add v0, v1
-      nextln:   i64.write_reg v2, "x1"
+      nextln:   write_reg.i64 v2, "x1"
 - name: add_2
   bytes: [0x21, 0x00, 0x00, 0x0b]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x1"
-      nextln:   v1 = i32.trunc_i64 v0
+      nextln:   v1 = i32.trunc.i64 v0
       nextln:   v2 = i64.read_reg "x0"
       nextln:   v3 = i32.wrapping_add v1, v2
-      nextln:   i32.write_reg v3, "x1"
+      nextln:   write_reg.i32 v3, "x1"
 - name: add_3
   bytes: [0x02, 0xc0, 0x21, 0x0b]
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x0"
-      nextln:   v1 = i32.trunc_i64 v0
+      nextln:   v1 = i32.trunc.i64 v0
       nextln:   v2 = i64.read_reg "x1"
-      nextln:   v3 = i32.trunc_i64 v2
+      nextln:   v3 = i32.trunc.i64 v2
       nextln:   v4 = i32.wrapping_add v1, v3
-      nextln:   i32.write_reg v4, "x2"
+      nextln:   write_reg.i32 v4, "x2"

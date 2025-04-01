@@ -19,7 +19,7 @@ impl LifterState<'_> {
                 );
                 match sz {
                     SizeCode::X => val,
-                    SizeCode::W => self.builder.trunc_i64(val, I32).into(),
+                    SizeCode::W => self.builder.trunc(val, I64, I32).into(),
                 }
             }
             Operand::Immediate(n) => self.builder.iconst(n),
@@ -48,17 +48,17 @@ impl LifterState<'_> {
                     }
                     ShiftStyle::SXTB => {
                         // TODO: for this we might need some optimization later on.
-                        let trunc = self.builder.trunc_i64(reg_val, I8);
-                        self.builder.sext_i8(trunc, op_type).into()
+                        let trunc = self.builder.trunc(reg_val, I64, I8);
+                        self.builder.sext(trunc, I8, op_type).into()
                     }
                     ShiftStyle::SXTH => {
-                        let trunc = self.builder.trunc_i64(reg_val, I16);
-                        self.builder.sext_i16(trunc, op_type).into()
+                        let trunc = self.builder.trunc(reg_val, I64, I16);
+                        self.builder.sext(trunc, I16, op_type).into()
                     }
                     ShiftStyle::SXTW => {
-                        let trunc = self.builder.trunc_i64(reg_val, I32);
+                        let trunc = self.builder.trunc(reg_val, I64, I32);
                         if op_type.bit_width().expect("type to be bit vector") > 32 {
-                            self.builder.sext_i32(trunc, op_type).into()
+                            self.builder.sext(trunc, I32, op_type).into()
                         } else {
                             trunc.into()
                         }
@@ -75,8 +75,8 @@ impl LifterState<'_> {
                     ShiftStyle::LSL => self.builder.lshl(rd, s, op_type).into(),
                     ShiftStyle::UXTW => rd,
                     ShiftStyle::SXTW => {
-                        let trunc = self.builder.trunc_i64(rd, I32);
-                        self.builder.sext_i32(trunc, I64).into()
+                        let trunc = self.builder.trunc(rd, I64, I32);
+                        self.builder.sext(trunc, I32, I64).into()
                     }
                     ShiftStyle::SXTX => rd,
                     style => unimplemented!("RegRegOffset with style: {:?}", style),

@@ -3,9 +3,9 @@ tests:
   bytes: [0x81, 0x01, 0xa0, 0x72]
   directives: |
       check: entry: // entry block; no preds!
-      nextln:   i16.write_reg 0xc0000, "x1"
+      nextln:   write_reg.i16 0xc0000, "x1"
 - name: movk_2
   bytes: [0xa1, 0x01, 0x80, 0xf2]
   directives: |
       check: entry: // entry block; no preds!
-      nextln:   i16.write_reg 0xd, "x1"
+      nextln:   write_reg.i16 0xd, "x1"

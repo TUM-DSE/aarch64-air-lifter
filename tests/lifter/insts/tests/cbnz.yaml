@@ -6,7 +6,7 @@ tests:
       nextln:   jump block_0
       check: block_0: // preds: entry block_0
       nextln:   v0 = i64.read_reg "x0"
-      nextln:   v1 = i64.icmp.ne v0, 0x0
+      nextln:   v1 = bool.icmp.i64.ne v0, 0x0
       nextln:   jumpif v1, block_0, block_4
       check: block_4: // preds: block_0
 - name: cbnz_2
@@ -14,8 +14,8 @@ tests:
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x0"
-      nextln:   v1 = i32.trunc_i64 v0
-      nextln:   v2 = i32.icmp.ne v1, 0x0
+      nextln:   v1 = i32.trunc.i64 v0
+      nextln:   v2 = bool.icmp.i32.ne v1, 0x0
       nextln:   jumpif v2, block_18446744073709551612, block_4
       check: block_4: // preds: entry
       check: block_18446744073709551612: // preds: entry
@@ -24,7 +24,7 @@ tests:
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x0"
-      nextln:   v1 = i64.icmp.ne v0, 0x0
+      nextln:   v1 = bool.icmp.i64.ne v0, 0x0
       nextln:   jumpif v1, block_4100, block_4
       check: block_4: // preds: entry
       check: block_4100: // preds: entry

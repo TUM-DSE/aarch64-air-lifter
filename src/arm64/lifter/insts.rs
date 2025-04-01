@@ -567,12 +567,12 @@ impl LifterState<'_> {
                 let address = self.get_value(inst.operands[2]);
 
                 let val1 = self.builder.load(address, I32);
-                let val1 = self.builder.sext_i32(val1, I64);
+                let val1 = self.builder.sext(val1, I32, I64);
                 self.write_reg(val1, dst_reg1, I64);
                 let address_offset = self.builder.iconst(4);
                 let address = self.builder.wrapping_add(address, address_offset, I64);
                 let val2 = self.builder.load(address, I32);
-                let val2 = self.builder.sext_i32(val2, I64);
+                let val2 = self.builder.sext(val2, I32, I64);
                 self.write_reg(val2, dst_reg2, I64);
             }
             Opcode::LDR
@@ -596,7 +596,7 @@ impl LifterState<'_> {
                 let dst_reg = self.get_dst_reg(inst).unwrap();
                 let address = self.get_value(inst.operands[1]);
                 let val = self.builder.load(address, I8);
-                let val = self.builder.zext_i8(val, I32);
+                let val = self.builder.zext(val, I8, I32);
                 self.write_reg(val, dst_reg, I32);
             }
             Opcode::LDRH
@@ -608,7 +608,7 @@ impl LifterState<'_> {
                 let dst_reg = self.get_dst_reg(inst).unwrap();
                 let address = self.get_value(inst.operands[1]);
                 let val = self.builder.load(address, I16);
-                let val = self.builder.zext_i16(val, I32);
+                let val = self.builder.zext(val, I16, I32);
                 self.write_reg(val, dst_reg, I32);
             }
             Opcode::LDRSB | Opcode::LDTRSB | Opcode::LDURSB => {
@@ -616,7 +616,7 @@ impl LifterState<'_> {
                 let op_type = helper::get_type_by_inst(inst);
                 let address = self.get_value(inst.operands[1]);
                 let val = self.builder.load(address, I8);
-                let val = self.builder.sext_i8(val, op_type);
+                let val = self.builder.sext(val, I8, op_type);
                 self.write_reg(val, dst_reg, op_type);
             }
             Opcode::LDRSH | Opcode::LDTRSH | Opcode::LDURSH => {
@@ -624,14 +624,14 @@ impl LifterState<'_> {
                 let op_type = helper::get_type_by_inst(inst);
                 let address = self.get_value(inst.operands[1]);
                 let val = self.builder.load(address, I16);
-                let val = self.builder.sext_i16(val, op_type);
+                let val = self.builder.sext(val, I16, op_type);
                 self.write_reg(val, dst_reg, op_type);
             }
             Opcode::LDRSW | Opcode::LDTRSW | Opcode::LDURSW => {
                 let dst_reg = self.get_dst_reg(inst).unwrap();
                 let address = self.get_value(inst.operands[1]);
                 let val = self.builder.load(address, I32);
-                let val = self.builder.sext_i32(val, I64);
+                let val = self.builder.sext(val, I32, I64);
                 self.write_reg(val, dst_reg, I64);
             }
             Opcode::LSLV => {
