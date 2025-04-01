@@ -11,22 +11,32 @@ tests:
       nextln:   v5 = i32.wrapping_sub v4, v3
       nextln:   i32.write_reg v5, "x1"
       nextln:   v6 = bool.read_reg "c"
-      nextln:   v7 = i32.add v0, v1
-      nextln:   v8 = i32.add v7, v6
+      nextln:   v7 = i32.wrapping_add v0, v1
+      nextln:   v8 = i32.wrapping_add v7, v6
       nextln:   v9 = i32.icmp.eq v8, 0x0
       nextln:   bool.write_reg v9, "z"
-      nextln:   v10 = i32.icmp.slt v8, 0x0
-      nextln:   bool.write_reg v10, "n"
-      nextln:   v11 = i32.icmp.ugt v0, v8
-      nextln:   v12 = i32.icmp.ugt v1, v8
-      nextln:   v13 = bool.or v11, v12
-      nextln:   bool.write_reg v13, "c"
-      nextln:   v14 = i32.icmp.slt v0, 0x0
-      nextln:   v15 = i32.icmp.slt v1, 0x0
-      nextln:   v16 = bool.icmp.eq v14, v15
-      nextln:   v17 = bool.icmp.ne v14, v10
-      nextln:   v18 = bool.and v16, v17
-      nextln:   bool.write_reg v18, "v"
+      nextln:   v10 = i32.signed_from_bits v8
+      nextln:   v11 = i32.signed_from_bits 0x0
+      nextln:   v12 = int.icmp.lt v10, v11
+      nextln:   bool.write_reg v12, "n"
+      nextln:   v13 = i32.unsigned_from_bits v0
+      nextln:   v14 = i32.unsigned_from_bits v8
+      nextln:   v15 = int.icmp.gt v13, v14
+      nextln:   v16 = i32.unsigned_from_bits v1
+      nextln:   v17 = i32.unsigned_from_bits v8
+      nextln:   v18 = int.icmp.gt v16, v17
+      nextln:   v19 = bool.or v15, v18
+      nextln:   bool.write_reg v19, "c"
+      nextln:   v20 = i32.signed_from_bits v0
+      nextln:   v21 = i32.signed_from_bits 0x0
+      nextln:   v22 = int.icmp.lt v20, v21
+      nextln:   v23 = i32.signed_from_bits v1
+      nextln:   v24 = i32.signed_from_bits 0x0
+      nextln:   v25 = int.icmp.lt v23, v24
+      nextln:   v26 = bool.icmp.eq v22, v25
+      nextln:   v27 = bool.icmp.ne v22, v12
+      nextln:   v28 = bool.and v26, v27
+      nextln:   bool.write_reg v28, "v"
 - name: sbcs_2
   bytes: [0x41, 0x00, 0x03, 0xfa]
   directives: |
@@ -39,19 +49,29 @@ tests:
       nextln:   v5 = i64.wrapping_sub v4, v3
       nextln:   i64.write_reg v5, "x1"
       nextln:   v6 = bool.read_reg "c"
-      nextln:   v7 = i64.add v0, v1
-      nextln:   v8 = i64.add v7, v6
+      nextln:   v7 = i64.wrapping_add v0, v1
+      nextln:   v8 = i64.wrapping_add v7, v6
       nextln:   v9 = i64.icmp.eq v8, 0x0
       nextln:   bool.write_reg v9, "z"
-      nextln:   v10 = i64.icmp.slt v8, 0x0
-      nextln:   bool.write_reg v10, "n"
-      nextln:   v11 = i64.icmp.ugt v0, v8
-      nextln:   v12 = i64.icmp.ugt v1, v8
-      nextln:   v13 = bool.or v11, v12
-      nextln:   bool.write_reg v13, "c"
-      nextln:   v14 = i64.icmp.slt v0, 0x0
-      nextln:   v15 = i64.icmp.slt v1, 0x0
-      nextln:   v16 = bool.icmp.eq v14, v15
-      nextln:   v17 = bool.icmp.ne v14, v10
-      nextln:   v18 = bool.and v16, v17
-      nextln:   bool.write_reg v18, "v"
+      nextln:   v10 = i64.signed_from_bits v8
+      nextln:   v11 = i64.signed_from_bits 0x0
+      nextln:   v12 = int.icmp.lt v10, v11
+      nextln:   bool.write_reg v12, "n"
+      nextln:   v13 = i64.unsigned_from_bits v0
+      nextln:   v14 = i64.unsigned_from_bits v8
+      nextln:   v15 = int.icmp.gt v13, v14
+      nextln:   v16 = i64.unsigned_from_bits v1
+      nextln:   v17 = i64.unsigned_from_bits v8
+      nextln:   v18 = int.icmp.gt v16, v17
+      nextln:   v19 = bool.or v15, v18
+      nextln:   bool.write_reg v19, "c"
+      nextln:   v20 = i64.signed_from_bits v0
+      nextln:   v21 = i64.signed_from_bits 0x0
+      nextln:   v22 = int.icmp.lt v20, v21
+      nextln:   v23 = i64.signed_from_bits v1
+      nextln:   v24 = i64.signed_from_bits 0x0
+      nextln:   v25 = int.icmp.lt v23, v24
+      nextln:   v26 = bool.icmp.eq v22, v25
+      nextln:   v27 = bool.icmp.ne v22, v12
+      nextln:   v28 = bool.and v26, v27
+      nextln:   bool.write_reg v28, "v"

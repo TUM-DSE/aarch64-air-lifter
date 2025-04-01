@@ -4,7 +4,7 @@ tests:
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "sp"
-      nextln:   v1 = i64.add v0, 0x0
+      nextln:   v1 = i64.wrapping_add v0, 0x0
       nextln:   v2 = i8.load v1
       nextln:   v3 = i32.zext_i8 v2
       nextln:   i32.write_reg v3, "x1"
@@ -13,7 +13,7 @@ tests:
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x1"
-      nextln:   v1 = i64.add v0, 0x0
+      nextln:   v1 = i64.wrapping_add v0, 0x0
       nextln:   v2 = i8.load v1
       nextln:   v3 = i32.zext_i8 v2
       nextln:   i32.write_reg v3, "x1"

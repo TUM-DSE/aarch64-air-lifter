@@ -56,23 +56,23 @@ impl LifterState<'_> {
         carry: Value,
     ) {
         let zero = self.builder.iconst(0);
-        let sum = self.builder.add(val1, val2, op_type);
-        let sum = self.builder.add(sum, carry, op_type);
+        let sum = self.builder.wrapping_add(val1, val2, op_type);
+        let sum = self.builder.wrapping_add(sum, carry, op_type);
 
         // z is set if equal if both values are equal
         let z = self.builder.icmp(CmpTy::Eq, sum, zero, op_type);
         self.write_flag(z.into(), Flag::Z);
         // n is set if the sum is negative
-        let n = self.builder.icmp(CmpTy::Slt, sum, zero, op_type);
+        let n = self.builder.scmp(CmpTy::Lt, sum, zero, op_type);
         self.write_flag(n.into(), Flag::N);
         // if either operand is greater than the result in an unsigned comparison, the carry is set
-        let val1_is_ugt_sum = self.builder.icmp(CmpTy::Ugt, val1, sum, op_type);
-        let val2_is_ugt_sum = self.builder.icmp(CmpTy::Ugt, val2, sum, op_type);
+        let val1_is_ugt_sum = self.builder.ucmp(CmpTy::Gt, val1, sum, op_type);
+        let val2_is_ugt_sum = self.builder.ucmp(CmpTy::Gt, val2, sum, op_type);
         let c = self.builder.or(val1_is_ugt_sum, val2_is_ugt_sum, BOOL);
         self.write_flag(c.into(), Flag::C);
         // v is set if both operands have the same sign and the result has a different sign
-        let val1_is_negative = self.builder.icmp(CmpTy::Slt, val1, zero, op_type);
-        let val2_is_negative = self.builder.icmp(CmpTy::Slt, val2, zero, op_type);
+        let val1_is_negative = self.builder.scmp(CmpTy::Lt, val1, zero, op_type);
+        let val2_is_negative = self.builder.scmp(CmpTy::Lt, val2, zero, op_type);
         let values_have_same_sign =
             self.builder
                 .icmp(CmpTy::Eq, val1_is_negative, val2_is_negative, BOOL);

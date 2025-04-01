@@ -121,6 +121,7 @@ impl<'a> LifterState<'a> {
                         self.builder.set_insert_block(block);
                     }
 
+                    println!("{}", inst);
                     self.lift_inst(pc, inst)?;
                 }
                 Err(DecodeError::ExhaustedInput) => break,

@@ -9,7 +9,7 @@ tests:
       check: entry: // entry block; no preds!
       nextln:   pre { "x2" -> 42; }
       nextln:   v0 = i64.read_reg "x2"
-      nextln:   v1 = i64.add v0, 0x4
+      nextln:   v1 = i64.wrapping_add v0, 0x4
       nextln:   v2 = i64.load v1
       nextln:   i64.write_reg v2, "x0"
       nextln:   post { "x0" == 42; }

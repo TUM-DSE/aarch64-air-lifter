@@ -45,7 +45,11 @@ impl LifterState<'_> {
                     }
                     ShiftStyle::SXTW => {
                         let trunc = self.builder.trunc_i64(reg_val, I32);
-                        self.builder.sext_i32(trunc, op_type).into()
+                        if op_type.bit_width().expect("type to be bit vector") > 32 {
+                            self.builder.sext_i32(trunc, op_type).into()
+                        } else {
+                            trunc.into()
+                        }
                     }
                     ShiftStyle::SXTX => reg_val,
                 }
@@ -65,17 +69,17 @@ impl LifterState<'_> {
                     ShiftStyle::SXTX => rd,
                     style => unimplemented!("RegRegOffset with style: {:?}", style),
                 };
-                self.builder.add(rn, offset_val, I64).into()
+                self.builder.wrapping_add(rn, offset_val, I64).into()
             }
             Operand::RegPreIndex(rn, offset, _write_back) => {
                 let rn = self.reg_val(SizeCode::X, rn, SpOrZrReg::Sp);
                 let offset = self.builder.iconst(offset as u64);
-                self.builder.add(rn, offset, I64).into()
+                self.builder.wrapping_add(rn, offset, I64).into()
             }
             Operand::RegPostIndex(rn, offset) => {
                 let val = self.reg_val(SizeCode::X, rn, SpOrZrReg::Sp);
                 let offset = self.builder.iconst(offset as u64);
-                self.builder.add(val, offset, I64).into()
+                self.builder.wrapping_add(val, offset, I64).into()
             }
             Operand::RegPostIndexReg(_, _) => unimplemented!("RegPostIndexReg"),
             Operand::PCOffset(n) => self.builder.iconst(n as u64),

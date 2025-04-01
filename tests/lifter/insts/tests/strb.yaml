@@ -5,7 +5,7 @@ tests:
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.read_reg "x0"
       nextln:   v1 = i64.read_reg "sp"
-      nextln:   v2 = i64.add v1, 0xc
+      nextln:   v2 = i64.wrapping_add v1, 0xc
       nextln:   i8.store v0, v2
 - name: strb_2
   bytes: [0x20, 0x08, 0x00, 0x39]
@@ -13,7 +13,7 @@ tests:
       check: entry: // entry block; no preds!
       nextln:   v0 = i32.read_reg "x0"
       nextln:   v1 = i64.read_reg "x1"
-      nextln:   v2 = i64.add v1, 0x2
+      nextln:   v2 = i64.wrapping_add v1, 0x2
       nextln:   i8.store v0, v2
 - name: strb_3
   bytes: [0x21, 0xd8, 0x21, 0x38]
@@ -24,5 +24,5 @@ tests:
       nextln:   v2 = i32.read_reg "x1"
       nextln:   v3 = i32.trunc_i64 v2
       nextln:   v4 = i64.sext_i32 v3
-      nextln:   v5 = i64.add v1, v4
+      nextln:   v5 = i64.wrapping_add v1, v4
       nextln:   i8.store v0, v5

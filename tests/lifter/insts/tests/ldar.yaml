@@ -4,7 +4,7 @@ tests:
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x1"
-      nextln:   v1 = i64.add v0, 0x0
+      nextln:   v1 = i64.wrapping_add v0, 0x0
       nextln:   v2 = i32.load v1
       nextln:   i32.write_reg v2, "x1"
 - name: ldar_2
@@ -12,7 +12,7 @@ tests:
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "sp"
-      nextln:   v1 = i64.add v0, 0x0
+      nextln:   v1 = i64.wrapping_add v0, 0x0
       nextln:   v2 = i64.load v1
       nextln:   i64.write_reg v2, "x1"
 - name: ldar_3
@@ -20,6 +20,6 @@ tests:
   directives: |
       check: entry: // entry block; no preds!
       nextln:   v0 = i64.read_reg "x1"
-      nextln:   v1 = i64.add v0, 0x0
+      nextln:   v1 = i64.wrapping_add v0, 0x0
       nextln:   v2 = i64.load v1
       nextln:   i64.write_reg v2, "x1"

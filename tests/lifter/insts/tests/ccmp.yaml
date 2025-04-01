@@ -11,36 +11,46 @@ tests:
       nextln:   v2 = i64.read_reg "x0"
       nextln:   v3 = i64.read_reg "x1"
       nextln:   v4 = i64.bitwise_not v3
-      nextln:   v5 = i64.add v2, v4
-      nextln:   v6 = i64.add v5, 0x0
+      nextln:   v5 = i64.wrapping_add v2, v4
+      nextln:   v6 = i64.wrapping_add v5, 0x0
       nextln:   v7 = i64.icmp.eq v6, 0x0
       nextln:   bool.write_reg v7, "z"
-      nextln:   v8 = i64.icmp.slt v6, 0x0
-      nextln:   bool.write_reg v8, "n"
-      nextln:   v9 = i64.icmp.ugt v2, v6
-      nextln:   v10 = i64.icmp.ugt v4, v6
-      nextln:   v11 = bool.or v9, v10
-      nextln:   bool.write_reg v11, "c"
-      nextln:   v12 = i64.icmp.slt v2, 0x0
-      nextln:   v13 = i64.icmp.slt v4, 0x0
-      nextln:   v14 = bool.icmp.eq v12, v13
-      nextln:   v15 = bool.icmp.ne v12, v8
-      nextln:   v16 = bool.and v14, v15
-      nextln:   bool.write_reg v16, "v"
+      nextln:   v8 = i64.signed_from_bits v6
+      nextln:   v9 = i64.signed_from_bits 0x0
+      nextln:   v10 = int.icmp.lt v8, v9
+      nextln:   bool.write_reg v10, "n"
+      nextln:   v11 = i64.unsigned_from_bits v2
+      nextln:   v12 = i64.unsigned_from_bits v6
+      nextln:   v13 = int.icmp.gt v11, v12
+      nextln:   v14 = i64.unsigned_from_bits v4
+      nextln:   v15 = i64.unsigned_from_bits v6
+      nextln:   v16 = int.icmp.gt v14, v15
+      nextln:   v17 = bool.or v13, v16
+      nextln:   bool.write_reg v17, "c"
+      nextln:   v18 = i64.signed_from_bits v2
+      nextln:   v19 = i64.signed_from_bits 0x0
+      nextln:   v20 = int.icmp.lt v18, v19
+      nextln:   v21 = i64.signed_from_bits v4
+      nextln:   v22 = i64.signed_from_bits 0x0
+      nextln:   v23 = int.icmp.lt v21, v22
+      nextln:   v24 = bool.icmp.eq v20, v23
+      nextln:   v25 = bool.icmp.ne v20, v10
+      nextln:   v26 = bool.and v24, v25
+      nextln:   bool.write_reg v26, "v"
       nextln:   jump block_4
       check: ccmp_negative_condition: // preds: entry
-      nextln:   v17 = i64.and 0x8, 0x3
-      nextln:   v18 = i64.icmp.ne 0x0, v17
-      nextln:   bool.write_reg v18, "n"
-      nextln:   v19 = i64.and 0x4, 0x3
-      nextln:   v20 = i64.icmp.ne 0x0, v19
-      nextln:   bool.write_reg v20, "z"
-      nextln:   v21 = i64.and 0x2, 0x3
-      nextln:   v22 = i64.icmp.ne 0x0, v21
-      nextln:   bool.write_reg v22, "c"
-      nextln:   v23 = i64.and 0x1, 0x3
-      nextln:   v24 = i64.icmp.ne 0x0, v23
-      nextln:   bool.write_reg v24, "v"
+      nextln:   v27 = i64.and 0x8, 0x3
+      nextln:   v28 = i64.icmp.ne 0x0, v27
+      nextln:   bool.write_reg v28, "n"
+      nextln:   v29 = i64.and 0x4, 0x3
+      nextln:   v30 = i64.icmp.ne 0x0, v29
+      nextln:   bool.write_reg v30, "z"
+      nextln:   v31 = i64.and 0x2, 0x3
+      nextln:   v32 = i64.icmp.ne 0x0, v31
+      nextln:   bool.write_reg v32, "c"
+      nextln:   v33 = i64.and 0x1, 0x3
+      nextln:   v34 = i64.icmp.ne 0x0, v33
+      nextln:   bool.write_reg v34, "v"
       nextln:   jump block_4
 - name: ccmp_2
   bytes: [0x04, 0x60, 0x42, 0x7a]
@@ -54,36 +64,46 @@ tests:
       nextln:   v2 = i32.read_reg "x0"
       nextln:   v3 = i32.read_reg "x2"
       nextln:   v4 = i32.bitwise_not v3
-      nextln:   v5 = i32.add v2, v4
-      nextln:   v6 = i32.add v5, 0x0
+      nextln:   v5 = i32.wrapping_add v2, v4
+      nextln:   v6 = i32.wrapping_add v5, 0x0
       nextln:   v7 = i32.icmp.eq v6, 0x0
       nextln:   bool.write_reg v7, "z"
-      nextln:   v8 = i32.icmp.slt v6, 0x0
-      nextln:   bool.write_reg v8, "n"
-      nextln:   v9 = i32.icmp.ugt v2, v6
-      nextln:   v10 = i32.icmp.ugt v4, v6
-      nextln:   v11 = bool.or v9, v10
-      nextln:   bool.write_reg v11, "c"
-      nextln:   v12 = i32.icmp.slt v2, 0x0
-      nextln:   v13 = i32.icmp.slt v4, 0x0
-      nextln:   v14 = bool.icmp.eq v12, v13
-      nextln:   v15 = bool.icmp.ne v12, v8
-      nextln:   v16 = bool.and v14, v15
-      nextln:   bool.write_reg v16, "v"
+      nextln:   v8 = i32.signed_from_bits v6
+      nextln:   v9 = i32.signed_from_bits 0x0
+      nextln:   v10 = int.icmp.lt v8, v9
+      nextln:   bool.write_reg v10, "n"
+      nextln:   v11 = i32.unsigned_from_bits v2
+      nextln:   v12 = i32.unsigned_from_bits v6
+      nextln:   v13 = int.icmp.gt v11, v12
+      nextln:   v14 = i32.unsigned_from_bits v4
+      nextln:   v15 = i32.unsigned_from_bits v6
+      nextln:   v16 = int.icmp.gt v14, v15
+      nextln:   v17 = bool.or v13, v16
+      nextln:   bool.write_reg v17, "c"
+      nextln:   v18 = i32.signed_from_bits v2
+      nextln:   v19 = i32.signed_from_bits 0x0
+      nextln:   v20 = int.icmp.lt v18, v19
+      nextln:   v21 = i32.signed_from_bits v4
+      nextln:   v22 = i32.signed_from_bits 0x0
+      nextln:   v23 = int.icmp.lt v21, v22
+      nextln:   v24 = bool.icmp.eq v20, v23
+      nextln:   v25 = bool.icmp.ne v20, v10
+      nextln:   v26 = bool.and v24, v25
+      nextln:   bool.write_reg v26, "v"
       nextln:   jump block_4
       check: ccmp_negative_condition: // preds: entry
-      nextln:   v17 = i32.and 0x8, 0x4
-      nextln:   v18 = i32.icmp.ne 0x0, v17
-      nextln:   bool.write_reg v18, "n"
-      nextln:   v19 = i32.and 0x4, 0x4
-      nextln:   v20 = i32.icmp.ne 0x0, v19
-      nextln:   bool.write_reg v20, "z"
-      nextln:   v21 = i32.and 0x2, 0x4
-      nextln:   v22 = i32.icmp.ne 0x0, v21
-      nextln:   bool.write_reg v22, "c"
-      nextln:   v23 = i32.and 0x1, 0x4
-      nextln:   v24 = i32.icmp.ne 0x0, v23
-      nextln:   bool.write_reg v24, "v"
+      nextln:   v27 = i32.and 0x8, 0x4
+      nextln:   v28 = i32.icmp.ne 0x0, v27
+      nextln:   bool.write_reg v28, "n"
+      nextln:   v29 = i32.and 0x4, 0x4
+      nextln:   v30 = i32.icmp.ne 0x0, v29
+      nextln:   bool.write_reg v30, "z"
+      nextln:   v31 = i32.and 0x2, 0x4
+      nextln:   v32 = i32.icmp.ne 0x0, v31
+      nextln:   bool.write_reg v32, "c"
+      nextln:   v33 = i32.and 0x1, 0x4
+      nextln:   v34 = i32.icmp.ne 0x0, v33
+      nextln:   bool.write_reg v34, "v"
       nextln:   jump block_4
 - name: ccmp_3
   bytes: [0xc0, 0xe0, 0x46, 0xfa]
@@ -96,34 +116,44 @@ tests:
       nextln:   v1 = i64.read_reg "x6"
       nextln:   v2 = i64.read_reg "x6"
       nextln:   v3 = i64.bitwise_not v2
-      nextln:   v4 = i64.add v1, v3
-      nextln:   v5 = i64.add v4, 0x0
+      nextln:   v4 = i64.wrapping_add v1, v3
+      nextln:   v5 = i64.wrapping_add v4, 0x0
       nextln:   v6 = i64.icmp.eq v5, 0x0
       nextln:   bool.write_reg v6, "z"
-      nextln:   v7 = i64.icmp.slt v5, 0x0
-      nextln:   bool.write_reg v7, "n"
-      nextln:   v8 = i64.icmp.ugt v1, v5
-      nextln:   v9 = i64.icmp.ugt v3, v5
-      nextln:   v10 = bool.or v8, v9
-      nextln:   bool.write_reg v10, "c"
-      nextln:   v11 = i64.icmp.slt v1, 0x0
-      nextln:   v12 = i64.icmp.slt v3, 0x0
-      nextln:   v13 = bool.icmp.eq v11, v12
-      nextln:   v14 = bool.icmp.ne v11, v7
-      nextln:   v15 = bool.and v13, v14
-      nextln:   bool.write_reg v15, "v"
+      nextln:   v7 = i64.signed_from_bits v5
+      nextln:   v8 = i64.signed_from_bits 0x0
+      nextln:   v9 = int.icmp.lt v7, v8
+      nextln:   bool.write_reg v9, "n"
+      nextln:   v10 = i64.unsigned_from_bits v1
+      nextln:   v11 = i64.unsigned_from_bits v5
+      nextln:   v12 = int.icmp.gt v10, v11
+      nextln:   v13 = i64.unsigned_from_bits v3
+      nextln:   v14 = i64.unsigned_from_bits v5
+      nextln:   v15 = int.icmp.gt v13, v14
+      nextln:   v16 = bool.or v12, v15
+      nextln:   bool.write_reg v16, "c"
+      nextln:   v17 = i64.signed_from_bits v1
+      nextln:   v18 = i64.signed_from_bits 0x0
+      nextln:   v19 = int.icmp.lt v17, v18
+      nextln:   v20 = i64.signed_from_bits v3
+      nextln:   v21 = i64.signed_from_bits 0x0
+      nextln:   v22 = int.icmp.lt v20, v21
+      nextln:   v23 = bool.icmp.eq v19, v22
+      nextln:   v24 = bool.icmp.ne v19, v9
+      nextln:   v25 = bool.and v23, v24
+      nextln:   bool.write_reg v25, "v"
       nextln:   jump block_4
       check: ccmp_negative_condition: // preds: entry
-      nextln:   v16 = i64.and 0x8, 0x0
-      nextln:   v17 = i64.icmp.ne 0x0, v16
-      nextln:   bool.write_reg v17, "n"
-      nextln:   v18 = i64.and 0x4, 0x0
-      nextln:   v19 = i64.icmp.ne 0x0, v18
-      nextln:   bool.write_reg v19, "z"
-      nextln:   v20 = i64.and 0x2, 0x0
-      nextln:   v21 = i64.icmp.ne 0x0, v20
-      nextln:   bool.write_reg v21, "c"
-      nextln:   v22 = i64.and 0x1, 0x0
-      nextln:   v23 = i64.icmp.ne 0x0, v22
-      nextln:   bool.write_reg v23, "v"
+      nextln:   v26 = i64.and 0x8, 0x0
+      nextln:   v27 = i64.icmp.ne 0x0, v26
+      nextln:   bool.write_reg v27, "n"
+      nextln:   v28 = i64.and 0x4, 0x0
+      nextln:   v29 = i64.icmp.ne 0x0, v28
+      nextln:   bool.write_reg v29, "z"
+      nextln:   v30 = i64.and 0x2, 0x0
+      nextln:   v31 = i64.icmp.ne 0x0, v30
+      nextln:   bool.write_reg v31, "c"
+      nextln:   v32 = i64.and 0x1, 0x0
+      nextln:   v33 = i64.icmp.ne 0x0, v32
+      nextln:   bool.write_reg v33, "v"
       nextln:   jump block_4

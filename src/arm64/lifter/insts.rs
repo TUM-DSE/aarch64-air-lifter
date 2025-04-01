@@ -93,7 +93,7 @@ impl LifterState<'_> {
                     self.write_flag(zero, Flag::V);
                     let is_zero = self.builder.icmp(CmpTy::Eq, val, zero, op_type);
                     self.write_flag(is_zero.into(), Flag::Z);
-                    let is_negative = self.builder.icmp(CmpTy::Slt, val, zero, op_type);
+                    let is_negative = self.builder.scmp(CmpTy::Lt, val, zero, op_type);
                     self.write_flag(is_negative.into(), Flag::N);
                 }
             }
@@ -148,7 +148,7 @@ impl LifterState<'_> {
                 let src = self.get_value(inst.operands[1]);
                 let immr = self.get_value(inst.operands[2]);
                 let imms = self.get_value(inst.operands[3]);
-                let cmp = self.builder.icmp(CmpTy::Uge, imms, immr, I64);
+                let cmp = self.builder.ucmp(CmpTy::Ge, imms, immr, I64);
                 self.builder.jumpif(
                     cmp,
                     positive_condition_block,
@@ -828,7 +828,7 @@ impl LifterState<'_> {
                 let src = self.get_value(inst.operands[1]);
                 let immr = self.get_value(inst.operands[2]);
                 let imms = self.get_value(inst.operands[3]);
-                let cmp = self.builder.icmp(CmpTy::Uge, imms, immr, I64);
+                let cmp = self.builder.ucmp(CmpTy::Ge, imms, immr, I64);
                 self.builder.jumpif(
                     cmp,
                     positive_condition_block,
@@ -1056,7 +1056,7 @@ impl LifterState<'_> {
                 let src = self.get_value(inst.operands[1]);
                 let immr = self.get_value(inst.operands[2]);
                 let imms = self.get_value(inst.operands[3]);
-                let cmp = self.builder.icmp(CmpTy::Ult, immr, imms, I64);
+                let cmp = self.builder.ucmp(CmpTy::Lt, immr, imms, I64);
                 self.builder.jumpif(
                     cmp,
                     positive_condition_block,
