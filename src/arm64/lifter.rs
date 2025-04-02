@@ -8,6 +8,7 @@ use tnj::air::instructions::CodeRegion;
 use tnj::arch::get_arch;
 use tnj::pcc;
 use tnj::pcc::Proof;
+use tnj::sym::{Expr, TypedExprPool};
 use yaxpeax_arch::{Arch, Decoder, U8Reader};
 use yaxpeax_arm::armv8::a64::{ARMv8, DecodeError, InstDecoder};
 
@@ -18,7 +19,10 @@ mod operands;
 mod regs;
 
 /// A lifter for AArch64
-pub struct AArch64Lifter;
+pub struct AArch64Lifter<'a> {
+    code: &'a [u8],
+    proofs: &'a [u8],
+}
 
 const INSTRUCTION_SIZE: u64 = 4;
 
@@ -29,21 +33,27 @@ enum Flag {
     V,
 }
 
-impl AArch64Lifter {
+impl AArch64Lifter<'_> {
     /// Disassemble code and print to a string.
-    pub fn disassemble<W>(&self, w: &mut W, code: &[u8]) -> Result<(), AArch64DisassemblerError>
+    pub fn disassemble<W>(&self, w: &mut W) -> Result<(), AArch64DisassemblerError>
     where
         W: ?Sized + std::io::Write,
     {
         let decoder = <ARMv8 as Arch>::Decoder::default();
-        let mut reader = U8Reader::new(code);
+        let mut reader = U8Reader::new(self.code);
+        let (proof, exprs) = self.parse_proofs()?.unwrap_or_default();
 
         let mut pc = 0u64;
 
         loop {
             match decoder.decode(&mut reader) {
                 Ok(inst) => {
+                    let constraints = proof.constraints.get(&(pc as u32));
+
+                    Self::print_assertions(w, &exprs, constraints.map(|c| c.asserts()), "assert")?;
                     writeln!(w, "0x{:0>4x}:\t{}", pc, inst)?;
+                    Self::print_assertions(w, &exprs, constraints.map(|c| c.ensures()), "ensure")?;
+
                     pc += INSTRUCTION_SIZE;
                 }
                 Err(DecodeError::ExhaustedInput) => break,
@@ -53,24 +63,52 @@ impl AArch64Lifter {
 
         Ok(())
     }
+
+    fn print_assertions<W>(
+        w: &mut W,
+        exprs: &TypedExprPool,
+        assertions: Option<&[Expr]>,
+        name: &str,
+    ) -> Result<(), std::io::Error>
+    where
+        W: ?Sized + std::io::Write,
+    {
+        if let Some(asserts) = assertions {
+            write!(w, "{name} {{ ")?;
+
+            for &assert in asserts {
+                write!(w, "{}; ", exprs.display(assert))?;
+            }
+
+            writeln!(w, "}}")?;
+        }
+
+        Ok(())
+    }
+
+    fn parse_proofs(&self) -> Result<Option<(Proof, TypedExprPool)>, pcc::read::Error> {
+        if !self.proofs.is_empty() {
+            Ok(Some(pcc::read::read(&mut Cursor::new(&self.proofs))?))
+        } else {
+            Ok(None)
+        }
+    }
 }
 
-impl Lifter for AArch64Lifter {
+impl<'a> Lifter<'a> for AArch64Lifter<'a> {
     type E = AArch64LifterError;
 
-    fn lift(&self, code: &[u8], proofs: &[u8]) -> Result<CodeRegion, Self::E> {
+    fn new(code: &'a [u8], proofs: &'a [u8]) -> Self {
+        Self { code, proofs }
+    }
+
+    fn lift(&self) -> Result<CodeRegion, Self::E> {
         let arch = get_arch(Architecture::Aarch64(Aarch64Architecture::Aarch64)).unwrap();
-        let mut code_region = CodeRegion::new(arch);
 
-        let proof = if !proofs.is_empty() {
-            let (proof, exprs) = pcc::read::read(&mut Cursor::new(&proofs))?;
-            *code_region.exprs_mut() = exprs;
-            proof
-        } else {
-            Default::default()
-        };
+        let (proof, exprs) = self.parse_proofs()?.unwrap_or_default();
+        let mut code_region = CodeRegion::with_exprs(arch, exprs);
 
-        let state = LifterState::new(&mut code_region, code, proof)?;
+        let state = LifterState::new(&mut code_region, self.code, proof)?;
 
         state.lift()?;
 
@@ -174,4 +212,8 @@ pub enum AArch64DisassemblerError {
     /// I/O error
     #[error("{0}")]
     Io(#[from] std::io::Error),
+
+    /// Proof decode error
+    #[error("Error decoding pcc proofs: {0}")]
+    Pcc(#[from] pcc::read::Error),
 }

@@ -44,8 +44,8 @@ pub fn check_instruction(
     directives: &str,
     args: CheckInstructionArgs,
 ) -> bool {
-    let lifter = AArch64Lifter;
-    let code_region = lifter.lift(bytes, proofs.unwrap_or(&[])).unwrap();
+    let lifter = AArch64Lifter::new(bytes, proofs.unwrap_or(&[]));
+    let code_region = lifter.lift().unwrap();
     let result = code_region.display().to_string();
     if args.debug {
         let blocks_count = code_region.blocks().len();

@@ -1,4 +1,5 @@
 use aarch64_air_lifter::arm64::AArch64Lifter;
+use aarch64_air_lifter::Lifter;
 use std::io::Cursor;
 
 #[test]
@@ -11,8 +12,8 @@ fn from_wasm() {
 
     let mut cursor = Cursor::new(Vec::new());
 
-    let lifter = AArch64Lifter;
-    lifter.disassemble(&mut cursor, &bytes).unwrap();
+    let lifter = AArch64Lifter::new(&bytes, &[]);
+    lifter.disassemble(&mut cursor).unwrap();
 
     let s = String::from_utf8(cursor.into_inner()).expect("Valid UTF-8");
 

@@ -8,10 +8,13 @@ use tnj::air::instructions::CodeRegion;
 pub mod arm64;
 
 /// A lifter.
-pub trait Lifter {
+pub trait Lifter<'a> {
     /// Error type when lifting fails.
     type E;
 
+    /// Construct a new lifter.
+    fn new(code: &'a [u8], proofs: &'a [u8]) -> Self;
+
     /// Lift from a reader reading machine code and one reading proofs to a CodeRegion.
-    fn lift(&self, code: &[u8], proofs: &[u8]) -> Result<CodeRegion, Self::E>;
+    fn lift(&self) -> Result<CodeRegion, Self::E>;
 }

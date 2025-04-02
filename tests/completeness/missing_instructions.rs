@@ -9,7 +9,6 @@ use elf::endian::AnyEndian;
 use elf::ElfBytes;
 
 fn read_elf_file(path: impl AsRef<Path>) -> Result<(), Box<dyn std::error::Error>> {
-    let lifter = AArch64Lifter;
     let file_data = std::fs::read(path)?;
     let slice = file_data.as_slice();
     let file = ElfBytes::<AnyEndian>::minimal_parse(slice)?;
@@ -50,7 +49,8 @@ fn read_elf_file(path: impl AsRef<Path>) -> Result<(), Box<dyn std::error::Error
         }
 
         let start = Instant::now();
-        let panic = std::panic::catch_unwind(|| match lifter.lift(&bytes[offset..end], &[]) {
+        let lifter = AArch64Lifter::new(&bytes[offset..end], &[]);
+        let panic = std::panic::catch_unwind(|| match lifter.lift() {
             Ok(_code_region) => Ok(()),
             Err(e) => {
                 println!("Error lifting {:?}: {}", s, e);
