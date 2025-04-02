@@ -48,7 +48,7 @@ impl AArch64Lifter<'_> {
         loop {
             match decoder.decode(&mut reader) {
                 Ok(inst) => {
-                    let constraints = proof.constraints.get(&(pc as u32));
+                    let constraints = proof.constraints.get(&pc);
 
                     Self::print_assertions(w, &exprs, constraints.map(|c| c.asserts()), "assert")?;
                     writeln!(w, "0x{:0>4x}:\t{}", pc, inst)?;
