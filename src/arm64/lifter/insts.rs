@@ -23,11 +23,13 @@ impl LifterState<'_> {
             return Ok(());
         }
 
+        let mut has_constraints = false;
         if let Some(constraints) = self.proof.constraints.get(&pc) {
             let bb = self.builder.current_block();
             let inst_group = self.builder.create_inst_group_if_not_empty();
             self.builder
                 .set_constraint(bb, inst_group, constraints.clone());
+            has_constraints = true;
         }
 
         match inst.opcode {
@@ -1144,6 +1146,11 @@ impl LifterState<'_> {
                 }
             }
         }
+
+        if has_constraints {
+            self.builder.create_inst_group_if_not_empty();
+        }
+
         Ok(())
     }
 }
