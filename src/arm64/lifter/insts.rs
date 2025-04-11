@@ -1,7 +1,7 @@
 use crate::arm64::lifter::{Flag, LifterState, INSTRUCTION_SIZE};
 use crate::arm64::{helper, AArch64LifterError};
-use tnj::types::cmp::CmpTy;
-use tnj::types::{BOOL, I128, I16, I32, I64, I8};
+use types::cmp::CmpTy;
+use types::{BOOL, I128, I16, I32, I64, I8};
 use yaxpeax_arm::armv8::a64::{Instruction, Opcode, Operand};
 
 impl LifterState<'_> {

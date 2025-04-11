@@ -1,5 +1,10 @@
 # AArch64 to AIR lifter
 
+## Submodule
+
+> [!IMPORTANT]
+> This project can only be built when integrated as a submodule into [tnj](https://github.com/TUM-DSE/tnj).
+
 ## Getting started
 
 To get started, install Rust (https://rustup.sh) and the following dependencies:

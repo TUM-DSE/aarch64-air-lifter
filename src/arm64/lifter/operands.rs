@@ -1,7 +1,7 @@
 use crate::arm64::helper;
 use crate::arm64::lifter::{LifterState, SpOrZrReg};
-use tnj::air::instructions::Value;
-use tnj::types::{I16, I32, I64, I8};
+use air::instructions::Value;
+use types::{I16, I32, I64, I8};
 use yaxpeax_arm::armv8::a64::{Operand, ShiftStyle, SizeCode};
 
 impl LifterState<'_> {

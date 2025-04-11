@@ -1,7 +1,7 @@
 use crate::arm64::lifter::{Flag, LifterState};
-use tnj::air::instructions::Value;
-use tnj::types::cmp::CmpTy;
-use tnj::types::{Type, BOOL};
+use air::instructions::Value;
+use types::cmp::CmpTy;
+use types::{Type, BOOL};
 
 impl LifterState<'_> {
     pub(crate) fn flag_value(&mut self, flag: Flag) -> Value {

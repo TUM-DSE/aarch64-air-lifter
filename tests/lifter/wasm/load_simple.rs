@@ -12,8 +12,8 @@ fn from_wasm() {
 
     let mut cursor = Cursor::new(Vec::new());
 
-    let lifter = AArch64Lifter::new(&bytes, &[]);
-    lifter.disassemble(&mut cursor).unwrap();
+    let lifter = AArch64Lifter::new();
+    lifter.disassemble(&mut cursor, &bytes, &[]).unwrap();
 
     let s = String::from_utf8(cursor.into_inner()).expect("Valid UTF-8");
 

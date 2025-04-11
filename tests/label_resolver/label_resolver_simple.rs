@@ -1,9 +1,9 @@
 use std::vec;
 
 use aarch64_air_lifter::arm64::LabelResolver;
+use air::instructions::CodeRegion;
+use arch::get_arch;
 use target_lexicon::{Aarch64Architecture, Architecture};
-use tnj::air::instructions::CodeRegion;
-use tnj::arch::get_arch;
 use yaxpeax_arch::Arch;
 use yaxpeax_arm::armv8::a64::ARMv8;
 

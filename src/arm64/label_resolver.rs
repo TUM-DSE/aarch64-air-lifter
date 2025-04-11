@@ -1,11 +1,11 @@
 use super::helper;
+use air::instructions::builder::InstructionBuilder;
+use air::instructions::BasicBlock;
 use std::cmp::Ord;
 use std::cmp::Reverse;
 use std::collections::HashMap;
 use std::collections::{BinaryHeap, HashSet};
 use std::hash::Hash;
-use tnj::air::instructions::builder::InstructionBuilder;
-use tnj::air::instructions::BasicBlock;
 use yaxpeax_arch::{Decoder, U8Reader};
 use yaxpeax_arm::armv8::a64::{DecodeError, InstDecoder, Opcode};
 

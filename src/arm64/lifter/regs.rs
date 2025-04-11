@@ -1,7 +1,7 @@
 use crate::arm64::lifter::{LifterState, SpOrZrReg};
-use tnj::air::instructions::Value;
-use tnj::arch::reg::Reg;
-use tnj::types::{Type, I64};
+use air::instructions::Value;
+use arch::reg::Reg;
+use types::{Type, I64};
 use yaxpeax_arm::armv8::a64::{Instruction, Operand, SizeCode};
 
 impl LifterState<'_> {
@@ -55,7 +55,7 @@ impl LifterState<'_> {
 
     pub(crate) fn read_pc_reg(&mut self) -> Value {
         let reg = self.get_reg_val_by_name("pc");
-        self.reg_val(reg.0 as u16, SpOrZrReg::Sp)
+        self.builder.read_reg(reg, I64).into()
     }
 
     pub(crate) fn get_reg_val_by_name(&mut self, name: &str) -> Reg {

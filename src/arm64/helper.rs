@@ -1,4 +1,4 @@
-use tnj::types::{Type, I128, I16, I32, I64, I8};
+use types::{Type, I128, I16, I32, I64, I8};
 use yaxpeax_arm::armv8::a64::Instruction;
 use yaxpeax_arm::armv8::a64::{Operand, SIMDSizeCode, SizeCode};
 

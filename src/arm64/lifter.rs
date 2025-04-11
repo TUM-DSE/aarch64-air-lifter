@@ -1,14 +1,14 @@
 use crate::arm64::LabelResolver;
 use crate::Lifter;
+use air::instructions::builder::InstructionBuilder;
+use air::instructions::CodeRegion;
+use arch::get_arch;
+use pcc;
+use pcc::Proof;
 use std::io::Cursor;
+use sym::{Expr, TypedExprPool};
 use target_lexicon::{Aarch64Architecture, Architecture};
 use thiserror::Error;
-use tnj::air::instructions::builder::InstructionBuilder;
-use tnj::air::instructions::CodeRegion;
-use tnj::arch::get_arch;
-use tnj::pcc;
-use tnj::pcc::Proof;
-use tnj::sym::{Expr, TypedExprPool};
 use yaxpeax_arch::{Arch, Decoder, U8Reader};
 use yaxpeax_arm::armv8::a64::{ARMv8, DecodeError, InstDecoder};
 
@@ -19,10 +19,7 @@ mod operands;
 mod regs;
 
 /// A lifter for AArch64
-pub struct AArch64Lifter<'a> {
-    code: &'a [u8],
-    proofs: &'a [u8],
-}
+pub struct AArch64Lifter;
 
 const INSTRUCTION_SIZE: u64 = 4;
 
@@ -33,15 +30,20 @@ enum Flag {
     V,
 }
 
-impl AArch64Lifter<'_> {
+impl AArch64Lifter {
     /// Disassemble code and print to a string.
-    pub fn disassemble<W>(&self, w: &mut W) -> Result<(), AArch64DisassemblerError>
+    pub fn disassemble<W>(
+        &self,
+        w: &mut W,
+        code: &[u8],
+        proofs: &[u8],
+    ) -> Result<(), AArch64DisassemblerError>
     where
         W: ?Sized + std::io::Write,
     {
         let decoder = <ARMv8 as Arch>::Decoder::default();
-        let mut reader = U8Reader::new(self.code);
-        let (proof, exprs) = self.parse_proofs()?.unwrap_or_default();
+        let mut reader = U8Reader::new(code);
+        let (proof, exprs) = self.parse_proofs(proofs)?.unwrap_or_default();
 
         let mut pc = 0u64;
 
@@ -86,29 +88,36 @@ impl AArch64Lifter<'_> {
         Ok(())
     }
 
-    fn parse_proofs(&self) -> Result<Option<(Proof, TypedExprPool)>, pcc::read::Error> {
-        if !self.proofs.is_empty() {
-            Ok(Some(pcc::read::read(&mut Cursor::new(&self.proofs))?))
+    fn parse_proofs(
+        &self,
+        proofs: &[u8],
+    ) -> Result<Option<(Proof, TypedExprPool)>, pcc::read::Error> {
+        if !proofs.is_empty() {
+            Ok(Some(pcc::read::read(&mut Cursor::new(proofs))?))
         } else {
             Ok(None)
         }
     }
 }
 
-impl<'a> Lifter<'a> for AArch64Lifter<'a> {
+impl Lifter for AArch64Lifter {
     type E = AArch64LifterError;
 
-    fn new(code: &'a [u8], proofs: &'a [u8]) -> Self {
-        Self { code, proofs }
+    fn arch() -> Architecture {
+        Architecture::Aarch64(Aarch64Architecture::Aarch64)
     }
 
-    fn lift(&self) -> Result<CodeRegion, Self::E> {
+    fn new() -> Self {
+        Self {}
+    }
+
+    fn lift(&self, code: &[u8], proofs: &[u8]) -> Result<CodeRegion, Self::E> {
         let arch = get_arch(Architecture::Aarch64(Aarch64Architecture::Aarch64)).unwrap();
 
-        let (proof, exprs) = self.parse_proofs()?.unwrap_or_default();
+        let (proof, exprs) = self.parse_proofs(proofs)?.unwrap_or_default();
         let mut code_region = CodeRegion::with_exprs(arch, exprs);
 
-        let state = LifterState::new(&mut code_region, self.code, proof)?;
+        let state = LifterState::new(&mut code_region, code, proof)?;
 
         state.lift()?;
 

@@ -4,19 +4,23 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-elf = "0.7.4"
-filecheck = "0.5.0"
-serde = { version = "1", features = ["derive"] }
-serde_yaml = "0.9"
-target-lexicon = "0.13.1"
-thiserror = "2.0.0"
-tnj = { git = "ssh://git@github.com/TUM-DSE/tnj.git", branch = "main" }
-yaxpeax-arch = "0.3.2"
-yaxpeax-arm = "0.3.0"
+air = { workspace = true }
+arch = { workspace = true }
+elf = { workspace = true }
+filecheck = { workspace = true }
+pcc = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_yaml = { workspace = true }
+sym = { workspace = true }
+target-lexicon = { workspace = true }
+thiserror = { workspace = true }
+types = { workspace = true }
+yaxpeax-arch = { workspace = true }
+yaxpeax-arm = { workspace = true }
 
 [build-dependencies]
-prettier-please = { version = "0.3.0" }
-quote = "1.0.40"
-serde = { version = "1", features = ["derive"] }
+prettier-please = { workspace = true }
+quote = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
 serde_yaml = "0.9"
-syn = { version = "2.0.100" }
+syn = { workspace = true }

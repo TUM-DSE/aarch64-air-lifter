@@ -49,8 +49,8 @@ fn read_elf_file(path: impl AsRef<Path>) -> Result<(), Box<dyn std::error::Error
         }
 
         let start = Instant::now();
-        let lifter = AArch64Lifter::new(&bytes[offset..end], &[]);
-        let panic = std::panic::catch_unwind(|| match lifter.lift() {
+        let lifter = AArch64Lifter::new();
+        let panic = std::panic::catch_unwind(|| match lifter.lift(&bytes[offset..end], &[]) {
             Ok(_code_region) => Ok(()),
             Err(e) => {
                 println!("Error lifting {:?}: {}", s, e);

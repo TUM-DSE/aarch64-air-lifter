@@ -42,14 +42,13 @@ pub fn run_test_from_yaml(file: &str, test_name: &str) {
             if let Some(true) = test.skip {
                 continue;
             }
-            let lifter = AArch64Lifter::new(
-                &test.bytes,
-                test.proofs
-                    .as_ref()
-                    .map(|bytes| &bytes[..])
-                    .unwrap_or_default(),
-            );
-            let blob = lifter.lift().expect("Lifter failed");
+            let lifter = AArch64Lifter::new();
+            let proofs = test
+                .proofs
+                .as_ref()
+                .map(|bytes| &bytes[..])
+                .unwrap_or_default();
+            let blob = lifter.lift(&test.bytes, proofs).expect("Lifter failed");
             let result = blob.display().to_string();
 
             // Reconstruct directives with 'check' and 'nextln'
